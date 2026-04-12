@@ -90,6 +90,23 @@ src/
 - Runner : **Vitest** + **`@amiceli/vitest-cucumber`** pour les scénarios BDD
 - Commande : `bun run test`
 
+### Workflow BDD
+
+1. Écrire le fichier `.feature`
+2. Générer la structure des steps via la CLI :
+   ```
+   bunx @amiceli/vitest-cucumber --feature tests/features/<name>.feature --spec tests/features/steps/<name>.steps.ts --lang fr
+   ```
+3. Implémenter les steps générés
+
+### Gotcha : langue française
+
+Toujours passer `{ language: 'fr' }` à `loadFeature` — la librairie ignore le commentaire `# language: fr` dans les fichiers `.feature` et défaut sur l'anglais. Sans cette option, `Contexte:` n'est pas reconnu et les tests crashent.
+
+```ts
+const feature = await loadFeature('tests/features/xxx.feature', { language: 'fr' })
+```
+
 ## Stack technique
 
 ```
