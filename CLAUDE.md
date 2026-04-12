@@ -20,6 +20,15 @@ Les sous-dossiers `docs/` ne doivent être chargés qu'à la demande, selon la t
 - Toujours **réserver du budget token pour la mise à jour de la documentation** en fin de session.
 - Pour les tâches complexes, utiliser `TaskCreate` pour découper et suivre la progression.
 
+## En cours de réalisation d'une étape
+
+Après avoir implémenté une étape (ou une partie significative), **prendre du recul et vérifier** :
+- Les règles et choix d'architecture définis dans la doc sont-ils toujours pertinents ?
+- L'implémentation révèle-t-elle une contrainte ou un cas non anticipé ?
+- Faut-il revoir le plan des étapes suivantes ?
+
+Si une règle doit changer, **mettre à jour la doc avant de continuer** — ne pas laisser une divergence entre le code et la documentation.
+
 ## Avant chaque push (branche ≠ main)
 
 Deux vérifications obligatoires avant de pousser une branche de développement :
