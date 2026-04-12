@@ -12,9 +12,10 @@ L'image est affichée comme élément `<image>` SVG et dimensionnée en **unité
 
 ```mermaid
 flowchart LR
-    Upload[Upload image] --> Read[FileReader vers dataUrl]
-    Read --> Dims[Lire naturalWidth et naturalHeight]
-    Dims --> Display[Afficher en unités monde]
+    Upload[Upload image File] --> Store[Stocker le File nativement dans IndexedDB]
+    Store --> ObjUrl[URL.createObjectURL file]
+    ObjUrl --> Img[new Image - lire naturalWidth et naturalHeight]
+    Img --> Display[Afficher en unités monde]
     Display --> Calib{Calibrer ?}
     Calib -- Oui --> P1[Choisir point 1 sur le plan]
     P1 --> P2[Choisir point 2 sur le plan]
@@ -23,6 +24,8 @@ flowchart LR
     Scale --> Done([Plan calibré])
     Calib -- Non --> Done
 ```
+
+L'image est un `File` directement stocké dans IndexedDB — pas de conversion base64. Au chargement, un object URL temporaire est créé via `URL.createObjectURL(file)` pour alimenter un `<image>` SVG. L'object URL est révoqué (`URL.revokeObjectURL`) dès qu'il n'est plus nécessaire.
 
 La calibration peut être refaite à tout moment sans perdre les pièces déjà dessinées : elles sont définies en coordonnées monde et s'adaptent automatiquement à la nouvelle échelle.
 
