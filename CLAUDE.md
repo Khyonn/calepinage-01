@@ -2,15 +2,16 @@
 
 ## Démarrage de session
 
-**Toujours commencer par lire [`docs/main.md`](docs/main.md)** avant toute action. Cette documentation est la **source de vérité** du projet : elle décrit l'application, ses fonctionnalités, les règles techniques et le glossaire.
+**Toujours commencer par lire [`docs/README.md`](docs/README.md)** avant toute action. Cette documentation est la **source de vérité** du projet : elle décrit l'application, ses fonctionnalités, les règles techniques et le glossaire.
 
 Les sous-dossiers `docs/` ne doivent être chargés qu'à la demande, selon la tâche en cours :
 
 | Dossier | Contenu |
 | --- | --- |
-| [`docs/project-steps/`](docs/project-steps/) | État d'avancement du développement, étapes réalisées |
 | [`docs/features/`](docs/features/) | Spécifications détaillées de chaque fonctionnalité |
 | [`docs/technical/`](docs/technical/) | Décisions d'architecture, ADR, choix techniques |
+| [`docs/project-steps/`](docs/project-steps/) | État d'avancement du développement, étapes réalisées |
+| [`docs/glossary.md`](docs/glossary.md) | Définitions des termes métier |
 | [`docs/images/`](docs/images/) | Maquettes, wireframes, captures d'écran |
 
 ## Gestion des tokens
@@ -18,6 +19,21 @@ Les sous-dossiers `docs/` ne doivent être chargés qu'à la demande, selon la t
 - Si une tâche nécessite une réflexion estimée à **plus de 5 minutes** ou risque de consommer trop de tokens, **poser des questions d'affinage à l'utilisateur avant de se lancer**.
 - Toujours **réserver du budget token pour la mise à jour de la documentation** en fin de session.
 - Pour les tâches complexes, utiliser `TaskCreate` pour découper et suivre la progression.
+
+## Avant chaque push (branche ≠ main)
+
+Deux vérifications obligatoires avant de pousser une branche de développement :
+
+**1. Documentation à jour**
+Passer en revue ce que la branche apporte et s'assurer que la doc reflète les changements :
+- Nouvelle fonctionnalité → fichier correspondant dans `docs/features/` créé ou mis à jour
+- Décision technique → `docs/technical/` mis à jour
+- Étape franchie → `docs/project-steps/` mis à jour
+
+**2. Migration IndexedDB obligatoire si le schéma change**
+Toute modification du schéma IndexedDB (ajout/suppression/renommage de champ sur `Project`, `Room`, `Row`, `PlankType`, `PoseParams`, ou `BackgroundPlan`) **doit être accompagnée d'une fonction de migration** dans la couche `src/store/db.ts`.
+
+Sans cette fonction, les données existantes des utilisateurs deviennent illisibles au chargement. C'est un **bloquant** : ne pas merger sans migration.
 
 ## Fin de session
 
@@ -41,15 +57,15 @@ Suivre les [Conventional Commits](https://www.conventionalcommits.org/) :
 
 ## Architecture du code
 
-Voir [`docs/main.md`](docs/main.md) — section 5 pour les contraintes techniques complètes.
+Voir [`docs/README.md`](docs/README.md) — section 5 pour les contraintes techniques complètes.
 
 Structure `src/` :
 
 ```
 src/
 ├── core/        ← logique métier pure — ZÉRO React, ZÉRO DOM
-├── store/       ← état global (useReducer) + persistance IndexedDB
-├── hooks/       ← hooks React + logique DOM extraite
+├── store/       ← reducer, actions, état, IndexedDB — ZÉRO React
+├── hooks/       ← binding React : useReducer + store, logique DOM
 └── components/  ← rendu JSX uniquement, aucune logique métier
 ```
 
