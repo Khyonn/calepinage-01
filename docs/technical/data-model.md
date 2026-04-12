@@ -25,6 +25,7 @@ Le stockage est **relationnel** : chaque entité a son propre object store, avec
 | `projectId` | `string` | FK → `projects` |
 | `name` | `string` | Nom de la pièce |
 | `vertices` | `Point[]` | Sommets du polygone en coordonnées monde (cm) |
+| `yOffset` | `number?` | Décalage vertical de départ du motif (cm) — pour assurer la continuité visuelle entre pièces adjacentes |
 
 #### `rows`
 | Champ | Type | Description |
@@ -33,7 +34,6 @@ Le stockage est **relationnel** : chaque entité a son propre object store, avec
 | `roomId` | `string` | FK → `rooms` |
 | `plankTypeId` | `string` | FK → `plankTypes` |
 | `xOffset` | `number` | Décalage horizontal (cm) — seule donnée de position persistée |
-| `yOffset` | `number?` | Décalage vertical optionnel (cm) |
 
 #### `plankTypes`
 | Champ | Type | Description |

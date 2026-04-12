@@ -4,7 +4,7 @@ import { loadFeature, describeFeature } from '@amiceli/vitest-cucumber'
 import { validateRow } from '@/core/validateRow'
 import type { ConstraintViolation, ConstraintViolationType, Plank, PoseParams } from '@/core/types'
 
-const feature = await loadFeature('tests/features/validate-row.feature', { language: 'fr' })
+const feature = await loadFeature('src/core/__tests__/validate-row.feature', { language: 'fr' })
 
 describeFeature(feature, ({ BeforeEachScenario, Background, Scenario }) => {
   let poseParams: PoseParams

@@ -55,7 +55,6 @@ export interface Row {
   roomId: string
   plankTypeId: string
   xOffset: number  // cm — only persisted position data
-  yOffset?: number // cm — optional vertical offset for inter-room continuity
 }
 
 export interface Room {
@@ -63,6 +62,7 @@ export interface Room {
   projectId: string
   name: string
   vertices: Point[]
+  yOffset?: number // cm — vertical start offset for inter-room continuity
   rows: Row[]
 }
 

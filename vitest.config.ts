@@ -10,8 +10,10 @@ export default defineConfig({
   test: {
     globals: true,
     include: [
-      'src/**/*.test.ts',
-      'tests/**/*.steps.ts',
+      'src/**/*.steps.ts',
     ],
+    coverage: {
+      provider: 'istanbul',
+    },
   },
 })

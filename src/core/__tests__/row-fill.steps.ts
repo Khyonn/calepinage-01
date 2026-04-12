@@ -4,7 +4,7 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber'
 import { computeOffcutLength, fillRow } from '@/core/rowFill'
 import type { Plank, PlankType, PoseParams } from '@/core/types'
 
-const feature = await loadFeature('tests/features/row-fill.feature', { language: 'fr' })
+const feature = await loadFeature('src/core/__tests__/row-fill.feature', { language: 'fr' })
 
 describeFeature(feature, ({ Background, BeforeEachScenario, Scenario }) => {
   let plankType: PlankType

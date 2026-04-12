@@ -4,9 +4,10 @@
 
 ```
 React 19 + TypeScript (strict) + Vite → build statique → GitHub Pages
-Persistance : IndexedDB via wrapper natif (sans librairie tierce)
+State management : Redux Toolkit (@reduxjs/toolkit) + react-redux
+Persistance : IndexedDB via librairie idb (schéma typé DBSchema)
 Package manager : Bun
-Tests : Vitest + @amiceli/vitest-cucumber
+Tests : Vitest + @amiceli/vitest-cucumber — coverage via Istanbul
 Aucun backend, aucune dépendance réseau après le premier chargement
 ```
 
@@ -20,19 +21,21 @@ L'architecture distingue trois niveaux indépendants :
 
 **Logique métier** (`src/core/`) : fonctions pures, types de domaine, règles de calcul. Zéro dépendance React, zéro accès au DOM. Ce code peut être extrait, testé en isolation ou porté vers n'importe quel autre environnement sans modification.
 
-**Store / event sourcing** (`src/store/`) : reducer pur, types d'actions, état global, persistance IndexedDB. **Zéro dépendance React.** Ce niveau ne connaît pas `useReducer` ni aucun hook — il expose uniquement des fonctions pures (`projectReducer`, `uiReducer`) et la couche d'accès IndexedDB (`db.ts`). Il pourrait être branché sur n'importe quel autre framework ou environnement.
+**Store** (`src/store/`) : slices RTK, état global, persistance IndexedDB, selectors mémoïsés. **Zéro dépendance React.** Basé sur Redux Toolkit (`@reduxjs/toolkit`) : `projectSlice` (Immer) pour les données persistantes, `uiSlice` pour l'état transient (viewport, mode, pièce active). Un middleware dédié (`idbMiddleware`) synchronise IndexedDB après les actions projet. Les selectors (`createSelector` de RTK) mémoïsent les calculs dérivés coûteux (`fillRow`, `computeSummary`…).
+
+Le store est initialisé de façon asynchrone via `createAppStore()` : la liste et le projet courant sont chargés depuis IndexedDB **avant** la création du store, passés en `preloadedState`. Aucune action d'initialisation n'est nécessaire.
 
 **Manipulation du DOM** : gestion des événements natifs (`wheel`, `keydown`, `pointermove`…), calculs de coordonnées, transformations géométriques. Extraite des composants dans des fonctions ou modules dédiés, sans dépendance aux mécanismes internes de React.
 
-**Binding React** (`src/hooks/`, `src/components/`) : les hooks font le pont entre le store et React — ils instancient `useReducer` avec les reducers du store, gèrent la persistance IndexedDB, et assemblent logique métier et état. Les composants JSX ne font que rendre des données.
+**Binding React** (`src/hooks/`, `src/components/`) : les hooks font le pont entre le store Redux et React via `react-redux` (`useSelector`, `useDispatch`). Les composants JSX ne font que rendre des données.
 
 ```
 src/
 ├── core/        ← logique métier pure — ZÉRO React, ZÉRO DOM
 │                   fillRow, validateRow, computeSummary, geometry...
-├── store/       ← reducer, actions, état, IndexedDB — ZÉRO React
-│                   projectReducer, uiReducer, db.ts
-├── hooks/       ← binding React : useReducer + store, logique DOM
+├── store/       ← slices, selectors, IndexedDB — ZÉRO React
+│                   projectSlice, uiSlice, selectors.ts, db.ts
+├── hooks/       ← binding React : useSelector/useDispatch, logique DOM
 │                   useRoomRows, useViewport, useResults...
 └── components/  ← rendu JSX uniquement, aucune logique métier
                     SvgCanvas, Toolbar, panneaux...
@@ -45,12 +48,13 @@ Le flux est strictement **unidirectionnel** :
 ```mermaid
 flowchart LR
     User[Interaction utilisateur] --> DOM[Gestionnaires DOM]
-    DOM --> Dispatch[dispatch AppAction]
-    Dispatch --> Reducer[projectReducer + uiReducer]
-    Reducer --> State[AppState]
-    State --> DB[(IndexedDB)]
-    State --> Hooks[useRoomRows - useResults - useViewport]
-    Hooks --> Core[fillRow - validateRow - computeSummary]
-    Core --> Components[Rendu SVG et JSX]
+    DOM --> Dispatch[dispatch action]
+    Dispatch --> Slice[projectSlice + uiSlice]
+    Slice --> State[AppState]
+    State --> MW[idbMiddleware]
+    MW --> DB[(IndexedDB via idb)]
+    State --> Selectors[createSelector - planks - violations - summary]
+    Selectors --> Hooks[useSelector hooks]
+    Hooks --> Components[Rendu SVG et JSX]
     Components --> User
 ```
