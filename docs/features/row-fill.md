@@ -27,12 +27,16 @@ L'algorithme cherche, parmi les chutes disponibles du même type de lame, la plu
 Les `Plank[]` ne sont **jamais stockés** dans IndexedDB. Seul `xOffset` est persisté dans `Row`. À chaque rendu, l'algorithme est rappelé — c'est une **fonction pure déterministe**.
 
 ```typescript
-// Seule donnée persistée
+// Seules données persistées
 interface Row {
   id: string
   plankTypeId: string
-  xOffset: number  // décalage en cm — tout le reste est recalculé
-  yOffset?: number
+  xOffset: number  // décalage horizontal en cm — tout le reste est recalculé
+}
+
+interface Room {
+  // ...
+  yOffset?: number // décalage vertical de départ du motif (cm) — continuité inter-pièces
 }
 ```
 

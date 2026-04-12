@@ -14,6 +14,10 @@ Les sous-dossiers `docs/` ne doivent être chargés qu'à la demande, selon la t
 | [`docs/glossary.md`](docs/glossary.md) | Définitions des termes métier |
 | [`docs/images/`](docs/images/) | Maquettes, wireframes, captures d'écran |
 
+## Posture de collaboration
+
+Remettre en question les choix de l'utilisateur est pertinent et attendu — ne pas systématiquement valider. Présenter les compromis honnêtement, signaler les risques ou alternatives si elles existent. L'utilisateur a le dernier mot.
+
 ## Gestion des tokens
 
 - Si une tâche nécessite une réflexion estimée à **plus de 5 minutes** ou risque de consommer trop de tokens, **poser des questions d'affinage à l'utilisateur avant de se lancer**.
@@ -29,6 +33,10 @@ Après avoir implémenté une étape (ou une partie significative), **prendre du
 
 Si une règle doit changer, **mettre à jour la doc avant de continuer** — ne pas laisser une divergence entre le code et la documentation.
 
+## Commits
+
+Ne jamais créer de commit sans validation explicite de l'utilisateur. Attendre que l'utilisateur confirme qu'une étape est terminée avant de committer quoi que ce soit.
+
 ## Avant chaque push (branche ≠ main)
 
 Deux vérifications obligatoires avant de pousser une branche de développement :
@@ -39,10 +47,12 @@ Passer en revue ce que la branche apporte et s'assurer que la doc reflète les c
 - Décision technique → `docs/technical/` mis à jour
 - Étape franchie → `docs/project-steps/` mis à jour
 
-**2. Migration IndexedDB obligatoire si le schéma change**
-Toute modification du schéma IndexedDB (ajout/suppression/renommage de champ sur `Project`, `Room`, `Row`, `PlankType`, `PoseParams`, ou `BackgroundPlan`) **doit être accompagnée d'une fonction de migration** dans la couche `src/store/db.ts`.
+**2. Migration IndexedDB obligatoire si le schéma change (par rapport à `main`)**
+Toute modification du schéma IndexedDB (ajout/suppression/renommage de champ sur `Project`, `Room`, `Row`, `PlankType`, `PoseParams`, ou `BackgroundPlan`) **doit être accompagnée d'une fonction de migration** dans la couche `src/store/db.ts` **uniquement si le schéma diverge de `main`**.
 
-Sans cette fonction, les données existantes des utilisateurs deviennent illisibles au chargement. C'est un **bloquant** : ne pas merger sans migration.
+En cours de développement sur une branche, pas de migration nécessaire : si le schéma local a changé, supprimer les données IndexedDB du navigateur manuellement (DevTools → Application → IndexedDB → Clear).
+
+Sans migration au moment du merge, les données existantes des utilisateurs deviennent illisibles au chargement. C'est un **bloquant** : ne pas merger sans migration.
 
 ## Fin de session
 
@@ -111,8 +121,13 @@ const feature = await loadFeature('tests/features/xxx.feature', { language: 'fr'
 
 ```
 React 19 + TypeScript (strict) + Vite
-Persistance : IndexedDB (wrapper natif, sans librairie tierce)
+State management : Redux Toolkit (@reduxjs/toolkit) + react-redux
+  - createSlice (Immer) pour projectSlice et uiSlice
+  - createSelector (inclus dans RTK, remplace reselect)
+  - configureStore avec preloadedState (hydratation IDB avant création du store)
+Persistance : IndexedDB via librairie idb (schéma typé DBSchema)
 Package manager : Bun
 Tests : Vitest + @amiceli/vitest-cucumber
+  - Coverage : provider Istanbul (bun run test --coverage)
 Déploiement : GitHub Pages via GitHub Actions
 ```
