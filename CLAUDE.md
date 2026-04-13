@@ -12,7 +12,7 @@ Les sous-dossiers `docs/` ne doivent être chargés qu'à la demande, selon la t
 | [`docs/technical/`](docs/technical/) | Décisions d'architecture, ADR, choix techniques |
 | [`docs/project-steps/`](docs/project-steps/) | État d'avancement du développement, étapes réalisées |
 | [`docs/glossary.md`](docs/glossary.md) | Définitions des termes métier |
-| [`docs/images/`](docs/images/) | Maquettes, wireframes, captures d'écran |
+| [`docs/wireframe-iterations/`](docs/wireframe-iterations/) | Prototypes HTML des wireframes, par itération |
 
 ## Posture de collaboration
 
@@ -32,6 +32,8 @@ Après avoir implémenté une étape (ou une partie significative), **prendre du
 - Faut-il revoir le plan des étapes suivantes ?
 
 Si une règle doit changer, **mettre à jour la doc avant de continuer** — ne pas laisser une divergence entre le code et la documentation.
+
+Si une décision de conception révèle un besoin non anticipé (nouvelle règle métier, nouveau composant technique, révision d'architecture), **insérer une étape dédiée dans `docs/project-steps/`** plutôt que de l'absorber dans l'étape en cours. Renuméroter les étapes suivantes en conséquence et mettre à jour `docs/project-steps/README.md`.
 
 ## Commits
 

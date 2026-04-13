@@ -1,29 +1,31 @@
 # Étape 04 — Wireframes & design system
 
-**Statut : à faire** — peut être parallélisée avec l'étape 03
+**Statut : terminé**
 
 ## Périmètre
 
-Définir l'apparence de l'application avant d'implémenter les composants métier. Deux livrables : les wireframes dans `docs/images/` et les composants atomiques réutilisables.
+Définir l'apparence de l'application avant d'implémenter les composants métier.
 
-## Wireframes
+## ✅ Wireframe
 
-Fichiers SVG à produire dans `docs/images/` :
+Prototype HTML autonome itéré jusqu'à validation. Itération finale : [`docs/wireframe-iterations/01-layout.html`](../wireframe-iterations/01-layout.html).
 
-| Fichier | Contenu |
+Layout et comportements documentés dans :
+- [ui-specifications.md](../features/ui-specifications.md) — structure, panneaux, drawer, helper
+- [interaction-modes.md](../features/interaction-modes.md) — comportement par mode, règles catalogue
+
+## Design tokens — `index.css`
+
+Définir le jeu complet de custom properties :
+
+| Catégorie | Exemples |
 | --- | --- |
-| `docs/images/layout.svg` | Structure générale : canvas SVG central, panneaux latéraux, barre d'outils |
-| `docs/images/toolbar.svg` | Barre d'outils avec les 4 modes + sélecteur de pièce active |
-| `docs/images/panel-project.svg` | Panneau projet : liste des projets, paramètres de pose, catalogue de lames |
-| `docs/images/panel-results.svg` | Panneau résultats : tableau récapitulatif + bouton export CSV |
+| Couleurs | palette principale, états (hover, active, disabled), sémantique (danger, warning) |
+| Typographie | font-family, tailles, line-height, font-weight |
+| Espacements | échelle cohérente (4px, 8px, 12px, 16px…) |
+| Formes | border-radius, shadows |
 
-## Design system — `index.css`
-
-Compléter les custom properties :
-- Couleurs (déjà définies pour le canvas, à étendre pour l'UI)
-- Typographie (font-family, tailles, line-height)
-- Spacing (échelle cohérente)
-- Border-radius, shadows
+Chaque token doit avoir une variante `[data-theme="dark"]` — voir [code-conventions.md](../technical/code-conventions.md).
 
 ## Composants atomiques
 
@@ -39,9 +41,10 @@ Fichiers à créer dans `src/components/ui/` — **aucune logique métier**, sty
 
 ## Page de démo
 
-`src/components/ui/Demo.tsx` — page isolée listant tous les composants dans leurs variantes. Supprimée une fois l'intégration terminée.
+`src/components/ui/Demo.tsx` — page isolée listant tous les composants dans leurs variantes, en mode clair et sombre. Supprimée une fois l'intégration terminée.
 
 ## Références doc
 
+- [ui-specifications.md](../features/ui-specifications.md) — structure visuelle de l'interface
+- [interaction-modes.md](../features/interaction-modes.md) — comportement par mode
 - [code-conventions.md](../technical/code-conventions.md) — custom properties CSS, jamais de valeurs en dur
-- [interaction-modes.md](../features/interaction-modes.md) — icônes suggérées pour la toolbar (Lucide)

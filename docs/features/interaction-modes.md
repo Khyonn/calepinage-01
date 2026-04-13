@@ -1,60 +1,84 @@
 # Modes d'interaction
 
-La barre d'outils expose quatre modes exclusifs. Le mode actif détermine le comportement du canvas et les éléments visuels affichés. La navigation dans le canvas (zoom, pan) reste disponible en permanence quel que soit le mode actif — voir [canvas-navigation.md](canvas-navigation.md).
+La barre d'outils expose quatre modes exclusifs. Le mode actif détermine le comportement du canvas et le contenu du panneau contextuel. La navigation dans le canvas (zoom, pan) reste disponible en permanence quel que soit le mode actif — voir [canvas-navigation.md](canvas-navigation.md).
 
-| `InteractionMode` | Label barre d'outils | Icône suggérée | Description |
+Pour le layout de l'interface (topbar, panneaux, drawer), voir [ui-specifications.md](ui-specifications.md).
+
+| `InteractionMode` | Label | Icône | Description |
 | --- | --- | --- | --- |
-| `nav` | **Navigation** | `MousePointer` 🖱️ | Mode par défaut — pan, zoom, sélection de pièce |
-| `add-room` | **Dessin de pièce** | `PenLine` ✏️ | Tracé interactif d'un polygone à angles droits |
-| `edit-plan` | **Plan** | `Image` 🖼️ | Gestion du plan de fond : import, calibration, opacité |
-| `edit-rows` | **Lames** | `Layers` ▦ | Ajustement des rangées de la pièce active |
+| `nav` | **Navigation** | Croix fléchée (move) | Mode par défaut — pan, zoom, sélection de pièce |
+| `draw` | **Nouvelle pièce** | Stylo | Tracé interactif d'un polygone à angles droits |
+| `rows` | **Lames** | Lignes superposées | Ajustement des rangées — visible uniquement si une pièce est active |
+| `plan` | **Plan** | Blueprint/image | Gestion du plan de fond : import, calibration, opacité |
 
-## Navigation — comportement de base
+Ordre d'affichage dans la topbar : `nav` → `draw` → `rows` *(conditionnel)* → `plan`
 
-Mode par défaut, actif au lancement et accessible depuis n'importe quel autre mode.
+## Mode `nav` — Navigation
 
-**Ce qui est affiché :**
-- Toutes les pièces, à opacité normale
-- Les rangées de la pièce active (lames visibles, sans annotations)
-- Aucun outil de dessin actif
+Mode par défaut, actif au lancement.
 
-**Interactions spécifiques :**
-- Clic sur une pièce → la sélectionner comme pièce active
+**Panneau contextuel :**
+- Paramètres de pose (cale, largeur scie, longueur min, écart min)
+- Catalogue de lames (voir règles ci-dessous)
+
+**Comportement canvas :**
+- Clic sur une pièce → la sélectionner et basculer automatiquement en mode `rows`
+- Survol des pièces : curseur pointer + highlight
 - Clic gauche + glisser → pan du canvas
 
-## Dessin de pièce — différences par rapport à Navigation
+## Mode `draw` — Nouvelle pièce
 
-**Ce qui change :**
-- Le curseur devient une croix (`crosshair`)
-- Clic gauche → place un sommet (ne pan plus)
-- Un aperçu en temps réel montre le prochain segment entre le dernier sommet validé et la position du curseur
-- Raccourcis clavier : `Suppr` (défaire), `Échap` (annuler), `Entrée` (valider)
+**Panneau contextuel :**
+- Instructions sur le tracé
+- Renvoi vers le helper contrôles
 
-**Ce qui reste inchangé :** toutes les pièces existantes restent visibles ; pan disponible via le bouton milieu de la souris.
+**Comportement canvas :**
+- Le curseur devient `crosshair`
+- Clic gauche → place un sommet
+- Aperçu en temps réel du prochain segment
+- Pan disponible via bouton milieu de la souris
 
 Voir [room-drawing.md](room-drawing.md) pour le détail complet.
 
-## Plan — différences par rapport à Navigation
+## Mode `plan` — Plan de fond
 
-**Ce qui change :**
-- Un panneau flottant apparaît avec les contrôles du plan de fond : import d'image, calibration, rotation (±90°) et **opacité**
-- Un **slider d'opacité** permet d'ajuster la transparence du plan entre 0 % et 100 % ; la valeur est persistée
-- Si la calibration est en cours, le curseur devient `crosshair` et les clics posent les points de référence
-- Les pièces sont légèrement atténuées (`opacity: 0.3`) pour mettre le plan en valeur
+**Panneau contextuel :**
+- Import de l'image de fond
+- Opacité (slider 0–100 %)
+- Rotation (0 / 90 / 180 / 270°)
+- Calibration : points A et B draggables sur le canvas + champ "distance réelle" + boutons ✕ / ✓ inline
 
-**Ce qui reste inchangé :** pan et zoom disponibles normalement.
+**Comportement canvas :**
+- Les pièces sont atténuées (`opacity: 0.3`) pour mettre le plan en valeur
+- La grille reste visible en fond
 
 Voir [background-plan.md](background-plan.md) pour le détail complet.
 
-## Lames — différences par rapport à Navigation
+## Mode `rows` — Lames
 
-**Ce qui change :**
-- La **pièce active** est affichée normalement avec ses rangées et ses **annotations** de liens de réutilisation
-- Toutes les **autres pièces** sont atténuées (`opacity: 0.2`)
-- Les rangées de la pièce active sont **draggables** (curseur `grab` → `grabbing` pendant le drag)
-- Le sélecteur de pièce active dans la barre d'outils permet de changer de pièce sans quitter le mode Lames
-- `Échap` → retour au mode Navigation
+Accessible uniquement si une pièce est active. Activé automatiquement au clic sur une pièce en mode `nav`. `Échap` → retour au mode `nav`.
 
-**Ce qui reste inchangé :** pan et zoom disponibles normalement.
+**Panneau contextuel :**
+- Paramètres de pose
+- Catalogue de lames
+- Liste des rangées de la pièce active (xOffset de chaque rangée)
+- Bouton "ajouter une rangée"
+- Dropdown de sélection de pièce (intégré dans le bouton `rows` de la topbar)
+
+**Comportement canvas :**
+- La pièce active est affichée normalement avec ses rangées et annotations
+- Toutes les autres pièces sont atténuées (`opacity: 0.2`)
+- Les rangées sont draggables (curseur `grab` → `grabbing`)
 
 Voir [row-drag.md](row-drag.md) et [constraints-annotations.md](constraints-annotations.md) pour le détail complet.
+
+## Règles du catalogue (modes `nav` et `rows`)
+
+Affichage par type : nom + dimensions + badge d'utilisation + boutons d'action.
+
+| Situation | Dimensions | Autres champs | Suppression |
+| --- | --- | --- | --- |
+| Type utilisé dans au moins une rangée | Lecture seule | Modifiables | Non |
+| Type non utilisé | Modifiables | Modifiables | Oui |
+
+L'ajout d'un nouveau type est disponible dans les deux modes.
