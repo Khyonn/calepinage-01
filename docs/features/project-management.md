@@ -15,7 +15,10 @@ Exemple :
 - **Chêne naturel 120×14 cm** — vendu par lot de 8, 45 €/lot
 - **Chêne naturel 120×10 cm** — vendu à l'unité, 6 €/pièce
 
-L'utilisateur peut réutiliser des types de lames définis dans d'autres projets ; les suggestions sont dédupliquées automatiquement.
+**Règles d'édition :**
+- Type utilisé dans au moins une rangée → dimensions (longueur, largeur) en lecture seule ; nom, tarif et description restent modifiables
+- Type non utilisé → tous les champs modifiables, et supprimable
+- L'ajout d'un nouveau type est toujours disponible
 
 ## Suppressions protégées
 

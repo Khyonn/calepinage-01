@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calepinage — Wireframe 03</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --topbar-h: 48px;
+      --panel-w: 272px;
+      --drawer-min: 250px;
+      --drawer-max: 50vw;
+      --drawer-default: 320px;
+      --radius: 8px;
+      --shadow: 0 2px 12px rgba(0,0,0,.12);
+      --border: 1px solid #e4e0df;
+      --bg: #f5f4f4;
+      --surface: #ffffff;
+      --text: #1a1718;
+      --text-muted: #78716c;
+      --accent: #8B1A3A;
+      --accent-light: rgba(139,26,58,.10);
+      --danger: #dc2626;
+      --topbar-bg: #ffffff;
+      --room-fill: rgba(139,26,58,.08);
+      --room-stroke: #8B1A3A;
+      --room-active-fill: rgba(139,26,58,.16);
+      --room-hover-fill: rgba(139,26,58,.13);
+      --room-dim-fill: rgba(139,26,58,.03);
+      --room-dim-stroke: rgba(139,26,58,.25);
+      --canvas-bg: #f8f6f6;
+      --grid-color: rgba(139,26,58,.07);
+    }
+
+    [data-theme="dark"] {
+      --bg: #1c1a1a;
+      --surface: #2a2727;
+      --text: #f4f2f2;
+      --text-muted: #a8a29e;
+      --accent: #C4546A;
+      --accent-light: rgba(196,84,106,.14);
+      --topbar-bg: #201e1e;
+      --border: 1px solid #3d3838;
+      --canvas-bg: #1a1717;
+      --grid-color: rgba(196,84,106,.07);
+      --room-fill: rgba(196,84,106,.10);
+      --room-stroke: #C4546A;
+      --room-active-fill: rgba(196,84,106,.22);
+      --room-hover-fill: rgba(196,84,106,.16);
+      --room-dim-fill: rgba(196,84,106,.04);
+      --room-dim-stroke: rgba(196,84,106,.30);
+    }
+
+    body {
+      font-family: system-ui, sans-serif;
+      font-size: 13px;
+      color: var(--text);
+      height: 100dvh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      height: var(--topbar-h);
+      background: var(--topbar-bg);
+      border-bottom: var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      gap: 8px;
+      position: relative;
+      z-index: 100;
+      flex-shrink: 0;
+    }
+    .topbar-left  { display: flex; align-items: center; gap: 4px; }
+    .topbar-right { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+    .topbar-center { flex: 1; display: flex; align-items: center; justify-content: center; gap: 2px; }
+
+    /* ── Project name editable ── */
+    .project-name-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 8px; border-radius: 6px;
+      border: 1px solid transparent; background: transparent;
+      font-size: 13px; font-weight: 600; color: var(--text);
+      cursor: pointer; transition: background .1s, border-color .1s;
+      max-width: 160px;
+    }
+    .project-name-btn:hover, .project-name-btn:focus {
+      background: var(--bg); border-color: var(--border); outline: none;
+    }
+    .project-name-btn .edit-icon {
+      opacity: 0; transition: opacity .15s; flex-shrink: 0; color: var(--text-muted);
+    }
+    .project-name-btn:hover .edit-icon,
+    .project-name-btn:focus .edit-icon { opacity: 1; }
+    .project-name-input {
+      padding: 4px 8px; border-radius: 6px;
+      border: 2px solid var(--accent); outline: none;
+      font-size: 13px; font-weight: 600;
+      width: 150px; background: var(--surface); color: var(--text);
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 10px; border-radius: 6px; border: var(--border);
+      background: var(--surface); color: var(--text); cursor: pointer;
+      font-size: 13px; line-height: 1; transition: background .1s;
+      white-space: nowrap;
+    }
+    .btn:hover { background: var(--bg); }
+    .btn.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+    .btn.icon-only { padding: 6px 8px; }
+    .btn.ghost { border-color: transparent; background: transparent; }
+    .btn.ghost:hover { background: var(--bg); }
+    .btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn.primary:hover { background: #6D1430; }
+    .btn.danger-ghost { border-color: transparent; background: transparent; color: var(--danger); }
+    .btn.danger-ghost:hover { background: rgba(220,38,38,.08); }
+    .btn.confirm { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+    .btn.confirm:hover { background: var(--accent); color: #fff; }
+
+    /* ── Rows conditional button ── */
+    .rows-dropdown { position: relative; display: flex; }
+    .rows-dropdown-menu {
+      display: none; position: absolute; top: calc(100% + 4px); left: 0;
+      background: var(--surface); border: var(--border); border-radius: var(--radius);
+      box-shadow: var(--shadow); min-width: 160px; padding: 4px; z-index: 200;
+    }
+    .rows-dropdown-menu.open { display: block; }
+    .dropdown-item {
+      padding: 6px 10px; border-radius: 4px; cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .dropdown-item:hover { background: var(--bg); }
+    .dropdown-item.active { background: var(--accent-light); color: var(--accent); }
+
+    /* ── Hamburger popover ── */
+    .popover-anchor { position: relative; }
+    .popover {
+      display: none; position: absolute; top: calc(100% + 8px); left: 0;
+      background: var(--surface); border: var(--border); border-radius: var(--radius);
+      box-shadow: var(--shadow); width: 230px; padding: 4px; z-index: 200;
+    }
+    .popover.open { display: block; }
+    .popover-section { padding: 6px 10px 2px; color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+    .popover-item {
+      padding: 7px 10px; border-radius: 4px; cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .popover-item:hover { background: var(--bg); }
+    .popover-item.danger { color: var(--danger); }
+    .popover-item.danger:hover { background: #fef2f2; }
+    .popover-item .submenu-arrow { margin-left: auto; transition: transform .15s; color: var(--text-muted); }
+    .popover-item.open .submenu-arrow { transform: rotate(90deg); }
+    .popover-separator { height: 1px; background: var(--bg); margin: 4px 0; }
+
+    #item-new, #item-open { position: relative; }
+
+    .submenu {
+      display: none;
+      position: absolute; left: calc(100% + 6px); top: 0;
+      background: var(--surface); border: var(--border); border-radius: var(--radius);
+      box-shadow: var(--shadow); min-width: 210px; padding: 4px; z-index: 300;
+    }
+    .submenu.open { display: block; }
+    .submenu-item {
+      padding: 7px 10px; cursor: pointer;
+      display: flex; align-items: center; gap: 8px; border-radius: 4px;
+      font-size: 13px;
+    }
+    .submenu-item:hover { background: var(--bg); }
+    .submenu-item.active { color: var(--accent); font-weight: 500; }
+
+    /* ── Theme toggle ── */
+    .theme-row {
+      padding: 6px 10px; display: flex; align-items: center; gap: 8px;
+    }
+    .theme-row span { font-size: 12px; color: var(--text-muted); margin-right: auto; }
+    .theme-group { display: flex; border: var(--border); border-radius: 4px; overflow: hidden; }
+    .theme-btn {
+      padding: 3px 8px; font-size: 11px; cursor: pointer;
+      border: none; background: transparent; color: var(--text-muted);
+      border-right: var(--border);
+    }
+    .theme-btn:last-child { border-right: none; }
+    .theme-btn:hover { background: var(--bg); color: var(--text); }
+    .theme-btn.selected { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+
+    /* ── Workspace ── */
+    .workspace { flex: 1; position: relative; overflow: hidden; }
+
+    /* ── Canvas SVG ── */
+    .canvas {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(var(--grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color) 1px, transparent 1px),
+        var(--canvas-bg);
+      background-size: 24px 24px;
+    }
+    .canvas svg { width: 100%; height: 100%; }
+
+    /* Room hover in nav mode */
+    body.mode-nav .room-shape { cursor: pointer; }
+    body.mode-nav .room-shape:hover .room-rect { fill: var(--room-hover-fill); }
+
+    /* ── Calibration ── */
+    .calib-point { cursor: grab; user-select: none; }
+    .calib-point:active { cursor: grabbing; }
+
+    /* ── Contextual panel (top-left) ── */
+    .ctx-panel {
+      position: absolute; top: 12px; left: 12px; width: var(--panel-w);
+      background: var(--surface); border: var(--border); border-radius: var(--radius);
+      box-shadow: var(--shadow); z-index: 50;
+      max-height: calc(100% - 24px);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .ctx-header {
+      padding: 10px 12px; border-bottom: var(--border);
+      font-weight: 600; font-size: 12px; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .05em;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; flex-shrink: 0; user-select: none;
+    }
+    .ctx-header:hover { background: var(--bg); }
+    .ctx-chevron { transition: transform .15s; color: var(--text-muted); }
+    .ctx-panel.collapsed .ctx-chevron { transform: rotate(180deg); }
+    .ctx-panel.collapsed .ctx-body { display: none; }
+    .ctx-body {
+      overflow-y: auto; flex: 1; padding: 12px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+
+    /* ── Help panel (bottom-left, collapsible) ── */
+    .help-panel {
+      position: absolute; bottom: 12px; left: 12px; width: 220px;
+      background: var(--surface); border: var(--border); border-radius: var(--radius);
+      box-shadow: var(--shadow); z-index: 50;
+    }
+    .help-header {
+      padding: 8px 12px; border-bottom: var(--border);
+      font-weight: 600; font-size: 12px; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .05em;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; user-select: none;
+    }
+    .help-header:hover { background: var(--bg); border-radius: inherit; }
+    .help-body { padding: 10px 12px; display: flex; flex-direction: column; }
+    .help-body.collapsed { display: none; }
+    .shortcut {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 4px 0; border-bottom: var(--border);
+    }
+    .shortcut:last-child { border-bottom: none; }
+    .shortcut-label { font-size: 12px; color: var(--text-muted); }
+    .shortcut-key {
+      font-family: monospace; background: var(--bg); border: var(--border);
+      padding: 2px 6px; border-radius: 4px; font-size: 11px; color: var(--text);
+    }
+
+    /* ── Form elements ── */
+    .field { display: flex; flex-direction: column; gap: 4px; }
+    .field label { font-size: 12px; color: var(--text-muted); }
+    .field input[type=number], .field input[type=text] {
+      padding: 5px 8px; border: var(--border); border-radius: 4px;
+      font-size: 13px; width: 100%; background: var(--surface); color: var(--text);
+    }
+    .field input:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
+    .field-row { display: flex; gap: 8px; }
+    .field-row .field { flex: 1; }
+
+    input[type=range] { width: 100%; accent-color: var(--accent); }
+    .radio-group { display: flex; gap: 4px; flex-wrap: wrap; }
+    .radio-btn {
+      padding: 4px 10px; border: var(--border); border-radius: 4px;
+      cursor: pointer; font-size: 12px; background: var(--surface); color: var(--text);
+    }
+    .radio-btn.selected { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+
+    .section-title {
+      font-weight: 600; font-size: 12px; color: var(--text);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .badge { display: inline-block; padding: 1px 6px; border-radius: 99px; font-size: 10px; font-weight: 600; }
+    .badge-blue { background: var(--accent-light); color: var(--accent); }
+
+    .catalogue-item {
+      padding: 6px 8px; border: var(--border); border-radius: 6px;
+      display: flex; flex-direction: column; gap: 2px; background: var(--surface);
+    }
+    .catalogue-item-name { font-weight: 500; font-size: 13px; }
+    .catalogue-item-meta { font-size: 11px; color: var(--text-muted); }
+    .catalogue-item-actions { display: flex; gap: 4px; margin-top: 4px; }
+
+    .row-item {
+      padding: 6px 8px; border: var(--border); border-radius: 6px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--surface);
+    }
+    .row-item-info { display: flex; flex-direction: column; gap: 1px; }
+    .row-item-label { font-weight: 500; }
+    .row-item-meta { font-size: 11px; color: var(--text-muted); }
+    .violation { color: var(--danger); font-size: 11px; }
+
+    .hint-box {
+      background: var(--bg); border-radius: 6px; padding: 10px 12px;
+      font-size: 12px; color: var(--text-muted); line-height: 1.6;
+      border: var(--border);
+    }
+    .hint-box strong { color: var(--text); }
+
+    .calib-inline {
+      display: flex; gap: 6px; align-items: flex-end; margin-top: 8px;
+    }
+    .calib-inline .field { flex: 1; }
+
+    /* ── Drawer ── */
+    .drawer {
+      position: absolute; top: 0; right: 0; bottom: 0;
+      width: var(--drawer-default);
+      min-width: var(--drawer-min); max-width: var(--drawer-max);
+      background: var(--surface); border-left: var(--border);
+      box-shadow: var(--shadow); z-index: 50;
+      display: flex; flex-direction: column;
+      transform: translateX(100%); transition: transform .2s ease;
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer-resize {
+      position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+      cursor: ew-resize; background: transparent;
+    }
+    .drawer-resize:hover, .drawer-resize.dragging { background: var(--accent); }
+    .drawer-header {
+      padding: 12px 16px; border-bottom: var(--border); font-weight: 600;
+      display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+    }
+    .drawer-body {
+      flex: 1; overflow-y: auto; padding: 12px 16px;
+      display: flex; flex-direction: column; gap: 20px;
+    }
+    .results-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .results-table th { text-align: left; padding: 4px 6px; color: var(--text-muted); border-bottom: var(--border); font-weight: 500; }
+    .results-table td { padding: 6px; border-bottom: var(--border); }
+    .results-table tr:last-child td { border-bottom: none; }
+    .results-total { font-weight: 600; font-size: 13px; text-align: right; }
+    .offcut-link { font-size: 12px; padding: 5px 8px; background: var(--bg); border-radius: 4px; color: var(--text-muted); }
+    .offcut-link strong { color: var(--text); }
+
+    hr { border: none; border-top: var(--border); }
+    .ctx-content { display: none; }
+    .ctx-content.active { display: flex; flex-direction: column; gap: 16px; }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(139,26,58,.20); border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<!-- ── Topbar ── -->
+<header class="topbar">
+  <div class="topbar-left">
+    <!-- Hamburger -->
+    <div class="popover-anchor">
+      <button class="btn icon-only ghost" id="btn-menu" title="Menu">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="popover" id="popover-menu">
+        <div class="popover-section">Projet</div>
+
+        <!-- Nouveau projet -->
+        <div class="popover-item" id="item-new">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nouveau projet
+          <svg class="submenu-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="submenu" id="submenu-new">
+          <div class="submenu-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            From scratch
+          </div>
+          <div class="submenu-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            À partir d'un projet existant
+          </div>
+        </div>
+
+        <!-- Ouvrir un projet -->
+        <div class="popover-item" id="item-open">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          Ouvrir un projet
+          <svg class="submenu-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="submenu" id="submenu-open">
+          <div class="submenu-item active">Appartement</div>
+          <div class="submenu-item">Maison Bretagne</div>
+          <div class="submenu-item">Studio Paris</div>
+        </div>
+
+        <div class="popover-separator"></div>
+        <div class="popover-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Exporter en CSV
+        </div>
+        <div class="popover-separator"></div>
+        <div class="popover-item danger">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+          Supprimer le projet
+        </div>
+        <div class="popover-separator"></div>
+        <div class="theme-row">
+          <span>Thème</span>
+          <div class="theme-group">
+            <button class="theme-btn" data-theme="light">Clair</button>
+            <button class="theme-btn selected" data-theme="system">Auto</button>
+            <button class="theme-btn" data-theme="dark">Sombre</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nom projet éditable -->
+    <button class="project-name-btn" id="project-name-btn" title="Cliquer pour renommer">
+      Appartement
+      <svg class="edit-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    </button>
+    <input class="project-name-input" id="project-name-input" value="Appartement" style="display:none">
+  </div>
+
+  <!-- Mode selector (centre) -->
+  <nav class="topbar-center">
+    <!-- Nav -->
+    <button class="btn mode-btn" data-mode="nav">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/>
+        <polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/>
+        <line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/>
+      </svg>
+      Navigation
+    </button>
+
+    <!-- Nouvelle pièce -->
+    <button class="btn mode-btn" data-mode="draw">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      Nouvelle pièce
+    </button>
+
+    <!-- Rows (conditionnel — affiché seulement si pièce active) -->
+    <div class="rows-dropdown" id="rows-zone" style="display:none">
+      <button class="btn mode-btn active" data-mode="rows" id="btn-rows">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <span id="rows-label">Lames</span>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="rows-dropdown-menu" id="rows-menu">
+        <div class="popover-section">Changer de pièce</div>
+        <div class="dropdown-item active" data-room="Salon">Salon</div>
+        <div class="dropdown-item" data-room="Couloir">Couloir</div>
+        <div class="dropdown-item" data-room="Chambre">Chambre</div>
+      </div>
+    </div>
+
+    <!-- Plan -->
+    <button class="btn mode-btn" data-mode="plan">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <path d="M3 9h18M9 3v18"/>
+      </svg>
+      Plan
+    </button>
+  </nav>
+
+  <div class="topbar-right">
+    <button class="btn" id="btn-drawer">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+      Tableaux
+    </button>
+  </div>
+</header>
+
+<!-- ── Workspace ── -->
+<main class="workspace">
+
+  <!-- Canvas SVG -->
+  <div class="canvas" id="canvas">
+    <svg id="scene" xmlns="http://www.w3.org/2000/svg">
+
+      <!-- Rooms — centrés dans le canvas -->
+      <g id="room-salon" class="room-shape" data-room="Salon">
+        <rect class="room-rect" x="380" y="170" width="260" height="200" rx="2"
+          fill="var(--room-fill)" stroke="var(--room-stroke)" stroke-width="1.5"/>
+        <text x="510" y="275" text-anchor="middle" font-size="13" fill="var(--room-stroke)" font-family="system-ui" font-weight="600">Salon</text>
+      </g>
+      <g id="room-couloir" class="room-shape" data-room="Couloir">
+        <rect class="room-rect" x="640" y="170" width="100" height="200" rx="2"
+          fill="var(--room-fill)" stroke="var(--room-stroke)" stroke-width="1.5"/>
+        <text x="690" y="275" text-anchor="middle" font-size="11" fill="var(--room-stroke)" font-family="system-ui" font-weight="600">Couloir</text>
+      </g>
+      <g id="room-chambre" class="room-shape" data-room="Chambre">
+        <rect class="room-rect" x="380" y="390" width="200" height="160" rx="2"
+          fill="var(--room-fill)" stroke="var(--room-stroke)" stroke-width="1.5"/>
+        <text x="480" y="475" text-anchor="middle" font-size="13" fill="var(--room-stroke)" font-family="system-ui" font-weight="600">Chambre</text>
+      </g>
+
+      <!-- Calibration points (mode plan) -->
+      <g id="calib-group" style="display:none">
+        <line id="calib-line" x1="490" y1="270" x2="640" y2="270"
+          stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4 3" pointer-events="none"/>
+        <g id="calib-a" class="calib-point" transform="translate(490,270)">
+          <line x1="-10" y1="0" x2="10" y2="0" stroke="#f59e0b" stroke-width="2"/>
+          <line x1="0" y1="-10" x2="0" y2="10" stroke="#f59e0b" stroke-width="2"/>
+          <circle r="4" fill="#f59e0b" fill-opacity=".25" stroke="#f59e0b" stroke-width="1.5"/>
+          <text x="8" y="-8" font-size="11" fill="#f59e0b" font-family="system-ui" font-weight="700">A</text>
+        </g>
+        <g id="calib-b" class="calib-point" transform="translate(640,270)">
+          <line x1="-10" y1="0" x2="10" y2="0" stroke="#f59e0b" stroke-width="2"/>
+          <line x1="0" y1="-10" x2="0" y2="10" stroke="#f59e0b" stroke-width="2"/>
+          <circle r="4" fill="#f59e0b" fill-opacity=".25" stroke="#f59e0b" stroke-width="1.5"/>
+          <text x="8" y="-8" font-size="11" fill="#f59e0b" font-family="system-ui" font-weight="700">B</text>
+        </g>
+      </g>
+
+      <!-- Row lines (mode rows — dans la pièce active) -->
+      <g id="rows-lines" style="display:none">
+        <line x1="380" y1="198" x2="640" y2="198" stroke="var(--room-stroke)" stroke-width="1.5" opacity=".7"/>
+        <line x1="380" y1="212" x2="640" y2="212" stroke="var(--room-stroke)" stroke-width="1.5" opacity=".5" stroke-dasharray="3 2"/>
+        <line x1="380" y1="226" x2="640" y2="226" stroke="#ef4444" stroke-width="1.5" opacity=".7"/>
+        <text x="648" y="202" font-size="10" fill="var(--room-stroke)" font-family="system-ui">xOffset: 0</text>
+        <text x="648" y="216" font-size="10" fill="var(--text-muted)" font-family="system-ui">xOffset: 39.1</text>
+        <text x="648" y="230" font-size="10" fill="#ef4444" font-family="system-ui">xOffset: 3 ⚠</text>
+      </g>
+    </svg>
+  </div>
+
+  <!-- Panneau contextuel (haut à droite, collapsible) -->
+  <aside class="ctx-panel" id="ctx-panel">
+    <div class="ctx-header" id="ctx-header">
+      <span id="ctx-title">Navigation</span>
+      <svg class="ctx-chevron" id="ctx-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+    </div>
+    <div class="ctx-body">
+
+      <!-- Nav -->
+      <div class="ctx-content" id="ctx-nav">
+        <div>
+          <div class="section-title" style="margin-bottom:8px">Paramètres de pose</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div class="field-row">
+              <div class="field"><label>Cale (cm)</label><input type="number" value="0.5" step="0.1"></div>
+              <div class="field"><label>Scie (cm)</label><input type="number" value="0.1" step="0.1"></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Min lame (cm)</label><input type="number" value="30"></div>
+              <div class="field"><label>Écart min (cm)</label><input type="number" value="15"></div>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div>
+          <div class="section-title" style="margin-bottom:8px">
+            Catalogue
+            <button class="btn primary" style="padding:3px 8px;font-size:11px">+ Ajouter</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div class="catalogue-item">
+              <div class="catalogue-item-name">Chêne 120 cm <span class="badge badge-blue">utilisé</span></div>
+              <div class="catalogue-item-meta">120 × 14 cm — 10 €/unité</div>
+              <div class="catalogue-item-actions">
+                <button class="btn ghost" style="padding:2px 6px;font-size:11px">Éditer</button>
+              </div>
+            </div>
+            <div class="catalogue-item">
+              <div class="catalogue-item-name">Chêne 90 cm</div>
+              <div class="catalogue-item-meta">90 × 14 cm — 8 €/unité</div>
+              <div class="catalogue-item-actions">
+                <button class="btn ghost" style="padding:2px 6px;font-size:11px">Éditer</button>
+                <button class="btn danger-ghost" style="padding:2px 6px;font-size:11px">Suppr.</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Draw -->
+      <div class="ctx-content" id="ctx-draw">
+        <div class="hint-box">
+          <strong>Tracer une pièce</strong><br>
+          Cliquez pour poser les sommets. Les angles sont automatiquement contraints à 90°.<br>
+          <strong>Entrée</strong> pour valider, <strong>Échap</strong> pour annuler.
+        </div>
+        <div class="hint-box" style="display:flex;align-items:center;gap:8px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>Voir les raccourcis dans le panneau <strong>Contrôles</strong> en bas à gauche.</span>
+        </div>
+      </div>
+
+      <!-- Plan -->
+      <div class="ctx-content" id="ctx-plan">
+        <div>
+          <div class="section-title" style="margin-bottom:8px">Image de fond</div>
+          <button class="btn" style="width:100%;justify-content:center">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Importer une image
+          </button>
+        </div>
+        <div class="field">
+          <label>Opacité</label>
+          <input type="range" min="0" max="100" value="60" id="opacity-slider">
+          <div style="text-align:right;font-size:11px;color:var(--text-muted)" id="opacity-label">60 %</div>
+        </div>
+        <div>
+          <div class="section-title" style="margin-bottom:8px">Rotation</div>
+          <div class="radio-group">
+            <div class="radio-btn selected">0°</div>
+            <div class="radio-btn">90°</div>
+            <div class="radio-btn">180°</div>
+            <div class="radio-btn">270°</div>
+          </div>
+        </div>
+        <div>
+          <div class="section-title" style="margin-bottom:8px">Calibration</div>
+          <p style="font-size:12px;color:var(--text-muted);line-height:1.5;margin-bottom:8px">
+            Déplacer les points <strong>A</strong> et <strong>B</strong> sur le plan, puis saisir la distance réelle entre eux.
+          </p>
+          <div class="calib-inline">
+            <div class="field">
+              <label>Distance réelle (cm)</label>
+              <input type="number" placeholder="ex. 300" id="calib-distance">
+            </div>
+            <button class="btn icon-only danger-ghost" title="Annuler">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <button class="btn icon-only confirm" title="Valider">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rows -->
+      <div class="ctx-content" id="ctx-rows">
+        <div>
+          <div class="section-title" style="margin-bottom:8px">Paramètres de pose</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div class="field-row">
+              <div class="field"><label>Cale (cm)</label><input type="number" value="0.5" step="0.1"></div>
+              <div class="field"><label>Scie (cm)</label><input type="number" value="0.1" step="0.1"></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Min lame (cm)</label><input type="number" value="30"></div>
+              <div class="field"><label>Écart min (cm)</label><input type="number" value="15"></div>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div>
+          <div class="section-title" style="margin-bottom:8px">
+            Catalogue
+            <button class="btn primary" style="padding:3px 8px;font-size:11px">+ Ajouter</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div class="catalogue-item">
+              <div class="catalogue-item-name">Chêne 120 cm <span class="badge badge-blue">utilisé</span></div>
+              <div class="catalogue-item-meta">120 × 14 cm — 10 €/unité</div>
+            </div>
+            <div class="catalogue-item">
+              <div class="catalogue-item-name">Chêne 90 cm</div>
+              <div class="catalogue-item-meta">90 × 14 cm — 8 €/unité</div>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div>
+          <div class="section-title" style="margin-bottom:8px">
+            Rangées — <span id="rows-panel-room">Salon</span>
+            <button class="btn primary" style="padding:3px 8px;font-size:11px">+ Rangée</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div class="row-item">
+              <div class="row-item-info">
+                <span class="row-item-label">Chêne 120 cm</span>
+                <span class="row-item-meta">xOffset : 0 cm — 4 lames</span>
+              </div>
+              <button class="btn danger-ghost icon-only" style="padding:2px 4px">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+              </button>
+            </div>
+            <div class="row-item" style="border-color:var(--danger)">
+              <div class="row-item-info">
+                <span class="row-item-label">Chêne 120 cm</span>
+                <span class="row-item-meta">xOffset : 3 cm — 4 lames</span>
+                <span class="violation">⚠ Écart de joint trop petit</span>
+              </div>
+              <button class="btn danger-ghost icon-only" style="padding:2px 4px">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- Helper contrôles (bas à gauche, collapsible) -->
+  <div class="help-panel" id="help-panel">
+    <div class="help-header" id="help-toggle">
+      <span>Contrôles</span>
+      <svg id="help-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="help-body collapsed" id="help-body">
+      <div class="shortcut"><span class="shortcut-label">Zoom</span><span class="shortcut-key">Ctrl + Molette</span></div>
+      <div class="shortcut"><span class="shortcut-label">Déplacer la vue</span><span class="shortcut-key">Clic milieu</span></div>
+      <div class="shortcut"><span class="shortcut-label">Sélectionner pièce</span><span class="shortcut-key">Clic</span></div>
+      <div class="shortcut"><span class="shortcut-label">Annuler tracé</span><span class="shortcut-key">Échap</span></div>
+      <div class="shortcut"><span class="shortcut-label">Valider tracé</span><span class="shortcut-key">Entrée</span></div>
+    </div>
+  </div>
+
+  <!-- Drawer tableaux (droite) -->
+  <aside class="drawer" id="drawer">
+    <div class="drawer-resize" id="drawer-resize"></div>
+    <div class="drawer-header">
+      <span>Tableaux</span>
+      <button class="btn ghost icon-only" id="btn-close-drawer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="drawer-body">
+      <div>
+        <div class="section-title" style="margin-bottom:8px">Résumé des achats</div>
+        <table class="results-table">
+          <thead><tr><th>Type</th><th>Lames</th><th>Coût</th></tr></thead>
+          <tbody>
+            <tr><td>Chêne 120 cm</td><td>8</td><td>80 €</td></tr>
+            <tr><td>Chêne 90 cm</td><td>0</td><td>0 €</td></tr>
+          </tbody>
+        </table>
+        <div class="results-total" style="margin-top:8px">Total : 80 €</div>
+      </div>
+      <hr>
+      <div>
+        <div class="section-title" style="margin-bottom:8px">Réutilisation de chutes</div>
+        <div class="offcut-link">Rangée 1 → Rangée 3 — chute <strong>89.9 cm</strong></div>
+      </div>
+      <hr>
+      <button class="btn primary" style="width:100%;justify-content:center">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Exporter en CSV
+      </button>
+    </div>
+  </aside>
+
+</main>
+
+<script>
+  // ── Project name edit ──
+  const nameBtn   = document.getElementById('project-name-btn')
+  const nameInput = document.getElementById('project-name-input')
+  nameBtn.addEventListener('click', () => {
+    nameBtn.style.display = 'none'
+    nameInput.style.display = 'inline-block'
+    nameInput.focus(); nameInput.select()
+  })
+  nameInput.addEventListener('blur', () => {
+    nameBtn.innerHTML = nameInput.value +
+      `<svg class="edit-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`
+    nameInput.style.display = 'none'
+    nameBtn.style.display = 'inline-flex'
+  })
+  nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') nameInput.blur() })
+
+  // ── Theme ──
+  let themeMode = 'system'
+  function applyTheme(mode) {
+    themeMode = mode
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const resolved = mode === 'system' ? (prefersDark ? 'dark' : 'light') : mode
+    document.documentElement.dataset.theme = resolved
+    document.querySelectorAll('.theme-btn').forEach(b =>
+      b.classList.toggle('selected', b.dataset.theme === mode))
+  }
+  document.querySelectorAll('.theme-btn').forEach(b =>
+    b.addEventListener('click', e => { e.stopPropagation(); applyTheme(b.dataset.theme) }))
+  applyTheme('system')
+
+  // ── Mode switching ──
+  const modeBtns    = document.querySelectorAll('.mode-btn')
+  const ctxTitle    = document.getElementById('ctx-title')
+  const ctxContents = document.querySelectorAll('.ctx-content')
+  const calibGroup  = document.getElementById('calib-group')
+  const rowsLines   = document.getElementById('rows-lines')
+  const rowsZone    = document.getElementById('rows-zone')
+  const modeLabels  = { nav: 'Navigation', draw: 'Nouvelle pièce', plan: 'Plan de fond', rows: 'Lames' }
+  let currentRoom  = null
+  let currentMode  = 'nav'
+
+  function applyRoomState(mode) {
+    ['salon','couloir','chambre'].forEach(key => {
+      const el   = document.getElementById('room-' + key)
+      const rect = el.querySelector('.room-rect')
+      if (mode === 'rows') {
+        const isActive = currentRoom && key === currentRoom.toLowerCase()
+        el.style.opacity   = isActive ? '1' : '0.3'
+        rect.style.fill    = isActive ? 'var(--room-active-fill)' : 'var(--room-dim-fill)'
+        rect.style.stroke  = isActive ? 'var(--room-stroke)' : 'var(--room-dim-stroke)'
+      } else {
+        el.style.opacity  = '1'
+        rect.style.fill   = 'var(--room-fill)'
+        rect.style.stroke = 'var(--room-stroke)'
+      }
+    })
+  }
+
+  function setMode(mode) {
+    currentMode = mode
+    document.body.className = 'mode-' + mode
+    modeBtns.forEach(b => b.classList.toggle('active', b.dataset.mode === mode))
+    ctxContents.forEach(c => c.classList.remove('active'))
+    const target = document.getElementById('ctx-' + mode)
+    if (target) target.classList.add('active')
+    ctxTitle.textContent = mode === 'rows'
+      ? `Lames — ${currentRoom}`
+      : modeLabels[mode] || mode
+    calibGroup.style.display = mode === 'plan'  ? '' : 'none'
+    rowsLines.style.display  = mode === 'rows'  ? '' : 'none'
+    applyRoomState(mode)
+    document.getElementById('rows-menu').classList.remove('open')
+  }
+
+  function activateRoom(roomName) {
+    currentRoom = roomName
+    rowsZone.style.display = 'flex'
+    document.querySelectorAll('[data-room]').forEach(i =>
+      i.classList.toggle('active', i.dataset.room === roomName))
+    document.getElementById('rows-panel-room').textContent = roomName
+  }
+
+  // Room click → rows mode (nav mode only)
+  document.querySelectorAll('.room-shape').forEach(el => {
+    el.addEventListener('click', () => {
+      if (currentMode !== 'nav') return
+      const roomName = el.dataset.room
+      activateRoom(roomName)
+      setMode('rows')
+    })
+  })
+
+  // Mode button clicks
+  modeBtns.forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation()
+      const mode = btn.dataset.mode
+      if (mode === 'rows') {
+        document.getElementById('rows-menu').classList.toggle('open')
+        return
+      }
+      setMode(mode)
+    })
+  })
+
+  // Room switch via dropdown
+  document.querySelectorAll('[data-room]').forEach(item => {
+    item.addEventListener('click', e => {
+      e.stopPropagation()
+      const roomName = item.dataset.room
+      activateRoom(roomName)
+      document.getElementById('rows-menu').classList.remove('open')
+      applyRoomState('rows')
+      setMode('rows')
+    })
+  })
+
+  setMode('nav')
+
+  // ── Hamburger popover ──
+  const btnMenu     = document.getElementById('btn-menu')
+  const popoverMenu = document.getElementById('popover-menu')
+  btnMenu.addEventListener('click', e => { e.stopPropagation(); popoverMenu.classList.toggle('open') })
+
+  // Submenus accordion
+  ;['new','open'].forEach(key => {
+    const item    = document.getElementById('item-' + key)
+    const submenu = document.getElementById('submenu-' + key)
+    item.addEventListener('click', e => {
+      e.stopPropagation()
+      const isOpen = submenu.classList.contains('open')
+      document.querySelectorAll('.submenu').forEach(s => s.classList.remove('open'))
+      document.querySelectorAll('.popover-item').forEach(i => i.classList.remove('open'))
+      if (!isOpen) {
+        submenu.classList.add('open')
+        item.classList.add('open')
+      }
+    })
+  })
+
+  // ── ctx-panel collapse ──
+  const ctxPanel  = document.getElementById('ctx-panel')
+  document.getElementById('ctx-header').addEventListener('click', () => {
+    ctxPanel.classList.toggle('collapsed')
+  })
+
+  // ── Drawer ──
+  const drawer    = document.getElementById('drawer')
+  const btnDrawer = document.getElementById('btn-drawer')
+  btnDrawer.addEventListener('click', () => {
+    drawer.classList.toggle('open')
+    btnDrawer.classList.toggle('active')
+  })
+  document.getElementById('btn-close-drawer').addEventListener('click', () => {
+    drawer.classList.remove('open')
+    btnDrawer.classList.remove('active')
+  })
+
+  // Drawer resize
+  let isResizing = false, startX = 0, startWidth = 0
+  document.getElementById('drawer-resize').addEventListener('mousedown', e => {
+    isResizing = true; startX = e.clientX; startWidth = drawer.offsetWidth
+    document.getElementById('drawer-resize').classList.add('dragging')
+    e.preventDefault()
+  })
+  document.addEventListener('mousemove', e => {
+    if (!isResizing) return
+    const newW = Math.min(Math.max(startWidth + (startX - e.clientX), 250), window.innerWidth * 0.5)
+    drawer.style.width = newW + 'px'
+  })
+  document.addEventListener('mouseup', () => {
+    isResizing = false
+    document.getElementById('drawer-resize').classList.remove('dragging')
+  })
+
+  // ── Calibration drag ──
+  function makeDraggable(id, initX, initY) {
+    const el = document.getElementById(id)
+    let dragging = false, ox = 0, oy = 0, tx = initX, ty = initY
+    el.addEventListener('mousedown', e => {
+      dragging = true
+      const rect = document.getElementById('scene').getBoundingClientRect()
+      ox = e.clientX - rect.left - tx
+      oy = e.clientY - rect.top  - ty
+      e.stopPropagation(); e.preventDefault()
+    })
+    document.addEventListener('mousemove', e => {
+      if (!dragging) return
+      const rect = document.getElementById('scene').getBoundingClientRect()
+      tx = e.clientX - rect.left - ox
+      ty = e.clientY - rect.top  - oy
+      el.setAttribute('transform', `translate(${tx},${ty})`)
+      updateCalibLine()
+    })
+    document.addEventListener('mouseup', () => { dragging = false })
+    return { getPos: () => ({ x: tx, y: ty }) }
+  }
+  const posA = makeDraggable('calib-a', 490, 270)
+  const posB = makeDraggable('calib-b', 640, 270)
+  function updateCalibLine() {
+    const line = document.getElementById('calib-line')
+    const a = posA.getPos(), b = posB.getPos()
+    line.setAttribute('x1', a.x); line.setAttribute('y1', a.y)
+    line.setAttribute('x2', b.x); line.setAttribute('y2', b.y)
+  }
+
+  // ── Help toggle ──
+  document.getElementById('help-toggle').addEventListener('click', () => {
+    const body    = document.getElementById('help-body')
+    const chevron = document.getElementById('help-chevron')
+    body.classList.toggle('collapsed')
+    chevron.style.transform = body.classList.contains('collapsed') ? '' : 'rotate(180deg)'
+  })
+
+  // ── Opacity slider ──
+  document.getElementById('opacity-slider').addEventListener('input', e => {
+    document.getElementById('opacity-label').textContent = e.target.value + ' %'
+  })
+
+  // ── Radio buttons ──
+  document.querySelectorAll('.radio-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.closest('.radio-group').querySelectorAll('.radio-btn').forEach(b => b.classList.remove('selected'))
+      btn.classList.add('selected')
+    })
+  })
+
+  // ── Close popovers on outside click ──
+  document.addEventListener('click', () => {
+    popoverMenu.classList.remove('open')
+    document.getElementById('rows-menu').classList.remove('open')
+    document.querySelectorAll('.submenu').forEach(s => s.classList.remove('open'))
+    document.querySelectorAll('.popover-item').forEach(i => i.classList.remove('open'))
+  })
+</script>
+</body>
+</html>

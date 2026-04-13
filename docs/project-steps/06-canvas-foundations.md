@@ -22,6 +22,11 @@ Mettre en place le canvas SVG interactif avec navigation (pan/zoom) et le rendu 
 - Pan clavier `Ctrl + ↑↓←→`
 - Défilement molette vertical / `Shift + molette` horizontal
 - Toutes les pièces du projet actif rendues en coordonnées monde
+- Éléments centrés dans le viewport à l'ouverture
+
+## Grille de fond
+
+Une grille est toujours rendue derrière les pièces, y compris lorsqu'un plan de fond est chargé. Elle sert de repère visuel permanent et distingue clairement la zone canvas des panneaux UI.
 
 ## Références doc
 

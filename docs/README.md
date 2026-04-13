@@ -87,4 +87,4 @@ Au lancement, l'utilisateur crée un nouveau projet et lui donne un nom. Plusieu
 | --- | --- |
 | [glossary.md](glossary.md) | Définitions des termes métier |
 | [project-steps/](project-steps/) | Étapes de développement et état d'avancement |
-| [images/](images/) | Maquettes et wireframes |
+| [wireframe-iterations/](wireframe-iterations/) | Prototypes HTML des wireframes, par itération |

@@ -1,0 +1,22 @@
+.wrapper { display: flex; flex-direction: column; gap: 6px; }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.label { font-size: var(--text-sm); color: var(--text-muted); }
+
+.value {
+  font-size: var(--text-sm);
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.input {
+  width: 100%;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.input:disabled { opacity: .45; cursor: not-allowed; }
