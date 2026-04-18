@@ -1,6 +1,6 @@
 # Étape 06 — Canvas SVG : fondations
 
-**Statut : à faire** — dépend des étapes 02, 03, 04, 05
+**Statut : ✅ Terminé**
 
 ## Périmètre
 
@@ -16,17 +16,19 @@ Mettre en place le canvas SVG interactif avec navigation (pan/zoom) et le rendu 
 
 `<Row>` et `<Segment>` ne sont pas encore rendus à cette étape.
 
-## Fichiers à créer
-
-Structure par dossier : `NomComposant/index.tsx` · `NomComposant/NomComposant.module.css` · `NomComposant/useNomComposant.ts` (si logique).
+## Fichiers créés
 
 | Fichier | Contenu |
 | --- | --- |
-| `src/hooks/useViewport.ts` | État du viewport (zoom, pan), fonctions de conversion coordonnées monde ↔ écran — partagé entre composants canvas |
-| `src/components/canvas/Scene/useCanvasEvents.ts` | Écouteurs natifs (`wheel` avec `{ passive: false }`, `pointermove`, `pointerdown`, `pointerup`) — ZÉRO React event |
-| `src/components/canvas/Scene/` | SVG racine + `<g transform>` appliquant le viewport + grille de fond |
-| `src/components/canvas/Room/` | Rendu d'un polygone de pièce (contour + fond semi-transparent) |
-| `src/components/canvas/BackgroundPlan/` | Rendu de l'image de fond (`<image>`) avec opacité et position x/y |
+| `src/hooks/viewport.ts` | Fonctions pures testables : `screenToWorld`, `worldToScreen`, `zoomTowards`, `centerViewport`, `roomsBoundingBox` |
+| `src/hooks/useViewport.ts` | Hook Redux : lecture du viewport + dispatch `setViewport` |
+| `src/hooks/__tests__/viewport.test.ts` | 12 tests unitaires sur les fonctions pures |
+| `src/components/canvas/Scene/` | SVG racine + grille + `<g transform>` viewport + centrage au montage |
+| `src/components/canvas/Scene/useCanvasEvents.ts` | Écouteurs natifs (`wheel` `{ passive: false }`, `pointer*`, `keydown`) — ZÉRO React event |
+| `src/components/canvas/Room/` | Polygone de pièce avec `vectorEffect="non-scaling-stroke"` |
+| `src/components/canvas/BackgroundPlan/` | `<image>` SVG avec calibration, opacité, rotation, object URL géré via `useEffect` |
+
+**Décision d'implémentation** : les fonctions de calcul viewport (`viewport.ts`) sont extraites dans un module pur séparé du hook, ce qui les rend testables sans store ni DOM. Le hook `useViewport.ts` se limite au binding Redux.
 
 ## Comportement attendu
 

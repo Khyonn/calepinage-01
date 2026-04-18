@@ -35,11 +35,20 @@ src/
 │                   fillRow, validateRow, computeSummary, geometry...
 ├── store/       ← slices, selectors, IndexedDB — ZÉRO React
 │                   projectSlice, uiSlice, selectors.ts, db.ts
-├── hooks/       ← binding React : useSelector/useDispatch, logique DOM
-│                   useRoomRows, useViewport, useResults...
-└── components/  ← rendu JSX uniquement, aucune logique métier
-                    SvgCanvas, Toolbar, panneaux...
+├── hooks/       ← binding React + fonctions pures partagées
+│                   viewport.ts (fonctions pures testables)
+│                   useViewport.ts (binding Redux)
+└── components/
+    ├── ui/      ← composants atomiques (Button, Input…)
+    └── canvas/  ← composants SVG du canvas
+                    Scene/ (racine SVG + grille + useCanvasEvents)
+                    Room/ (polygone de pièce)
+                    BackgroundPlan/ (image de fond)
 ```
+
+**Gestion des événements canvas** : les écouteurs sont enregistrés via l'API DOM native dans `useCanvasEvents.ts` (co-localisé dans `Scene/`). L'interception `wheel` avec `{ passive: false }` est indispensable pour appeler `preventDefault()` et empêcher le navigateur de zoomer la page sur Ctrl+molette. Les refs (`viewportRef`, `modeRef`) évitent de ré-enregistrer les écouteurs à chaque changement d'état.
+
+**Tests** : Vitest détecte maintenant deux patterns : `*.steps.ts` (BDD) et `*.test.ts` (unitaires).
 
 ## Flux de données
 

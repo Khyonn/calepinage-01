@@ -1,0 +1,6 @@
+.room {
+  fill: var(--room-fill);
+  stroke: var(--room-stroke);
+  stroke-width: 1.5px;
+  stroke-linejoin: round;
+}

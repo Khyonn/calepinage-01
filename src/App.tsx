@@ -1,5 +1,5 @@
-import { Demo } from './components/ui/Demo'
+import { Scene } from './components/canvas/Scene'
 
 export default function App() {
-  return <Demo />
+  return <Scene />
 }

@@ -11,6 +11,7 @@ export default defineConfig({
     globals: true,
     include: [
       'src/**/*.steps.ts',
+      'src/**/*.test.ts',
     ],
     coverage: {
       provider: 'istanbul',
