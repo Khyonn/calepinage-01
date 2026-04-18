@@ -87,7 +87,7 @@ describeFeature(feature, ({ Scenario }) => {
     When('j\'ajoute une rangée avec un décalage de 0 cm dans la pièce "Salon"', () => {
       const roomId = selectActiveRoomId(s())!
       const plankTypeId = selectCatalog(s())[0].id
-      project = projectReducer(project, projectActions.addRow({ roomId, plankTypeId, xOffset: 0 }))
+      project = projectReducer(project, projectActions.addRow({ roomId, row: { id: crypto.randomUUID(), roomId, plankTypeId, segments: [{ xOffset: 0 }] } }))
       rowId = selectActiveRoom(s())!.rows[0].id
     })
     Then('la pièce active contient 1 rangée', () => {

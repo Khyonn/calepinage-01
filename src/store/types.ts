@@ -2,7 +2,7 @@ import type {
   Calibration, PlankTypePricing,
   Point, PoseParams, Project, Viewport,
 } from '@/core/types'
-import type { UnknownAction } from '@reduxjs/toolkit'
+import type { ThunkDispatch, UnknownAction } from '@reduxjs/toolkit'
 
 // ─── IDB Storage Records ──────────────────────────────────────────────────────
 // Flat records persisted in IndexedDB — distinct from assembled domain types.
@@ -27,7 +27,7 @@ export interface RowRecord {
   roomId: string
   projectId: string  // denormalized for cleanup (not in domain model)
   plankTypeId: string
-  xOffset: number
+  segments: { xOffset: number }[]
 }
 
 export interface PlankTypeRecord {
@@ -52,11 +52,13 @@ export interface PlanRecord {
   calibration?: Calibration
   opacity: number
   rotation: number
+  x?: number
+  y?: number
 }
 
 // ─── App State ────────────────────────────────────────────────────────────────
 
-export type InteractionMode = 'nav' | 'draw' | 'plan' | 'rows'
+export type InteractionMode = 'nav' | 'draw' | 'plan' | 'edit'
 
 export interface ProjectsListEntry {
   id: string
@@ -72,6 +74,7 @@ export interface ProjectState {
 export interface UIState {
   mode: InteractionMode
   activeRoomId: string | null
+  selectedPlankTypeId: string | null
   viewport: Viewport
 }
 
@@ -79,6 +82,8 @@ export interface AppState {
   project: ProjectState
   ui: UIState
 }
+
+export type AppDispatch = ThunkDispatch<AppState, unknown, UnknownAction>
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

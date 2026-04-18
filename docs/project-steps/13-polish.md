@@ -1,4 +1,4 @@
-# Étape 12 — Polish & finalisation
+# Étape 13 — Polish & finalisation
 
 **Statut : à faire** — dépend de toutes les étapes précédentes
 
@@ -23,7 +23,7 @@ Révision globale avant livraison : accessibilité, couverture de tests, cohére
 
 Zone à réévaluer après implémentation des étapes précédentes :
 - Pertinence du clonage de projet (fonctionnalité envisagée, voir [project-management.md](../features/project-management.md))
-- `yOffset` sur `Row` — décalage vertical inter-pièces (complexité vs valeur)
+- `yOffset` sur `Room` — décalage vertical de la pièce dans le canvas (complexité vs valeur)
 - Performance du recalcul à chaque rendu sur de grands projets (nombreuses pièces/rangées)
 
 ## Références doc

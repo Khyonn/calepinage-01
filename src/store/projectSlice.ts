@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import type { BackgroundPlan, PlankType, PoseParams, Project, Point } from '@/core/types'
+import type { BackgroundPlan, PlankType, PoseParams, Project, Point, Row } from '@/core/types'
 import type { ProjectState, ProjectsListEntry } from '@/store/types'
 
 const DEFAULT_POSE_PARAMS: PoseParams = {
@@ -83,25 +83,22 @@ export const projectSlice = createSlice({
       state.current.rooms = state.current.rooms.filter(r => r.id !== action.payload.id)
     },
 
-    addRow: (state, action: PayloadAction<{ roomId: string; plankTypeId: string; xOffset: number }>) => {
+    addRow: (state, action: PayloadAction<{ roomId: string; row: Row }>) => {
       if (!state.current) return
       const room = state.current.rooms.find(r => r.id === action.payload.roomId)
       if (!room) return
-      room.rows.push({
-        id: crypto.randomUUID(),
-        roomId: action.payload.roomId,
-        plankTypeId: action.payload.plankTypeId,
-        xOffset: action.payload.xOffset,
-      })
+      room.rows.push(action.payload.row)
     },
 
-    updateRow: (state, action: PayloadAction<{ id: string; roomId: string; xOffset: number }>) => {
+    updateSegmentOffset: (state, action: PayloadAction<{ roomId: string; rowId: string; segmentIndex: number; xOffset: number }>) => {
       if (!state.current) return
       const room = state.current.rooms.find(r => r.id === action.payload.roomId)
       if (!room) return
-      const row = room.rows.find(r => r.id === action.payload.id)
+      const row = room.rows.find(r => r.id === action.payload.rowId)
       if (!row) return
-      row.xOffset = action.payload.xOffset
+      const segment = row.segments[action.payload.segmentIndex]
+      if (!segment) return
+      segment.xOffset = action.payload.xOffset
     },
 
     deleteRow: (state, action: PayloadAction<{ id: string; roomId: string }>) => {
@@ -119,11 +116,21 @@ export const projectSlice = createSlice({
     updatePlankType: (state, action: PayloadAction<PlankType>) => {
       if (!state.current) return
       const idx = state.current.catalog.findIndex(pt => pt.id === action.payload.id)
-      if (idx !== -1) state.current.catalog[idx] = action.payload
+      if (idx === -1) return
+      const inUse = state.current.rooms.some(r => r.rows.some(row => row.plankTypeId === action.payload.id))
+      if (inUse) {
+        const existing = state.current.catalog[idx]
+        // Lock length and width when the type is referenced in at least one row
+        state.current.catalog[idx] = { ...action.payload, length: existing.length, width: existing.width }
+      } else {
+        state.current.catalog[idx] = action.payload
+      }
     },
 
     deletePlankType: (state, action: PayloadAction<{ id: string }>) => {
       if (!state.current) return
+      const inUse = state.current.rooms.some(r => r.rows.some(row => row.plankTypeId === action.payload.id))
+      if (inUse) return
       state.current.catalog = state.current.catalog.filter(pt => pt.id !== action.payload.id)
     },
 

@@ -35,6 +35,11 @@ export const selectActiveRoom = createSelector(
   (rooms, activeRoomId) => rooms.find(r => r.id === activeRoomId) ?? null
 )
 
+export const selectUsedPlankTypeIds = createSelector(
+  selectRooms,
+  (rooms): Set<string> => new Set(rooms.flatMap(r => r.rows.map(row => row.plankTypeId)))
+)
+
 // ─── Derived computations (memoized) ─────────────────────────────────────────
 
 export const selectOffcutLinks = createSelector(
@@ -66,7 +71,7 @@ export const selectAllPlanks = createSelector(
 
       for (const row of room.rows) {
         const type = catalog.find(pt => pt.id === row.plankTypeId) ?? plankType
-        if (type) result.set(row.id, fillRow(row.xOffset, roomWidth, type, poseParams))
+        if (type) result.set(row.id, fillRow(row.segments[0]?.xOffset ?? 0, roomWidth, type, poseParams))
       }
     }
     return result

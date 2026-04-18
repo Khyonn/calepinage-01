@@ -2,7 +2,7 @@ import type { Middleware } from '@reduxjs/toolkit'
 import type { AppState } from '@/store/types'
 import { isProjectAction } from '@/store/types'
 import { projectSlice } from '@/store/projectSlice'
-import { saveProject, deleteProject } from '@/store/db'
+import { saveProject, deleteProject } from '@/persistence/db'
 
 /**
  * Synchronizes project state to IndexedDB after every project action.

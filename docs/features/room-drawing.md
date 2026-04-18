@@ -1,12 +1,12 @@
 # Dessin de pièces
 
-Disponible en mode **Dessin de pièce** (`add-room`). L'utilisateur pose des sommets un par un ; chaque sommet est automatiquement contraint à partager sa coordonnée X ou Y avec le sommet précédent, garantissant des angles droits.
+Disponible en mode **Nouvelle pièce** (`draw`). L'utilisateur pose des sommets un par un pour former un polygone. Les pièces peuvent avoir des murs diagonaux — la contrainte 90° est levée. Le snap axial (`Ctrl` + drag) permet d'aligner facilement les sommets sans forcer des angles droits.
 
 ## Flux de création
 
 ```mermaid
 flowchart TD
-    Start([Mode Dessin de pièce activé]) --> Click[Clic sur le canvas]
+    Start([Mode draw activé]) --> Click[Clic sur le canvas]
     Click --> AddVertex[Ajouter un sommet]
     AddVertex --> Preview[Afficher aperçu du prochain segment]
     Preview --> Check{Clic sur le 1er sommet ?}
@@ -26,9 +26,13 @@ flowchart TD
     Enter --> Confirm
 ```
 
-## Snap à 90°
+## Snap axial
 
-À chaque déplacement de la souris, l'application compare le delta horizontal et le delta vertical depuis le dernier sommet. L'axe avec le plus grand delta l'emporte — le point prévisualisé est aligné sur l'autre coordonnée du point précédent. Ce comportement est automatique et transparent pour l'utilisateur.
+Disponible pendant la création (`Ctrl` + drag sur le dernier sommet posé) et pendant l'édition (`Ctrl` + drag sur un sommet existant).
+
+Si le point s'approche à ~10 px du X ou du Y d'un autre sommet, il s'accroche à cette coordonnée. Une ligne guide colorée (couleur distincte du contour) s'affiche tant que l'accroche est active.
+
+Le snap est optionnel — sans `Ctrl`, le sommet se pose librement, permettant des murs diagonaux.
 
 ## Raccourcis clavier
 
@@ -40,4 +44,8 @@ flowchart TD
 
 ## Comportement sur changement de mode
 
-Si l'utilisateur change de mode sans appuyer sur `Entrée`, les sommets en cours sont purement abandonnés. Aucune pièce partielle n'est enregistrée dans IndexedDB.
+Si l'utilisateur change de mode sans appuyer sur `Entrée`, les sommets en cours sont abandonnés. Aucune pièce partielle n'est enregistrée dans IndexedDB.
+
+## Édition des sommets d'une pièce existante
+
+Disponible en mode `edit` sur une pièce **sans rangées**. Voir [interaction-modes.md](interaction-modes.md).

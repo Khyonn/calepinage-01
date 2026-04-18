@@ -2,7 +2,7 @@
 
 Le plan joue un rôle de guide passif : l'utilisateur s'en sert pour tracer les pièces avec précision, mais il n'est ni analysé ni interprété par l'application.
 
-Disponible en mode **Plan** (`edit-plan`).
+Disponible en mode **Plan** (`plan`).
 
 ## Affichage et dimensionnement
 
@@ -31,13 +31,17 @@ La calibration peut être refaite à tout moment sans perdre les pièces déjà 
 
 **Sans calibration** : l'échelle par défaut est 1 px = 1 cm. Le plan s'affiche et l'utilisateur peut dessiner des pièces, mais les dimensions calculées seront incorrectes.
 
+## Repositionnement
+
+En mode `plan`, l'utilisateur peut glisser l'image pour l'aligner avec les pièces déjà dessinées. La position est stockée dans les champs `x` et `y` de `BackgroundPlan` (en unités monde, cm).
+
 ## Rotation
 
 La rotation (±90°) est non destructive : elle s'applique par transformation sans modifier les données stockées.
 
 ## Opacité
 
-Le slider disponible en mode Plan permet de doser la visibilité du plan entre 0 % et 100 %. La valeur est persistée dans `BackgroundPlan.opacity`.
+Le slider disponible en mode `plan` permet de doser la visibilité du plan entre 0 % et 100 %. La valeur est persistée dans `BackgroundPlan.opacity`.
 
 ## Technique de contraste pour les annotations
 

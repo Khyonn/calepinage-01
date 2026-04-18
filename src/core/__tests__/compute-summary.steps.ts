@@ -25,7 +25,7 @@ describeFeature(feature, ({ Background, BeforeEachScenario, Scenario }) => {
       rooms = [{
         id: 'room-1', projectId: 'proj-1', name: 'Salon',
         vertices: BASE_VERTICES,
-        rows: [{ id: 'row-a', roomId: 'room-1', plankTypeId: 'pt-1', xOffset: 0 }],
+        rows: [{ id: 'row-a', roomId: 'room-1', plankTypeId: 'pt-1', segments: [{ xOffset: 0 }] }],
       }]
     })
     And('des paramètres de pose avec une cale de 5 cm et une largeur de scie de 0.1 cm et une longueur minimale de 30 cm', () => {
@@ -84,8 +84,8 @@ describeFeature(feature, ({ Background, BeforeEachScenario, Scenario }) => {
         id: 'room-1', projectId: 'proj-1', name: 'Salon',
         vertices: BASE_VERTICES,
         rows: [
-          { id: 'row-a', roomId: 'room-1', plankTypeId: 'pt-1', xOffset: 0 },
-          { id: 'row-b', roomId: 'room-1', plankTypeId: 'pt-1', xOffset: 30.1 },
+          { id: 'row-a', roomId: 'room-1', plankTypeId: 'pt-1', segments: [{ xOffset: 0 }] },
+          { id: 'row-b', roomId: 'room-1', plankTypeId: 'pt-1', segments: [{ xOffset: 30.1 }] },
         ],
       }]
       offcutLinks = [{ sourceRowId: 'row-a', targetRowId: 'row-b', length: 89.9 }]

@@ -2,7 +2,7 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import { projectReducer } from '@/store/projectSlice'
 import { uiReducer } from '@/store/uiSlice'
 import { idbMiddleware } from '@/store/idbMiddleware'
-import { listProjects, loadProject } from '@/store/db'
+import { listProjects, loadProject } from '@/persistence/db'
 
 const rootReducer = combineReducers({
   project: projectReducer,
@@ -18,7 +18,6 @@ export async function createAppStore() {
     preloadedState: { project: { list, current } },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
-        thunk: false,
         serializableCheck: {
           ignoredPaths: ['project.current.backgroundPlan.imageFile'],
         },

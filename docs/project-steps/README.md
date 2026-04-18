@@ -6,7 +6,7 @@
 | 02 — Domaine core | [02-domain-core.md](02-domain-core.md) | ✅ Terminé |
 | 03 — Store & persistance | [03-store.md](03-store.md) | ✅ Terminé |
 | 04 — Wireframes & design system | [04-wireframes-design-system.md](04-wireframes-design-system.md) | ✅ Terminé |
-| 05 — Révision domaine & store | [05-domain-review.md](05-domain-review.md) | ⬜ À faire |
+| 05 — Révision domaine & store | [05-domain-review.md](05-domain-review.md) | ✅ Terminé |
 | 06 — Canvas SVG : fondations | [06-canvas-foundations.md](06-canvas-foundations.md) | ⬜ À faire |
 | 07 — Mode dessin de pièces | [07-room-drawing.md](07-room-drawing.md) | ⬜ À faire |
 | 08 — Plan de fond | [08-background-plan.md](08-background-plan.md) | ⬜ À faire |
