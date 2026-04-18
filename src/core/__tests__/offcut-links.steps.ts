@@ -36,8 +36,8 @@ describeFeature(feature, ({ Background, Scenario }) => {
         id: 'room-1', projectId: 'proj-1', name: 'Salon',
         vertices: [{ x: 0, y: 0 }, { x: 400, y: 0 }, { x: 400, y: 300 }, { x: 0, y: 300 }],
         rows: [
-          { id: rowAId, roomId: 'room-1', plankTypeId: 'pt-1', xOffset: 0 },
-          { id: rowBId, roomId: 'room-1', plankTypeId: 'pt-1', xOffset: 30.1 },
+          { id: rowAId, roomId: 'room-1', plankTypeId: 'pt-1', segments: [{ xOffset: 0 }] },
+          { id: rowBId, roomId: 'room-1', plankTypeId: 'pt-1', segments: [{ xOffset: 30.1 }] },
         ],
       }]
     })
@@ -57,8 +57,8 @@ describeFeature(feature, ({ Background, Scenario }) => {
         id: 'room-1', projectId: 'proj-1', name: 'Salon',
         vertices: [{ x: 0, y: 0 }, { x: 400, y: 0 }, { x: 400, y: 300 }, { x: 0, y: 300 }],
         rows: [
-          { id: 'row-a', roomId: 'room-1', plankTypeId: 'pt-1', xOffset: 0 },
-          { id: 'row-b', roomId: 'room-1', plankTypeId: 'pt-1', xOffset: 50 },
+          { id: 'row-a', roomId: 'room-1', plankTypeId: 'pt-1', segments: [{ xOffset: 0 }] },
+          { id: 'row-b', roomId: 'room-1', plankTypeId: 'pt-1', segments: [{ xOffset: 50 }] },
         ],
       }]
     })
@@ -73,8 +73,8 @@ describeFeature(feature, ({ Background, Scenario }) => {
         id: 'room-1', projectId: 'proj-1', name: 'Salon',
         vertices: [{ x: 0, y: 0 }, { x: 400, y: 0 }, { x: 400, y: 300 }, { x: 0, y: 300 }],
         rows: [
-          { id: 'row-a', roomId: 'room-1', plankTypeId: 'pt-1', xOffset: 0 },
-          { id: 'row-b', roomId: 'room-1', plankTypeId: 'pt-1', xOffset: 0 },
+          { id: 'row-a', roomId: 'room-1', plankTypeId: 'pt-1', segments: [{ xOffset: 0 }] },
+          { id: 'row-b', roomId: 'room-1', plankTypeId: 'pt-1', segments: [{ xOffset: 0 }] },
         ],
       }]
     })
@@ -89,7 +89,7 @@ describeFeature(feature, ({ Background, Scenario }) => {
       rooms = [{
         id: 'room-1', projectId: 'proj-1', name: 'Salon',
         vertices: [{ x: 0, y: 0 }, { x: 400, y: 0 }, { x: 400, y: 300 }, { x: 0, y: 300 }],
-        rows: [{ id: rowAId, roomId: 'room-1', plankTypeId: 'pt-1', xOffset: 0 }],
+        rows: [{ id: rowAId, roomId: 'room-1', plankTypeId: 'pt-1', segments: [{ xOffset: 0 }] }],
       }]
     })
     And('une pièce "Couloir" avec une rangée B au décalage 30.1 cm', () => {
@@ -97,7 +97,7 @@ describeFeature(feature, ({ Background, Scenario }) => {
       rooms = [...rooms, {
         id: 'room-2', projectId: 'proj-1', name: 'Couloir',
         vertices: [{ x: 0, y: 0 }, { x: 400, y: 0 }, { x: 400, y: 300 }, { x: 0, y: 300 }],
-        rows: [{ id: rowBId, roomId: 'room-2', plankTypeId: 'pt-1', xOffset: 30.1 }],
+        rows: [{ id: rowBId, roomId: 'room-2', plankTypeId: 'pt-1', segments: [{ xOffset: 30.1 }] }],
       }]
     })
     Then('un lien est établi de A vers B', () => {

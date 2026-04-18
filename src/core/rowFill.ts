@@ -93,7 +93,7 @@ export function computeOffcutLinks(
     for (const room of rooms) {
       for (const row of room.rows) {
         if (row.plankTypeId === plankType.id) {
-          rows.push({ rowId: row.id, roomId: room.id, xOffset: row.xOffset, roomWidth: computeRoomWidth(room) })
+          rows.push({ rowId: row.id, roomId: room.id, xOffset: row.segments[0]?.xOffset ?? 0, roomWidth: computeRoomWidth(room) })
         }
       }
     }

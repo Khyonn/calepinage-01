@@ -1,40 +1,49 @@
-# Étape 06 — Mode dessin de pièces
+# Étape 07 — Mode dessin de pièces
 
-**Statut : à faire** — dépend de l'étape 05
+**Statut : à faire** — dépend de l'étape 06
 
 ## Périmètre
 
-Implémenter le mode `add-room` en entier : tracé interactif, snap à 90°, validation, persistence.
+Implémenter le mode `draw` (tracé d'une nouvelle pièce) et le mode `edit` sur une pièce sans rangées (édition des sommets). Les deux modes partagent le même hook de gestion des sommets.
 
-## Fichiers à créer / modifier
+## Fichiers à créer
+
+Structure par dossier : `NomComposant/index.tsx` · `NomComposant/NomComposant.module.css` · `NomComposant/useNomComposant.ts` (si logique).
 
 | Fichier | Contenu |
 | --- | --- |
-| `src/hooks/useRoomDrawing.ts` | Gestion de l'état de dessin en cours (sommets, snap, preview), raccourcis clavier |
-| `src/components/RoomDrawingOverlay.tsx` | Rendu SVG du polygone en cours + segment de preview |
+| `src/components/canvas/RoomDrawingOverlay/useRoomDrawing.ts` | État du tracé en cours (sommets, snap axial, preview), raccourcis clavier |
+| `src/components/canvas/VertexHandles/useVertexEdit.ts` | Drag des sommets d'une pièce existante (snap axial, push voisins) |
+| `src/components/canvas/RoomDrawingOverlay/` | Rendu SVG du polygone en cours + segment de preview |
+| `src/components/canvas/VertexHandles/` | Croix draggables + hit targets + lignes de guidage snap |
 
 ## Comportement attendu
 
-### Dessin d'une nouvelle pièce
+### Dessin d'une nouvelle pièce (mode `draw`)
 
-- Clic → ajouter un sommet (contraint à 90° par rapport au précédent)
+- Clic → ajouter un sommet
+- `Ctrl` + drag sur le dernier sommet → snap axial : accrochage au X ou Y d'un sommet existant à ~10 px + ligne guide colorée tant que l'accroche est active
 - Mouvement souris → preview du prochain segment en temps réel
-- Clic sur le 1er sommet → fermer et demander un nom (dialog ou input inline)
+- Clic sur le 1er sommet (ou `Entrée`) → fermer le polygone et demander un nom (dialog ou input inline)
 - `Suppr` → défaire le dernier sommet
 - `Échap` → abandonner sans enregistrer
-- `Entrée` → valider avec les sommets actuels
 - Changement de mode → abandon silencieux
 
-### Modification des points d'une pièce existante
+Les pièces peuvent avoir des murs diagonaux — la contrainte 90° est levée. Le snap axial remplace la contrainte forcée.
 
-En mode `draw`, cliquer sur une pièce existante permet de repositionner ses sommets :
+### Édition des sommets (mode `edit`, pièce sans rangées)
 
-- Les sommets sont affichés sous forme de poignées draggables
-- Drag d'un sommet → déplace le point, les segments adjacents se mettent à jour en temps réel
-- La contrainte à 90° peut être appliquée ou relâchée (à préciser)
+Quand la pièce active n'a pas encore de rangées, ses sommets sont éditables :
+
+- **Représentation** : croix ("X"), pas de point plein (masquerait le plan de fond)
+- **Hit target** : `<circle>` transparent centré sur le sommet pour une saisie confortable
+- **`Ctrl` + drag** : snap axial — accrochage au X ou Y d'un autre sommet à ~10 px + ligne guide colorée tant que l'accroche est active
+- **`Shift` + drag** : déplace les deux sommets adjacents du même delta vectoriel ("pousser un mur")
 - `Échap` → annule les modifications en cours
+
+> Si la pièce a déjà des rangées, le mode `edit` bascule sur la gestion des rangées (étape 09) — les sommets ne sont plus éditables.
 
 ## Références doc
 
-- [room-drawing.md](../features/room-drawing.md) — algorithme de snap et flux complet
-- [interaction-modes.md](../features/interaction-modes.md) — différences par rapport au mode Navigation
+- [room-drawing.md](../features/room-drawing.md) — snap axial et flux complet
+- [interaction-modes.md](../features/interaction-modes.md) — modes `draw` et `edit`

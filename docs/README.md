@@ -37,6 +37,10 @@ flowchart TD
     J --> K[Exporter en CSV]
 ```
 
+### Précision des mesures
+
+Toutes les valeurs numériques du domaine (dimensions de lames, paramètres de pose, offsets, positions) sont exprimées en **centimètres** avec une précision de **0,1 cm**. Toute valeur produite ou saisie est arrondie au dixième le plus proche.
+
 ### Créer et configurer un projet
 
 Au lancement, l'utilisateur crée un nouveau projet et lui donne un nom. Plusieurs projets peuvent coexister. Une fois le projet créé, il définit les **paramètres de pose** :

@@ -1,12 +1,47 @@
 # Remplissage automatique des rangées
 
-Le remplissage se déclenche dès qu'une rangée est ajoutée en mode **Lames**. L'algorithme calcule la séquence de lames qui couvre la largeur disponible (largeur de la pièce moins deux fois la cale de dilatation).
+Le remplissage se déclenche dès qu'une rangée est ajoutée en mode **Modifier** (`edit`). L'algorithme calcule les segments de la rangée par intersection avec le polygone de la pièce, puis positionne les lames dans chaque segment.
 
-## Algorithme
+## Postulat de base
+
+Les rangées sont des strips **horizontaux** (hauteur constante = largeur du type de lame). Une pose en diagonale ou en chevrons nécessiterait une révision complète de l'algorithme — hors scope.
+
+## Calcul des segments par rangée
+
+Chaque rangée (strip `[y1, y2]`) est intersectée avec le polygone de la pièce via un algorithme scanline :
+
+1. Parcourir chaque arête du polygone
+2. Calculer les intersections de l'arête avec `y1` et `y2`
+3. Trier les points d'intersection par X et les apparier (règle pair-impair) → liste de `[xStart, xEnd]`
+
+Une pièce concave (en L, en U…) peut produire **plusieurs segments** pour une même rangée. Chaque segment est rempli indépendamment.
+
+```
+Exemple — pièce en U :
+
+  +-------+   +-------+
+  |       |   |       |
+  | seg 0 |   | seg 1 |
+  |       |   |       |
+  +-------+---+-------+
+  |                   |
+  |      seg 0        |
+  |                   |
+  +-------------------+
+
+Rangée haute : 2 segments
+Rangée basse : 1 segment
+```
+
+Les coupes aux murs diagonaux sont toujours perpendiculaires (coupe droite). Longueur utile = longueur du segment dans la pièce. Chute = longueur brute − longueur utile.
+
+## Algorithme de remplissage par segment
 
 ```mermaid
 flowchart TD
-    AddRow[Ajouter une rangée de type T] --> Prev{Chute disponible du même type ?}
+    AddRow[Ajouter une rangée de type T] --> Segments[Calculer les segments par intersection bande/polygone]
+    Segments --> ForEach[Pour chaque segment]
+    ForEach --> Prev{Chute disponible du même type ?}
     Prev -- Non --> FirstFull[Première lame = planche entière]
     Prev -- Oui --> Optim{Chute longueur minimale ET écart respecté ?}
     Optim -- Oui --> FirstOffcut[Première lame = chute réutilisée]
@@ -15,23 +50,26 @@ flowchart TD
     FirstOffcut --> Fill
     Fill --> LastCut[Dernière lame = coupe pour combler exactement la largeur]
     LastCut --> CalcOffcut[Chute = longueur nominale - dernière lame - largeur scie]
-    CalcOffcut --> End([Rangée remplie])
+    CalcOffcut --> End([Segment rempli])
 ```
 
-## Réutilisation des chutes
+## Contrainte esthétique inter-rangées
 
-L'algorithme cherche, parmi les chutes disponibles du même type de lame, la plus grande dont la longueur est inférieure ou égale à la largeur disponible. Il vérifie ensuite que cette réutilisation respecte les contraintes de longueur minimale et d'écart esthétique. Si aucune chute ne satisfait ces critères, la rangée démarre avec une planche neuve entière.
+Un segment de la rangée N "touche" un segment de la rangée N−1 s'ils se chevauchent horizontalement. Pour chaque paire qui se touche, on calcule l'intervalle d'offsets X qui violerait la contrainte esthétique (écart min entre fins de rangées). On agrège tous ces intervalles → ensemble de zones interdites.
+
+À l'ajout d'une rangée, le positionnement automatique cherche un offset hors de ces zones. Si impossible (certaines configurations l'imposent), la violation est acceptée et signalée visuellement — l'utilisateur n'est pas bloqué.
 
 ## Ce qui est stocké vs recalculé
 
-Les `Plank[]` ne sont **jamais stockés** dans IndexedDB. Seul `xOffset` est persisté dans `Row`. À chaque rendu, l'algorithme est rappelé — c'est une **fonction pure déterministe**.
+La géométrie des segments (xStart, xEnd, y1, y2) n'est **jamais stockée**. Seul l'`xOffset` de chaque segment est persisté. À chaque rendu, la géométrie est recalculée — c'est une **fonction pure déterministe**.
 
 ```typescript
 // Seules données persistées
 interface Row {
   id: string
+  roomId: string
   plankTypeId: string
-  xOffset: number  // décalage horizontal en cm — tout le reste est recalculé
+  segments: { xOffset: number }[]  // un par segment — tout le reste est recalculé
 }
 
 interface Room {
@@ -40,10 +78,10 @@ interface Room {
 }
 ```
 
-Les liens de réutilisation entre rangées sont inférés à l'affichage en comparant les `xOffset` des rangées du même type.
+Toutes les valeurs numériques sont exprimées en centimètres, arrondies au 0,1 cm le plus proche.
 
-## Cascade
+## Réutilisation des chutes
 
-Au relâchement d'un drag, toutes les rangées suivantes du même type dans la même pièce sont recalculées en cascade — leurs `xOffset` sont dérivés de la chute de la rangée précédente.
+L'algorithme cherche, parmi les chutes disponibles du même type de lame, la plus grande dont la longueur est inférieure ou égale à la largeur disponible. Il vérifie ensuite que cette réutilisation respecte les contraintes de longueur minimale et d'écart esthétique. Si aucune chute ne satisfait ces critères, le segment démarre avec une planche neuve entière.
 
 Voir aussi [row-drag.md](row-drag.md) pour le comportement pendant le glisser-déposer.

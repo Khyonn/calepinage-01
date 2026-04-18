@@ -64,7 +64,7 @@ export async function loadProject(id: string): Promise<Project | null> {
     id: room.id, projectId: room.projectId, name: room.name, vertices: room.vertices,
     ...(room.yOffset !== undefined ? { yOffset: room.yOffset } : {}),
     rows: (rowGroups[i] ?? []).map((row): Row => ({
-      id: row.id, roomId: row.roomId, plankTypeId: row.plankTypeId, xOffset: row.xOffset,
+      id: row.id, roomId: row.roomId, plankTypeId: row.plankTypeId, segments: row.segments,
     })),
   }))
 
@@ -78,6 +78,7 @@ export async function loadProject(id: string): Promise<Project | null> {
     backgroundPlan = {
       id: planRecord.id, projectId: planRecord.projectId,
       calibration: planRecord.calibration, opacity: planRecord.opacity, rotation: planRecord.rotation,
+      x: planRecord.x ?? 0, y: planRecord.y ?? 0,
       ...(fileRecord ? { imageFile: fileRecord.file } : {}),
     }
   }
@@ -93,7 +94,6 @@ export async function saveProject(project: Project): Promise<void> {
   const db = await dbPromise
   const tx = db.transaction(['projects', 'rooms', 'rows', 'plankTypes', 'plans', 'files'], 'readwrite')
 
-  // Load existing keys then delete + re-insert in one transaction (atomic replace)
   const [roomKeys, rowKeys, ptKeys, planKeys] = await Promise.all([
     tx.objectStore('rooms').index('projectId').getAllKeys(project.id),
     tx.objectStore('rows').index('projectId').getAllKeys(project.id),
@@ -116,7 +116,7 @@ export async function saveProject(project: Project): Promise<void> {
     ...project.rooms.flatMap(room =>
       room.rows.map(row => tx.objectStore('rows').put({
         id: row.id, roomId: row.roomId, projectId: project.id,
-        plankTypeId: row.plankTypeId, xOffset: row.xOffset,
+        plankTypeId: row.plankTypeId, segments: row.segments,
       }))
     ),
     ...project.catalog.map(pt =>

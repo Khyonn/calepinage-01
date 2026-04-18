@@ -54,7 +54,7 @@ describeFeature(feature, ({ Scenario }) => {
     And('une rangée avec un décalage de 0 cm dans la pièce "Salon"', () => {
       const roomId = selectRooms(buildAppState(state))[0].id
       const plankTypeId = selectCatalog(buildAppState(state))[0].id
-      state = projectReducer(state, projectActions.addRow({ roomId, plankTypeId, xOffset: 0 }))
+      state = projectReducer(state, projectActions.addRow({ roomId, row: { id: crypto.randomUUID(), roomId, plankTypeId, segments: [{ xOffset: 0 }] } }))
     })
     And("aucune violation n'est détectée", () => {
       expect(selectViolations(buildAppState(state))).toHaveLength(0)
@@ -87,7 +87,7 @@ describeFeature(feature, ({ Scenario }) => {
     And('une rangée avec un décalage de 0 cm dans la pièce "Salon"', () => {
       const roomId = selectRooms(buildAppState(state))[0].id
       const plankTypeId = selectCatalog(buildAppState(state))[0].id
-      state = projectReducer(state, projectActions.addRow({ roomId, plankTypeId, xOffset: 0 }))
+      state = projectReducer(state, projectActions.addRow({ roomId, row: { id: crypto.randomUUID(), roomId, plankTypeId, segments: [{ xOffset: 0 }] } }))
     })
     And('la longueur minimale de lame est de 40 cm', () => {
       state = projectReducer(state, projectActions.updatePoseParams({
@@ -118,12 +118,12 @@ describeFeature(feature, ({ Scenario }) => {
     And('une rangée avec un décalage de 0 cm dans la pièce "Salon"', () => {
       const roomId = selectRooms(buildAppState(state))[0].id
       const plankTypeId = selectCatalog(buildAppState(state))[0].id
-      state = projectReducer(state, projectActions.addRow({ roomId, plankTypeId, xOffset: 0 }))
+      state = projectReducer(state, projectActions.addRow({ roomId, row: { id: crypto.randomUUID(), roomId, plankTypeId, segments: [{ xOffset: 0 }] } }))
     })
     When("j'ajoute une rangée avec un décalage de 3 cm dans la pièce \"Salon\"", () => {
       const roomId = selectRooms(buildAppState(state))[0].id
       const plankTypeId = selectCatalog(buildAppState(state))[0].id
-      state = projectReducer(state, projectActions.addRow({ roomId, plankTypeId, xOffset: 3 }))
+      state = projectReducer(state, projectActions.addRow({ roomId, row: { id: crypto.randomUUID(), roomId, plankTypeId, segments: [{ xOffset: 3 }] } }))
     })
     Then('1 violation est détectée', () => {
       expect(selectViolations(buildAppState(state))).toHaveLength(1)
@@ -148,12 +148,12 @@ describeFeature(feature, ({ Scenario }) => {
     And('une rangée avec un décalage de 0 cm dans la pièce "Salon"', () => {
       const roomId = selectRooms(buildAppState(state))[0].id
       const plankTypeId = selectCatalog(buildAppState(state))[0].id
-      state = projectReducer(state, projectActions.addRow({ roomId, plankTypeId, xOffset: 0 }))
+      state = projectReducer(state, projectActions.addRow({ roomId, row: { id: crypto.randomUUID(), roomId, plankTypeId, segments: [{ xOffset: 0 }] } }))
     })
     And('une rangée avec un décalage de 39.1 cm dans la pièce "Salon"', () => {
       const roomId = selectRooms(buildAppState(state))[0].id
       const plankTypeId = selectCatalog(buildAppState(state))[0].id
-      state = projectReducer(state, projectActions.addRow({ roomId, plankTypeId, xOffset: 39.1 }))
+      state = projectReducer(state, projectActions.addRow({ roomId, row: { id: crypto.randomUUID(), roomId, plankTypeId, segments: [{ xOffset: 39.1 }] } }))
     })
     Then('le résumé indique 7 lames à commander pour "Chêne 120cm"', () => {
       const plankTypeId = selectCatalog(buildAppState(state))[0].id
@@ -184,12 +184,12 @@ describeFeature(feature, ({ Scenario }) => {
     And('une rangée avec un décalage de 0 cm dans la pièce "Salon"', () => {
       const roomId = selectRooms(buildAppState(state))[0].id
       const plankTypeId = selectCatalog(buildAppState(state))[0].id
-      state = projectReducer(state, projectActions.addRow({ roomId, plankTypeId, xOffset: 0 }))
+      state = projectReducer(state, projectActions.addRow({ roomId, row: { id: crypto.randomUUID(), roomId, plankTypeId, segments: [{ xOffset: 0 }] } }))
     })
     And('une rangée avec un décalage de 80 cm dans la pièce "Salon"', () => {
       const roomId = selectRooms(buildAppState(state))[0].id
       const plankTypeId = selectCatalog(buildAppState(state))[0].id
-      state = projectReducer(state, projectActions.addRow({ roomId, plankTypeId, xOffset: 80 }))
+      state = projectReducer(state, projectActions.addRow({ roomId, row: { id: crypto.randomUUID(), roomId, plankTypeId, segments: [{ xOffset: 80 }] } }))
     })
     Then('le résumé indique 8 lames à commander pour "Chêne 120cm"', () => {
       const plankTypeId = selectCatalog(buildAppState(state))[0].id

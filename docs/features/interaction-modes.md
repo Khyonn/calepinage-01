@@ -7,11 +7,11 @@ Pour le layout de l'interface (topbar, panneaux, drawer), voir [ui-specification
 | `InteractionMode` | Label | Icône | Description |
 | --- | --- | --- | --- |
 | `nav` | **Navigation** | Croix fléchée (move) | Mode par défaut — pan, zoom, sélection de pièce |
-| `draw` | **Nouvelle pièce** | Stylo | Tracé interactif d'un polygone à angles droits |
-| `rows` | **Lames** | Lignes superposées | Ajustement des rangées — visible uniquement si une pièce est active |
-| `plan` | **Plan** | Blueprint/image | Gestion du plan de fond : import, calibration, opacité |
+| `draw` | **Nouvelle pièce** | Stylo | Tracé interactif d'un polygone |
+| `edit` | **Modifier** | Crayon | Édition des sommets (pièce sans rangées) ou gestion des rangées (pièce avec rangées) — visible uniquement si une pièce est active |
+| `plan` | **Plan** | Blueprint/image | Gestion du plan de fond : import, calibration, opacité, repositionnement |
 
-Ordre d'affichage dans la topbar : `nav` → `draw` → `rows` *(conditionnel)* → `plan`
+Ordre d'affichage dans la topbar : `nav` → `draw` → `edit` *(conditionnel)* → `plan`
 
 ## Mode `nav` — Navigation
 
@@ -22,9 +22,9 @@ Mode par défaut, actif au lancement.
 - Catalogue de lames (voir règles ci-dessous)
 
 **Comportement canvas :**
-- Clic sur une pièce → la sélectionner et basculer automatiquement en mode `rows`
+- Clic sur une pièce → la sélectionner et basculer automatiquement en mode `edit`
 - Survol des pièces : curseur pointer + highlight
-- Clic gauche + glisser → pan du canvas
+- `Espace` + clic gauche drag **OU** clic molette drag → pan du canvas
 
 ## Mode `draw` — Nouvelle pièce
 
@@ -35,8 +35,9 @@ Mode par défaut, actif au lancement.
 **Comportement canvas :**
 - Le curseur devient `crosshair`
 - Clic gauche → place un sommet
+- `Ctrl` + drag → snap axial (accrochage au X ou Y d'un sommet existant)
 - Aperçu en temps réel du prochain segment
-- Pan disponible via bouton milieu de la souris
+- Pan disponible via `Espace` + drag ou bouton milieu
 
 Voir [room-drawing.md](room-drawing.md) pour le détail complet.
 
@@ -49,30 +50,40 @@ Voir [room-drawing.md](room-drawing.md) pour le détail complet.
 - Calibration : points A et B draggables sur le canvas + champ "distance réelle" + boutons ✕ / ✓ inline
 
 **Comportement canvas :**
+- Drag de l'image → repositionnement (position x/y persistée)
 - Les pièces sont atténuées (`opacity: 0.3`) pour mettre le plan en valeur
 - La grille reste visible en fond
 
 Voir [background-plan.md](background-plan.md) pour le détail complet.
 
-## Mode `rows` — Lames
+## Mode `edit` — Modifier
 
 Accessible uniquement si une pièce est active. Activé automatiquement au clic sur une pièce en mode `nav`. `Échap` → retour au mode `nav`.
 
+Le comportement est **conditionnel** selon l'état de la pièce active :
+
+### Pièce sans rangées — édition des sommets
+
+- Sommets affichés sous forme de croix ("X")
+- `Ctrl` + drag → snap axial sur un sommet existant + ligne guide colorée
+- `Shift` + drag → pousse les deux sommets adjacents du même delta ("pousser un mur")
+- `Échap` → annule les modifications en cours
+
+### Pièce avec rangées — gestion des rangées
+
 **Panneau contextuel :**
-- Paramètres de pose
 - Catalogue de lames
-- Liste des rangées de la pièce active (xOffset de chaque rangée)
-- Bouton "ajouter une rangée"
-- Dropdown de sélection de pièce (intégré dans le bouton `rows` de la topbar)
+- Combobox sélection du type de lame + bouton "Ajouter une rangée"
 
 **Comportement canvas :**
 - La pièce active est affichée normalement avec ses rangées et annotations
 - Toutes les autres pièces sont atténuées (`opacity: 0.2`)
-- Les rangées sont draggables (curseur `grab` → `grabbing`)
+- Les segments sont draggables (curseur `grab` → `grabbing`), offset quantifié à 0,1 cm
+- Violations de contraintes signalées visuellement (pas de blocage)
 
 Voir [row-drag.md](row-drag.md) et [constraints-annotations.md](constraints-annotations.md) pour le détail complet.
 
-## Règles du catalogue (modes `nav` et `rows`)
+## Règles du catalogue (modes `nav` et `edit`)
 
 Affichage par type : nom + dimensions + badge d'utilisation + boutons d'action.
 

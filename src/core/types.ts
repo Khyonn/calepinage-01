@@ -54,7 +54,7 @@ export interface Row {
   id: string
   roomId: string
   plankTypeId: string
-  xOffset: number  // cm — only persisted position data
+  segments: { xOffset: number }[]  // one per geometric segment, xOffset persisted
 }
 
 export interface Room {
@@ -73,6 +73,8 @@ export interface BackgroundPlan {
   calibration?: Calibration
   opacity: number      // 0–1
   rotation: number     // 0 | 90 | 180 | 270
+  x: number            // cm — horizontal position (drag in plan mode)
+  y: number            // cm — vertical position (drag in plan mode)
 }
 
 export interface Project {

@@ -50,7 +50,7 @@ Passer en revue ce que la branche apporte et s'assurer que la doc reflète les c
 - Étape franchie → `docs/project-steps/` mis à jour
 
 **2. Migration IndexedDB obligatoire si le schéma change (par rapport à `main`)**
-Toute modification du schéma IndexedDB (ajout/suppression/renommage de champ sur `Project`, `Room`, `Row`, `PlankType`, `PoseParams`, ou `BackgroundPlan`) **doit être accompagnée d'une fonction de migration** dans la couche `src/store/db.ts` **uniquement si le schéma diverge de `main`**.
+Toute modification du schéma IndexedDB (ajout/suppression/renommage de champ sur `Project`, `Room`, `Row`, `PlankType`, `PoseParams`, ou `BackgroundPlan`) **doit être accompagnée d'une fonction de migration** dans la couche `src/persistence/db.ts` **uniquement si le schéma diverge de `main`**.
 
 En cours de développement sur une branche, pas de migration nécessaire : si le schéma local a changé, supprimer les données IndexedDB du navigateur manuellement (DevTools → Application → IndexedDB → Clear).
 
@@ -84,10 +84,25 @@ Structure `src/` :
 
 ```
 src/
-├── core/        ← logique métier pure — ZÉRO React, ZÉRO DOM
-├── store/       ← reducer, actions, état, IndexedDB — ZÉRO React
-├── hooks/       ← binding React : useReducer + store, logique DOM
-└── components/  ← rendu JSX uniquement, aucune logique métier
+├── core/           ← logique métier pure — ZÉRO React, ZÉRO DOM
+├── persistence/    ← schéma et accès IndexedDB (db.ts) — ZÉRO React, ZÉRO Redux
+├── store/          ← reducer, actions, état, middleware IDB — ZÉRO React
+├── hooks/          ← hooks React partagés entre plusieurs composants
+└── components/     ← composants React ; hooks spécifiques co-localisés dans leur dossier
+    ├── ui/         ← composants atomiques (Button, Input…)
+    └── canvas/     ← composants SVG du canvas (Scene, Room, Row, Segment…)
+```
+
+**Règle hooks :**
+- Hook **partagé** entre plusieurs composants → `src/hooks/`
+- Hook **spécifique** à un composant → co-localisé dans `src/components/.../MonComposant/useMonHook.ts`
+
+**Structure par dossier pour chaque composant :**
+```
+MonComposant/
+├── index.tsx
+├── MonComposant.module.css
+└── useMonComposant.ts   (si logique propre au composant)
 ```
 
 **Règles strictes :**

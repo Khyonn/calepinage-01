@@ -25,7 +25,7 @@ export function computeSummary(
       for (const row of room.rows) {
         if (row.plankTypeId !== plankType.id) continue
 
-        const planks = fillRow(row.xOffset, roomWidth, plankType, poseParams)
+        const planks = fillRow(row.segments[0]?.xOffset ?? 0, roomWidth, plankType, poseParams)
         if (planks.length === 0) continue
 
         const startsFromOffcut = consumingRowIds.has(row.id)
