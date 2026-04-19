@@ -83,7 +83,6 @@ export interface Project {
   catalog: PlankType[]     // assembled from plankTypes store
   rooms: Room[]            // assembled from rooms + rows stores
   backgroundPlan?: BackgroundPlan // assembled from plans + files stores
-  lastOpenedAt: number     // timestamp
 }
 
 // ─── Computed types (never stored) ───────────────────────────────────────────

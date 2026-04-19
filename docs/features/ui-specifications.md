@@ -37,6 +37,8 @@ Définis dans `src/index.css`. Toutes les valeurs sont exprimées via des custom
 | Ombres | `--shadow-sm` · `--shadow` · `--shadow-lg` |
 | Espacements | `--space-1` à `--space-6` (4px → 24px) |
 | Typographie | `--font-sans` · `--font-mono` · `--text-xs` (11px) à `--text-md` (15px) |
+| Layout | `--topbar-h` (3rem) · `--panel-w` (17rem) · `--panel-top` / `--panel-left` (1rem) · `--drawer-min` (15rem) · `--drawer-max` (50vw) |
+| Z-index | `--z-canvas` (0) · `--z-panel` (10) · `--z-drawer` (20) · `--z-topbar` (30) · `--z-dialog` (40) · `--z-menu` (50) |
 
 ### Dark mode
 
