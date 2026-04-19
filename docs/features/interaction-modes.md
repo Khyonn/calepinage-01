@@ -65,7 +65,7 @@ Le comportement est **conditionnel** selon l'état de la pièce active :
 ### Pièce sans rangées — édition des sommets
 
 - Sommets affichés sous forme de croix ("X")
-- `Ctrl` + drag → snap axial sur un sommet existant + ligne guide colorée
+- `Ctrl` + drag → snap axial simultané en X et Y (seuil 12 px écran, voir [room-drawing.md](room-drawing.md#snap-axial)) + ligne guide colorée par axe actif
 - `Shift` + drag → pousse les deux sommets adjacents du même delta ("pousser un mur")
 - `Échap` → annule les modifications en cours
 

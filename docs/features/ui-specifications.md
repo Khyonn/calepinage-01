@@ -49,8 +49,8 @@ Piloté par l'attribut `data-theme` sur `<html>` (`"light"` ou `"dark"`). Le cho
 | `--canvas-bg` | Fond du canvas |
 | `--grid-color` | Couleur de la grille (toujours visible, même avec plan chargé) |
 | `--room-fill` / `--room-stroke` | Pièces à l'état normal |
-| `--room-active-fill` | Pièce active (mode rows) |
-| `--room-dim-fill` / `--room-dim-stroke` | Pièces atténuées (mode rows) |
+| `--room-active-fill` | Pièce active (mode `edit`) |
+| `--room-dim-fill` / `--room-dim-stroke` | Pièces atténuées (mode `edit`, ou `plan`) |
 
 ---
 
