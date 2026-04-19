@@ -57,25 +57,23 @@ export const projectSlice = createSlice({
       if (state.current?.id === action.payload.id) state.current = null
     },
 
-    addRoom: (state, action: PayloadAction<{ name: string; vertices: Point[]; yOffset?: number }>) => {
+    addRoom: (state, action: PayloadAction<{ name: string; vertices: Point[] }>) => {
       if (!state.current) return
       state.current.rooms.push({
         id: crypto.randomUUID(),
         projectId: state.current.id,
         name: action.payload.name,
         vertices: action.payload.vertices,
-        ...(action.payload.yOffset !== undefined ? { yOffset: action.payload.yOffset } : {}),
         rows: [],
       })
     },
 
-    updateRoom: (state, action: PayloadAction<{ id: string; name?: string; vertices?: Point[]; yOffset?: number }>) => {
+    updateRoom: (state, action: PayloadAction<{ id: string; name?: string; vertices?: Point[] }>) => {
       if (!state.current) return
       const room = state.current.rooms.find(r => r.id === action.payload.id)
       if (!room) return
       if (action.payload.name !== undefined) room.name = action.payload.name
       if (action.payload.vertices !== undefined) room.vertices = action.payload.vertices
-      if (action.payload.yOffset !== undefined) room.yOffset = action.payload.yOffset
     },
 
     deleteRoom: (state, action: PayloadAction<{ id: string }>) => {

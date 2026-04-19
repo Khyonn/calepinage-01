@@ -62,7 +62,6 @@ export interface Room {
   projectId: string
   name: string
   vertices: Point[]
-  yOffset?: number // cm — vertical start offset for inter-room continuity
   rows: Row[]
 }
 
