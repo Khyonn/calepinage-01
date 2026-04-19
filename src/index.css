@@ -71,12 +71,18 @@
   --panel-w:         17rem;
   --panel-top:       1rem;
   --panel-left:      1rem;
+  --helper-panel-w:  14rem;
   --drawer-min:      15rem;
   --drawer-max:      50vw;
+
+  /* ScaleBar (écran, px/rem) */
+  --scale-bar-color: var(--text-muted);
 
   /* Z-index stack */
   --z-canvas:        0;
   --z-panel:         10;
+  --z-helper:        10;
+  --z-scalebar:      10;
   --z-drawer:        20;
   --z-topbar:        30;
   --z-dialog:        40;

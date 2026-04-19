@@ -1,5 +1,5 @@
 .panel {
-  position: absolute;
+  position: fixed;
   top: calc(var(--topbar-h) + var(--panel-top));
   left: var(--panel-left);
   width: var(--panel-w);
