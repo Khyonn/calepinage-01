@@ -1,0 +1,32 @@
+.line {
+  stroke: var(--calib-accent);
+  stroke-dasharray: 4 3;
+  stroke-width: 1;
+  pointer-events: none;
+}
+
+.point {
+  cursor: move;
+}
+
+.cross {
+  stroke: var(--calib-accent);
+  stroke-width: 2;
+}
+
+.circle {
+  fill: var(--calib-accent-soft);
+  stroke: var(--calib-accent);
+  stroke-width: 2;
+}
+
+.label {
+  fill: var(--calib-accent);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 3;
+}

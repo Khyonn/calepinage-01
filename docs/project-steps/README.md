@@ -38,9 +38,9 @@ Chaque jalon apporte une valeur utilisateur observable. Les sous-étapes `NN.M` 
 
 | # | Titre | Fichier | Statut |
 |---|---|---|---|
-| 08.1 | Mode `plan` + import image | [08.1-plan-import.md](08.1-plan-import.md) | ⬜ |
-| 08.2 | Repositionnement | [08.2-plan-reposition.md](08.2-plan-reposition.md) | ⬜ |
-| 08.3 | Calibration | [08.3-calibration.md](08.3-calibration.md) | ⬜ |
+| 08.1 | Mode `plan` + import image | [08.1-plan-import.md](08.1-plan-import.md) | ✅ |
+| 08.2 | Repositionnement | [08.2-plan-reposition.md](08.2-plan-reposition.md) | ✅ |
+| 08.3 | Calibration | [08.3-calibration.md](08.3-calibration.md) | ✅ |
 
 ### Jalon 09 — Pièces dessinées et éditables
 [09-rooms.md](09-rooms.md) — tracé de polygones avec snap axial, rendu, édition de sommets.

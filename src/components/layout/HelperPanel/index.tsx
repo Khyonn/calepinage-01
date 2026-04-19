@@ -1,4 +1,6 @@
 import { useState, Fragment } from "react";
+import { useAppSelector } from "@/hooks/redux";
+import { selectInteractionMode } from "@/store/selectors";
 import styles from "./HelperPanel.module.css";
 
 interface Entry {
@@ -14,6 +16,10 @@ const NAV_ENTRIES: Entry[] = [
   { label: "Zoomer", combos: ["Ctrl + Mol."] },
   { label: "Défiler horizontal", combos: ["Shift + Mol."] },
   { label: "Défiler vertical", combos: ["Molette"] },
+];
+
+const PLAN_ENTRIES: Entry[] = [
+  { label: "Déplacer le plan", combos: ["Grab G."] },
 ];
 
 function Combo({ text }: { text: string }) {
@@ -36,7 +42,8 @@ function Combo({ text }: { text: string }) {
 
 export function HelperPanel() {
   const [collapsed, setCollapsed] = useState(false);
-  const entries = NAV_ENTRIES;
+  const mode = useAppSelector(selectInteractionMode);
+  const entries: Entry[] = mode === "plan" ? [...PLAN_ENTRIES, ...NAV_ENTRIES] : NAV_ENTRIES;
 
   return (
     <aside className={styles.panel}>

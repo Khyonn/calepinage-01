@@ -8,9 +8,10 @@ import styles from './Scene.module.css'
 
 interface Props {
   children?: ReactNode
+  overlay?: ReactNode
 }
 
-export function Scene({ children }: Props) {
+export function Scene({ children, overlay }: Props) {
   const svgRef = useRef<SVGSVGElement | null>(null)
   const api = useViewport()
   const { viewport, setViewport } = api
@@ -51,6 +52,7 @@ export function Scene({ children }: Props) {
           <g transform={`translate(${viewport.panX} ${viewport.panY}) scale(${viewport.zoom})`}>
             {children}
           </g>
+          {overlay}
         </svg>
         <ScaleBar zoom={viewport.zoom} />
       </div>

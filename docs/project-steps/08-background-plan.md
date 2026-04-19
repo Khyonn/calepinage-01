@@ -8,9 +8,9 @@
 
 | # | Titre | Fichier | Statut |
 |---|---|---|---|
-| 08.1 | Mode `plan` + import image | [08.1-plan-import.md](08.1-plan-import.md) | ⬜ |
-| 08.2 | Repositionnement (drag x/y) | [08.2-plan-reposition.md](08.2-plan-reposition.md) | ⬜ |
-| 08.3 | Calibration | [08.3-calibration.md](08.3-calibration.md) | ⬜ |
+| 08.1 | Mode `plan` + import image | [08.1-plan-import.md](08.1-plan-import.md) | ✅ |
+| 08.2 | Repositionnement (drag x/y) | [08.2-plan-reposition.md](08.2-plan-reposition.md) | ✅ |
+| 08.3 | Calibration | [08.3-calibration.md](08.3-calibration.md) | ✅ |
 
 ## Ordre et parallélisation
 
