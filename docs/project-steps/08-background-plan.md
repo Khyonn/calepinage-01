@@ -1,47 +1,27 @@
-# Étape 08 — Plan de fond
+# Jalon 08 — Plan de fond
 
-**Statut : à faire** — dépend de l'étape 06
+**Valeur utilisateur :** l'utilisateur importe son plan (photo, scan, image), règle son opacité et son orientation, le positionne sur le canvas, et le cale à l'échelle réelle. Dès la fin de ce jalon, il peut dessiner à main levée à la bonne échelle dans le jalon suivant.
 
-## Périmètre
+**Ordre :** ce jalon précède désormais celui des pièces (09) — on veut le fond calibré avant le tracé.
 
-Implémenter le mode `plan` : import d'image, calibration, opacité, rotation et repositionnement par drag. Le composant `<BackgroundPlan />` existe déjà depuis l'étape 06 (rendu de base) — cette étape le complète avec toute l'interactivité.
+## Sous-étapes
 
-## Fichiers à créer / modifier
+| # | Titre | Fichier | Statut |
+|---|---|---|---|
+| 08.1 | Mode `plan` + import image | [08.1-plan-import.md](08.1-plan-import.md) | ⬜ |
+| 08.2 | Repositionnement (drag x/y) | [08.2-plan-reposition.md](08.2-plan-reposition.md) | ⬜ |
+| 08.3 | Calibration | [08.3-calibration.md](08.3-calibration.md) | ⬜ |
 
-Structure par dossier : `NomComposant/index.tsx` · `NomComposant/NomComposant.module.css` · `NomComposant/useNomComposant.ts` (si logique).
+## Ordre et parallélisation
 
-| Fichier | Contenu |
-| --- | --- |
-| `src/components/canvas/BackgroundPlan/useBackgroundPlan.ts` | Import (`URL.createObjectURL`), calibration (2 points → échelle), rotation, opacité, drag de repositionnement |
-| `src/components/canvas/BackgroundPlan/` | Compléter le rendu : appliquer position x/y, opacité, rotation |
-| `src/components/canvas/PlanPanel/` | Panneau flottant mode `plan` : bouton import, slider opacité, boutons rotation, déclencheur calibration |
+- Strictement séquentiel : 08.1 → 08.2 → 08.3.
 
-## Comportement attendu
+## Dépendances
 
-### Import
+- Jalon 07 ✅ (canvas navigable).
 
-- Sélection d'un fichier image → stockage du `File` natif dans IndexedDB (pas de base64)
-- Au chargement : `URL.createObjectURL(file)` → lecture `naturalWidth` / `naturalHeight` → affichage en unités monde
-- L'object URL est révoqué (`URL.revokeObjectURL`) dès qu'il n'est plus nécessaire
+## Références doc transverses
 
-### Calibration
-
-- Mode crosshair : 2 clics sur le plan pour poser les points A et B
-- Saisie de la distance réelle en cm → calcul de l'échelle px/cm
-- Recalibration possible sans perte des pièces (coordonnées monde inchangées)
-- Sans calibration : échelle par défaut 1 px = 1 cm (plan utilisable mais dimensions incorrectes)
-
-### Repositionnement
-
-- En mode `plan`, drag de l'image pour l'aligner avec les pièces déjà dessinées
-- Position (`x`, `y`) persistée dans `BackgroundPlan`
-
-### Opacité et rotation
-
-- Slider opacité 0–100 % persisté dans `BackgroundPlan.opacity`
-- Rotation ±90° non destructive (transformation SVG, données inchangées)
-
-## Références doc
-
-- [background-plan.md](../features/background-plan.md) — flux complet et technique de contraste
-- [interaction-modes.md](../features/interaction-modes.md) — mode `plan`
+- [features/background-plan.md](../features/background-plan.md)
+- [features/interaction-modes.md](../features/interaction-modes.md) — mode `plan`.
+- [technical/data-model.md](../technical/data-model.md) — table `plans`, `files`.
