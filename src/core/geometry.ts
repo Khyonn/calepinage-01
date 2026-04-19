@@ -1,4 +1,4 @@
-import type { Point, Viewport } from '@/core/types'
+import type { Point } from '@/core/types'
 
 export function roundToTenth(value: number): number {
   return Math.round(value * 10) / 10
@@ -36,26 +36,6 @@ export function intersectStripWithPolygon(
     segments.push([xIntercepts[i], xIntercepts[i + 1]])
   }
   return segments
-}
-
-/**
- * Convert a point from world coordinates (cm) to screen coordinates (px).
- */
-export function worldToScreen(point: Point, viewport: Viewport): Point {
-  return {
-    x: point.x * viewport.zoom + viewport.panX,
-    y: point.y * viewport.zoom + viewport.panY,
-  }
-}
-
-/**
- * Convert a point from screen coordinates (px) to world coordinates (cm).
- */
-export function screenToWorld(point: Point, viewport: Viewport): Point {
-  return {
-    x: (point.x - viewport.panX) / viewport.zoom,
-    y: (point.y - viewport.panY) / viewport.zoom,
-  }
 }
 
 /**

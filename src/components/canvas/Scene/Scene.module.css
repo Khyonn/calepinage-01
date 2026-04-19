@@ -1,0 +1,22 @@
+.wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-canvas);
+}
+
+.svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: var(--canvas-bg);
+  outline: none;
+  touch-action: none;
+}
+
+.svg:focus,
+.svg:focus-visible {
+  outline: none;
+}
+
+.svg.spaceDown { cursor: grab; }
+.svg.panning   { cursor: grabbing; }

@@ -6,7 +6,7 @@ import { saveProject, deleteProject } from '@/persistence/db'
 
 /**
  * Synchronizes project state to IndexedDB after every project action.
- * UI actions (viewport, interaction mode) are intentionally not persisted.
+ * UI actions (interaction mode, selection) are intentionally not persisted.
  *
  * Fire-and-forget: IDB writes are async but don't block dispatch.
  */

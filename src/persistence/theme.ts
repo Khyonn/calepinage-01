@@ -1,5 +1,4 @@
 export type Theme = 'light' | 'dark' | 'system'
-export type ResolvedTheme = 'light' | 'dark'
 
 const KEY = 'calepinage.theme'
 const DEFAULT: Theme = 'system'
@@ -21,12 +20,11 @@ export function writeTheme(theme: Theme): void {
   try { localStorage.setItem(KEY, theme) } catch { /* ignore */ }
 }
 
-export function resolveTheme(theme: Theme): ResolvedTheme {
-  if (theme !== 'system') return theme
-  if (typeof matchMedia !== 'function') return 'light'
-  return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-}
-
-export function applyTheme(resolved: ResolvedTheme): void {
-  document.documentElement.setAttribute('data-theme', resolved)
+export function applyTheme(theme: Theme): void {
+  const root = document.documentElement
+  if (theme === 'system') {
+    root.removeAttribute('data-theme')
+  } else {
+    root.setAttribute('data-theme', theme)
+  }
 }

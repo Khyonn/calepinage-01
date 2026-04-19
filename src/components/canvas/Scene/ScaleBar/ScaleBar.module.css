@@ -1,0 +1,40 @@
+.wrapper {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: var(--z-scalebar);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  color: var(--scale-bar-color);
+  font-size: var(--text-xs);
+  pointer-events: none;
+  user-select: none;
+}
+
+.bar {
+  position: relative;
+  height: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: currentColor;
+}
+
+.tickStart,
+.tickEnd {
+  position: relative;
+  display: inline-block;
+  width: 1px;
+  height: 0.5rem;
+  background: currentColor;
+}

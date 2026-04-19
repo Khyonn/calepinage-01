@@ -1,6 +1,6 @@
 import type {
   Calibration, PlankTypePricing,
-  Point, PoseParams, Project, Viewport,
+  Point, PoseParams, Project,
 } from '@/core/types'
 import type { ThunkDispatch, UnknownAction } from '@reduxjs/toolkit'
 
@@ -72,7 +72,6 @@ export interface UIState {
   mode: InteractionMode
   activeRoomId: string | null
   selectedPlankTypeId: string | null
-  viewport: Viewport
 }
 
 export interface AppState {

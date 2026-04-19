@@ -10,7 +10,6 @@ import type { Plank } from '@/core/types'
 export const selectCurrentProject = (state: AppState) => state.project.current
 export const selectProjectList = (state: AppState) => state.project.list
 export const selectUI = (state: AppState) => state.ui
-export const selectViewport = (state: AppState) => state.ui.viewport
 export const selectActiveRoomId = (state: AppState) => state.ui.activeRoomId
 export const selectInteractionMode = (state: AppState) => state.ui.mode
 
