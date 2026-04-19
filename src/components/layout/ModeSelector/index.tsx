@@ -17,7 +17,7 @@ export function ModeSelector() {
 
   const entries: ModeEntry[] = [
     { value: 'nav',  label: 'Vue',          enabled: true },
-    { value: 'plan', label: 'Plan de fond', enabled: false },
+    { value: 'plan', label: 'Plan de fond', enabled: true },
     { value: 'draw', label: 'Dessiner',     enabled: false },
   ]
   if (activeRoomId) entries.push({ value: 'edit', label: 'Éditer', enabled: false })

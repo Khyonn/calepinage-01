@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAppSelector } from '@/hooks/redux'
 import { selectInteractionMode, selectCurrentProject } from '@/store/selectors'
 import { NavPanel } from '@/components/panels/NavPanel'
+import { PlanImportForm } from '@/components/panels/PlanImportForm'
 import styles from './ContextualPanel.module.css'
 
 export function ContextualPanel() {
@@ -16,6 +17,9 @@ export function ContextualPanel() {
   if (mode === 'nav') {
     title = 'Paramètres du projet'
     content = <NavPanel />
+  } else if (mode === 'plan') {
+    title = 'Plan de fond'
+    content = <PlanImportForm />
   } else {
     return null
   }

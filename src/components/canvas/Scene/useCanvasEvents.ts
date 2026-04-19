@@ -1,12 +1,6 @@
 import { useEffect, useRef, useState, type RefObject } from 'react'
 import type { ViewportApi } from '@/hooks/useViewport'
-
-const FORM_SELECTOR = 'input, textarea, select, [contenteditable]'
-
-function focusInsideForm(): boolean {
-  const el = document.activeElement as HTMLElement | null
-  return !!el && el.matches?.(FORM_SELECTOR)
-}
+import { useSpaceKey } from '@/hooks/useSpaceKey'
 
 export type CursorMode = '' | 'spaceDown' | 'panning'
 
@@ -14,10 +8,10 @@ export function useCanvasEvents(
   svgRef: RefObject<SVGSVGElement | null>,
   api: ViewportApi,
 ): { cursorMode: CursorMode } {
-  const [cursorMode, setCursorMode] = useState<CursorMode>('')
+  const [isPanning, setIsPanning] = useState(false)
+  const { spaceDownRef, spaceDown } = useSpaceKey()
   const apiRef = useRef(api)
   apiRef.current = api
-  const spaceDownRef = useRef(false)
   const panStateRef = useRef<{ pointerId: number; lastX: number; lastY: number } | null>(null)
 
   useEffect(() => {
@@ -46,7 +40,7 @@ export function useCanvasEvents(
       e.preventDefault()
       svg.setPointerCapture(e.pointerId)
       panStateRef.current = { pointerId: e.pointerId, lastX: e.clientX, lastY: e.clientY }
-      setCursorMode('panning')
+      setIsPanning(true)
     }
 
     const handlePointerMove = (e: PointerEvent) => {
@@ -62,22 +56,7 @@ export function useCanvasEvents(
       if (!st || st.pointerId !== e.pointerId) return
       svg.releasePointerCapture?.(e.pointerId)
       panStateRef.current = null
-      setCursorMode(spaceDownRef.current ? 'spaceDown' : '')
-    }
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code !== 'Space' || focusInsideForm()) return
-      if (document.activeElement !== svg) return
-      e.preventDefault()
-      if (spaceDownRef.current) return
-      spaceDownRef.current = true
-      if (!panStateRef.current) setCursorMode('spaceDown')
-    }
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.code !== 'Space') return
-      spaceDownRef.current = false
-      if (!panStateRef.current) setCursorMode('')
+      setIsPanning(false)
     }
 
     svg.addEventListener('wheel', handleWheel, { passive: false })
@@ -85,8 +64,6 @@ export function useCanvasEvents(
     svg.addEventListener('pointermove', handlePointerMove)
     svg.addEventListener('pointerup', handlePointerEnd)
     svg.addEventListener('pointercancel', handlePointerEnd)
-    window.addEventListener('keydown', handleKeyDown)
-    window.addEventListener('keyup', handleKeyUp)
 
     return () => {
       svg.removeEventListener('wheel', handleWheel)
@@ -94,10 +71,9 @@ export function useCanvasEvents(
       svg.removeEventListener('pointermove', handlePointerMove)
       svg.removeEventListener('pointerup', handlePointerEnd)
       svg.removeEventListener('pointercancel', handlePointerEnd)
-      window.removeEventListener('keydown', handleKeyDown)
-      window.removeEventListener('keyup', handleKeyUp)
     }
-  }, [svgRef])
+  }, [svgRef, spaceDownRef])
 
+  const cursorMode: CursorMode = isPanning ? 'panning' : spaceDown ? 'spaceDown' : ''
   return { cursorMode }
 }

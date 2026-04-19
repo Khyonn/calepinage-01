@@ -3,6 +3,7 @@ import type { AppState } from '@/store/types'
 import { fillRow, computeOffcutLinks } from '@/core/rowFill'
 import { validateRow } from '@/core/validateRow'
 import { computeSummary } from '@/core/computeSummary'
+import { computeScale } from '@/core/calibration'
 import type { Plank } from '@/core/types'
 
 // ─── Base selectors ───────────────────────────────────────────────────────────
@@ -26,6 +27,16 @@ export const selectCatalog = createSelector(
 export const selectPoseParams = createSelector(
   selectCurrentProject,
   (project) => project?.poseParams ?? null
+)
+
+export const selectBackgroundPlan = createSelector(
+  selectCurrentProject,
+  (project) => project?.backgroundPlan ?? null
+)
+
+export const selectBackgroundPlanScale = createSelector(
+  selectBackgroundPlan,
+  (plan) => computeScale(plan?.calibration)
 )
 
 export const selectActiveRoom = createSelector(

@@ -34,6 +34,10 @@ export async function createAppStore({
       getDefaultMiddleware({
         serializableCheck: {
           ignoredPaths: ['project.current.backgroundPlan.imageFile'],
+          ignoredActionPaths: ['payload.imageFile'],
+        },
+        immutableCheck: {
+          ignoredPaths: ['project.current.backgroundPlan.imageFile'],
         },
       }).concat(idbMiddleware),
   })
