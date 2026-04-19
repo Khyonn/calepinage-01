@@ -65,6 +65,22 @@
   --room-active-fill: rgba(139, 26, 58, .16);
   --room-dim-fill:   rgba(139, 26, 58, .03);
   --room-dim-stroke: #d4a0ac;
+
+  /* Layout (rem, hors SVG) */
+  --topbar-h:        3rem;
+  --panel-w:         17rem;
+  --panel-top:       1rem;
+  --panel-left:      1rem;
+  --drawer-min:      15rem;
+  --drawer-max:      50vw;
+
+  /* Z-index stack */
+  --z-canvas:        0;
+  --z-panel:         10;
+  --z-drawer:        20;
+  --z-topbar:        30;
+  --z-dialog:        40;
+  --z-menu:          50;
 }
 
 :root[data-theme=dark] {

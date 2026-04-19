@@ -40,6 +40,19 @@ export const selectUsedPlankTypeIds = createSelector(
   (rooms): Set<string> => new Set(rooms.flatMap(r => r.rows.map(row => row.plankTypeId)))
 )
 
+export const selectPlankTypeUsage = createSelector(
+  selectRooms,
+  (rooms): Map<string, number> => {
+    const usage = new Map<string, number>()
+    for (const room of rooms) {
+      for (const row of room.rows) {
+        usage.set(row.plankTypeId, (usage.get(row.plankTypeId) ?? 0) + 1)
+      }
+    }
+    return usage
+  }
+)
+
 // ─── Derived computations (memoized) ─────────────────────────────────────────
 
 export const selectOffcutLinks = createSelector(

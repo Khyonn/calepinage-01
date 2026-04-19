@@ -19,7 +19,9 @@ export const projectSlice = createSlice({
   initialState,
   reducers: {
     open: (state, action: PayloadAction<Project>) => {
-      state.current = { ...action.payload, lastOpenedAt: Date.now() }
+      state.current = action.payload
+      const entry = state.list.find(p => p.id === action.payload.id)
+      if (!entry) state.list.push({ id: action.payload.id, name: action.payload.name })
     },
 
     close: (state) => {
@@ -33,9 +35,8 @@ export const projectSlice = createSlice({
         poseParams: DEFAULT_POSE_PARAMS,
         catalog: [],
         rooms: [],
-        lastOpenedAt: Date.now(),
       }
-      const entry: ProjectsListEntry = { id: project.id, name: project.name, lastOpenedAt: project.lastOpenedAt }
+      const entry: ProjectsListEntry = { id: project.id, name: project.name }
       state.list.push(entry)
       state.current = project
     },

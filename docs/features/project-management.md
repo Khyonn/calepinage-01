@@ -28,6 +28,10 @@ Toute suppression portant sur des éléments comportant des enfants (projet avec
 
 Au retour dans l'application, l'utilisateur retrouve automatiquement le dernier projet sur lequel il travaillait.
 
+**Implémentation** — l'identifiant du dernier projet est stocké dans `localStorage` (clé `calepinage.lastProjectId`). Au boot, seul ce projet est chargé intégralement depuis IndexedDB. La liste des autres projets est limitée à `{ id, name }` (alimente le menu hamburger sans tout charger). Si aucun projet n'existe, un projet vide `"Nouveau projet"` est créé automatiquement — l'utilisateur n'a jamais à interagir avec un écran « pas de projet ».
+
+**Multi-onglets** — pas de synchronisation cross-tab. Le dernier onglet à écrire `lastProjectId` gagne au prochain reload.
+
 ## Résultats et export
 
 Le panneau **Résultats** affiche en permanence :

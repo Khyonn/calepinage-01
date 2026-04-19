@@ -1,5 +1,5 @@
-import { Demo } from './components/ui/Demo'
+import { AppShell } from '@/components/layout/AppShell'
 
 export default function App() {
-  return <Demo />
+  return <AppShell />
 }

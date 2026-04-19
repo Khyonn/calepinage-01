@@ -10,7 +10,6 @@ import type { ThunkDispatch, UnknownAction } from '@reduxjs/toolkit'
 export interface ProjectRecord {
   id: string
   name: string
-  lastOpenedAt: number
   poseParams: PoseParams
 }
 
@@ -62,7 +61,6 @@ export type InteractionMode = 'nav' | 'draw' | 'plan' | 'edit'
 export interface ProjectsListEntry {
   id: string
   name: string
-  lastOpenedAt: number
 }
 
 export interface ProjectState {

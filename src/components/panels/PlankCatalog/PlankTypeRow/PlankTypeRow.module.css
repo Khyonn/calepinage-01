@@ -1,0 +1,40 @@
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0.5rem;
+  background: var(--surface-raised);
+  border: var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.info { display: flex; flex-direction: column; gap: 0.125rem; }
+
+.name { font-weight: 500; color: var(--text); }
+
+.meta { font-size: var(--text-sm); color: var(--text-muted); }
+
+.badgeUse,
+.badgeUnused {
+  font-size: var(--text-xs);
+  display: inline-block;
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--radius-sm);
+  align-self: flex-start;
+}
+
+.badgeUse {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.badgeUnused {
+  background: var(--bg);
+  color: var(--text-muted);
+}
+
+.actions {
+  display: flex;
+  gap: 0.25rem;
+  justify-content: flex-end;
+}

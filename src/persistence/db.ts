@@ -34,8 +34,8 @@ export async function listProjects(): Promise<ProjectsListEntry[]> {
   const db = await dbPromise
   const records = await db.getAll('projects')
   return records
-    .map(r => ({ id: r.id, name: r.name, lastOpenedAt: r.lastOpenedAt }))
-    .sort((a, b) => b.lastOpenedAt - a.lastOpenedAt)
+    .map(r => ({ id: r.id, name: r.name }))
+    .sort((a, b) => a.name.localeCompare(b.name, 'fr'))
 }
 
 export async function loadProject(id: string): Promise<Project | null> {
@@ -84,7 +84,7 @@ export async function loadProject(id: string): Promise<Project | null> {
 
   return {
     id: projectRecord.id, name: projectRecord.name,
-    poseParams: projectRecord.poseParams, lastOpenedAt: projectRecord.lastOpenedAt,
+    poseParams: projectRecord.poseParams,
     rooms, catalog, backgroundPlan,
   }
 }
@@ -105,7 +105,7 @@ export async function saveProject(project: Project): Promise<void> {
     ...rowKeys.map(k => tx.objectStore('rows').delete(k)),
     ...ptKeys.map(k => tx.objectStore('plankTypes').delete(k)),
     ...planKeys.map(k => tx.objectStore('plans').delete(k)),
-    tx.objectStore('projects').put({ id: project.id, name: project.name, lastOpenedAt: project.lastOpenedAt, poseParams: project.poseParams }),
+    tx.objectStore('projects').put({ id: project.id, name: project.name, poseParams: project.poseParams }),
     ...project.rooms.map(room =>
       tx.objectStore('rooms').put({
         id: room.id, projectId: room.projectId, name: room.name, vertices: room.vertices,
