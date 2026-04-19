@@ -10,7 +10,7 @@ import { intersectStripWithPolygon } from '@/core/geometry'
  */
 export function addRow(room: Room, plankType: PlankType): Row {
   const roomMinY = room.vertices.length > 0 ? Math.min(...room.vertices.map(v => v.y)) : 0
-  const yStart = roomMinY + (room.yOffset ?? 0) + room.rows.length * plankType.width
+  const yStart = roomMinY + room.rows.length * plankType.width
   const yEnd = yStart + plankType.width
 
   const xSegments = intersectStripWithPolygon(room.vertices, yStart, yEnd)

@@ -19,7 +19,6 @@ export interface RoomRecord {
   projectId: string
   name: string
   vertices: Point[]
-  yOffset?: number
 }
 
 export interface RowRecord {
@@ -52,8 +51,8 @@ export interface PlanRecord {
   calibration?: Calibration
   opacity: number
   rotation: number
-  x?: number
-  y?: number
+  x: number
+  y: number
 }
 
 // ─── App State ────────────────────────────────────────────────────────────────

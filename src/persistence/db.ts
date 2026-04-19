@@ -62,7 +62,6 @@ export async function loadProject(id: string): Promise<Project | null> {
 
   const rooms: Room[] = roomRecords.map((room, i) => ({
     id: room.id, projectId: room.projectId, name: room.name, vertices: room.vertices,
-    ...(room.yOffset !== undefined ? { yOffset: room.yOffset } : {}),
     rows: (rowGroups[i] ?? []).map((row): Row => ({
       id: row.id, roomId: row.roomId, plankTypeId: row.plankTypeId, segments: row.segments,
     })),
@@ -78,7 +77,7 @@ export async function loadProject(id: string): Promise<Project | null> {
     backgroundPlan = {
       id: planRecord.id, projectId: planRecord.projectId,
       calibration: planRecord.calibration, opacity: planRecord.opacity, rotation: planRecord.rotation,
-      x: planRecord.x ?? 0, y: planRecord.y ?? 0,
+      x: planRecord.x, y: planRecord.y,
       ...(fileRecord ? { imageFile: fileRecord.file } : {}),
     }
   }
@@ -110,7 +109,6 @@ export async function saveProject(project: Project): Promise<void> {
     ...project.rooms.map(room =>
       tx.objectStore('rooms').put({
         id: room.id, projectId: room.projectId, name: room.name, vertices: room.vertices,
-        ...(room.yOffset !== undefined ? { yOffset: room.yOffset } : {}),
       })
     ),
     ...project.rooms.flatMap(room =>
