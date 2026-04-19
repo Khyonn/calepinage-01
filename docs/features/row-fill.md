@@ -71,11 +71,6 @@ interface Row {
   plankTypeId: string
   segments: { xOffset: number }[]  // un par segment — tout le reste est recalculé
 }
-
-interface Room {
-  // ...
-  yOffset?: number // décalage vertical de départ du motif (cm) — continuité inter-pièces
-}
 ```
 
 Toutes les valeurs numériques sont exprimées en centimètres, arrondies au 0,1 cm le plus proche.

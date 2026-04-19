@@ -30,7 +30,14 @@ flowchart TD
 
 Disponible pendant la création (`Ctrl` + drag sur le dernier sommet posé) et pendant l'édition (`Ctrl` + drag sur un sommet existant).
 
-Si le point s'approche à ~10 px du X ou du Y d'un autre sommet, il s'accroche à cette coordonnée. Une ligne guide colorée (couleur distincte du contour) s'affiche tant que l'accroche est active.
+**Seuil :** `12 px` à l'écran (constant quel que soit le zoom — la conversion en cm monde se fait via `threshold_world = 12 / zoom`).
+
+**Deux axes indépendants :** le point cherche à s'accrocher **simultanément** à l'axe X **et** à l'axe Y d'un sommet existant, évalués séparément :
+
+- Si la distance horizontale au X d'un sommet `V` est ≤ 12 px → snap en X sur `V.x`.
+- Si la distance verticale au Y d'un sommet `V'` (potentiellement différent de `V`) est ≤ 12 px → snap en Y sur `V'.y`.
+
+Les deux accroches peuvent être actives en même temps (cas classique de l'alignement sur un coin de pièce déjà tracé). Une ligne guide colorée (couleur distincte du contour) est affichée pour chaque axe actif.
 
 Le snap est optionnel — sans `Ctrl`, le sommet se pose librement, permettant des murs diagonaux.
 

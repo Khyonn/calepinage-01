@@ -15,8 +15,9 @@ Le stockage est **relationnel** : chaque entité a son propre object store, avec
 | --- | --- | --- |
 | `id` | `string` | Clé primaire |
 | `name` | `string` | Nom du projet |
-| `lastOpenedAt` | `number` | Timestamp de dernière ouverture |
 | `poseParams` | `PoseParams` | Paramètres de pose (1:1, embedded) |
+
+> **Reprise de session** : le dernier projet ouvert est identifié par `localStorage.calepinage.lastProjectId` — pas de champ `lastOpenedAt` dans le modèle. Au boot, l'app charge uniquement le projet courant en entier + la liste minimale `{ id, name }` des autres projets (pour le menu hamburger). Si aucun projet n'existe, un projet vide est créé automatiquement.
 
 #### `rooms`
 | Champ | Type | Description |
@@ -25,15 +26,15 @@ Le stockage est **relationnel** : chaque entité a son propre object store, avec
 | `projectId` | `string` | FK → `projects` |
 | `name` | `string` | Nom de la pièce |
 | `vertices` | `Point[]` | Sommets du polygone en coordonnées monde (cm) |
-| `yOffset` | `number?` | Décalage vertical de départ du motif (cm) — pour assurer la continuité visuelle entre pièces adjacentes |
 
 #### `rows`
 | Champ | Type | Description |
 | --- | --- | --- |
 | `id` | `string` | Clé primaire |
 | `roomId` | `string` | FK → `rooms` |
+| `projectId` | `string` | FK → `projects` (dénormalisé pour cleanup — absent du modèle domaine) |
 | `plankTypeId` | `string` | FK → `plankTypes` |
-| `xOffset` | `number` | Décalage horizontal (cm) — seule donnée de position persistée |
+| `segments` | `{ xOffset: number }[]` | Un élément par segment géométrique de la rangée (pièces concaves → plusieurs segments). Seul le `xOffset` de chaque segment est persisté ; la géométrie des segments est recalculée à partir des `vertices` de la pièce. |
 
 #### `plankTypes`
 | Champ | Type | Description |
@@ -61,6 +62,8 @@ Le stockage est **relationnel** : chaque entité a son propre object store, avec
 | `calibration` | `Calibration?` | Points de référence + distance réelle |
 | `opacity` | `number` | Opacité 0–1 |
 | `rotation` | `number` | Rotation en degrés (0, 90, 180, 270) |
+| `x` | `number` | Position horizontale (cm) — repositionnement en mode `plan`, défaut 0 |
+| `y` | `number` | Position verticale (cm) — repositionnement en mode `plan`, défaut 0 |
 
 ### Diagramme
 
@@ -75,7 +78,6 @@ erDiagram
     projects {
         string id
         string name
-        number lastOpenedAt
         PoseParams poseParams
     }
 
@@ -89,9 +91,9 @@ erDiagram
     rows {
         string id
         string roomId
+        string projectId
         string plankTypeId
-        number xOffset
-        number yOffset
+        segments segments
     }
 
     plankTypes {
@@ -116,6 +118,8 @@ erDiagram
         Calibration calibration
         number opacity
         number rotation
+        number x
+        number y
     }
 ```
 
