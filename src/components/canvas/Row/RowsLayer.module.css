@@ -1,0 +1,12 @@
+.layer {
+  pointer-events: none;
+}
+
+.dim {
+  opacity: var(--row-dim-opacity);
+}
+
+.caleY {
+  fill: var(--plank-cale);
+  stroke: none;
+}

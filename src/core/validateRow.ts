@@ -25,12 +25,12 @@ export function validateRow(
 
   // Constraint 1: first plank too short
   if (firstPlank.length < poseParams.minPlankLength) {
-    violations.push({ type: 'first-plank-too-short', rowId })
+    violations.push({ type: 'first-plank-too-short', rowId, value: firstPlank.length })
   }
 
   // Constraint 2: last plank too short
   if (lastPlank.length < poseParams.minPlankLength) {
-    violations.push({ type: 'last-plank-too-short', rowId })
+    violations.push({ type: 'last-plank-too-short', rowId, value: lastPlank.length })
   }
 
   // Constraint 3: gap between end joints too small
@@ -41,7 +41,7 @@ export function validateRow(
     const gap = Math.abs(thisJoint - prevJoint)
 
     if (gap < poseParams.minRowGap) {
-      violations.push({ type: 'row-gap-too-small', rowId })
+      violations.push({ type: 'row-gap-too-small', rowId, value: gap })
     }
   }
 

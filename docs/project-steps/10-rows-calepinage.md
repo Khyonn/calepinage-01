@@ -6,10 +6,10 @@
 
 | # | Titre | Fichier | Statut |
 |---|---|---|---|
-| 10.1 | Ajouter une rangée | [10.1-add-row.md](10.1-add-row.md) | ⬜ |
-| 10.2 | Composants `Row` / `Segment` + selectors paramétrés | [10.2-row-segment-render.md](10.2-row-segment-render.md) | ⬜ |
-| 10.3 | Annotations de réutilisation | [10.3-annotations.md](10.3-annotations.md) | ⬜ |
-| 10.4 | Violations de contraintes visuelles | [10.4-constraint-violations.md](10.4-constraint-violations.md) | ⬜ |
+| 10.1 | Ajouter une rangée | [10.1-add-row.md](10.1-add-row.md) | ✅ |
+| 10.2 | Composants `Row` / `Segment` + selectors paramétrés | [10.2-row-segment-render.md](10.2-row-segment-render.md) | ✅ |
+| 10.3 | Annotations de réutilisation | [10.3-annotations.md](10.3-annotations.md) | ✅ |
+| 10.4 | Violations de contraintes visuelles | [10.4-constraint-violations.md](10.4-constraint-violations.md) | ✅ |
 
 ## Ordre et parallélisation
 

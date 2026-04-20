@@ -1,0 +1,17 @@
+.badge {
+  pointer-events: all;
+  cursor: help;
+}
+
+.shape {
+  fill: var(--warning);
+  stroke: var(--surface);
+  stroke-linejoin: round;
+}
+
+.bang {
+  fill: var(--surface);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  pointer-events: none;
+}

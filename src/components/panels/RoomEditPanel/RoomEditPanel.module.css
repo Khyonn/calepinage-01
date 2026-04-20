@@ -57,3 +57,54 @@
   line-height: 1;
   white-space: nowrap;
 }
+
+.addRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.addBtn {
+  width: 100%;
+  justify-content: center;
+}
+
+.emptyHint {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+.rowList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-height: 16rem;
+  overflow-y: auto;
+}
+
+.rowItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.5rem;
+  background: var(--surface-raised);
+  border: var(--border);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+}
+
+.rowIndex {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  min-width: 1.25rem;
+}
+
+.rowLabel {
+  flex: 1;
+  color: var(--text);
+}

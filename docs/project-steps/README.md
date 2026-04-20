@@ -56,10 +56,10 @@ Chaque jalon apporte une valeur utilisateur observable. Les sous-étapes `NN.M` 
 
 | # | Titre | Fichier | Statut |
 |---|---|---|---|
-| 10.1 | Ajouter une rangée | [10.1-add-row.md](10.1-add-row.md) | ⬜ |
-| 10.2 | Composants `Row` / `Segment` | [10.2-row-segment-render.md](10.2-row-segment-render.md) | ⬜ |
-| 10.3 | Annotations de réutilisation | [10.3-annotations.md](10.3-annotations.md) | ⬜ |
-| 10.4 | Violations de contraintes | [10.4-constraint-violations.md](10.4-constraint-violations.md) | ⬜ |
+| 10.1 | Ajouter une rangée | [10.1-add-row.md](10.1-add-row.md) | ✅ |
+| 10.2 | Composants `Row` / `Segment` | [10.2-row-segment-render.md](10.2-row-segment-render.md) | ✅ |
+| 10.3 | Annotations de réutilisation | [10.3-annotations.md](10.3-annotations.md) | ✅ |
+| 10.4 | Violations de contraintes | [10.4-constraint-violations.md](10.4-constraint-violations.md) | ✅ |
 
 ### Jalon 11 — Drag interactif des segments
 [11-drag-segments.md](11-drag-segments.md) — drag souris, preview temps réel, cascade au release.

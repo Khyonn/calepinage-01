@@ -1,10 +1,11 @@
 import { createSelector } from '@reduxjs/toolkit'
 import type { AppState } from '@/store/types'
-import { fillRow, computeOffcutLinks } from '@/core/rowFill'
+import { computeOffcutLinks } from '@/core/rowFill'
 import { validateRow } from '@/core/validateRow'
 import { computeSummary } from '@/core/computeSummary'
 import { computeScale } from '@/core/calibration'
-import type { Plank } from '@/core/types'
+import { computeRowGeometry, type RowGeometry } from '@/core/rowGeometry'
+import type { ConstraintViolation, Plank } from '@/core/types'
 
 // ─── Base selectors ───────────────────────────────────────────────────────────
 
@@ -68,6 +69,37 @@ export const selectPlankTypeUsage = createSelector(
   }
 )
 
+// ─── Row geometry (per-row, parametric) ──────────────────────────────────────
+
+interface RowGeometryProps {
+  roomId: string
+  rowId: string
+}
+
+/**
+ * Factory — create a parametric selector returning the geometry of one row
+ * (y strip + per-segment x range and planks). Use `useMemo(makeSelectRowGeometry, [])`
+ * per component instance so each <Row> gets its own memoization cache.
+ */
+export function makeSelectRowGeometry() {
+  return createSelector(
+    [
+      selectCurrentProject,
+      selectPoseParams,
+      (_: AppState, props: RowGeometryProps) => props.roomId,
+      (_: AppState, props: RowGeometryProps) => props.rowId,
+    ],
+    (project, poseParams, roomId, rowId): RowGeometry | null => {
+      if (!project || !poseParams) return null
+      const room = project.rooms.find(r => r.id === roomId)
+      if (!room) return null
+      const rowIndex = room.rows.findIndex(r => r.id === rowId)
+      if (rowIndex === -1) return null
+      return computeRowGeometry(room, rowIndex, project.catalog, poseParams)
+    }
+  )
+}
+
 // ─── Derived computations (memoized) ─────────────────────────────────────────
 
 export const selectOffcutLinks = createSelector(
@@ -81,8 +113,8 @@ export const selectOffcutLinks = createSelector(
 )
 
 /**
- * Returns a map of rowId → Plank[] for all rows in the current project.
- * Recomputed only when rooms, catalog, or poseParams change.
+ * Returns a map of rowId → flattened Plank[] (all segments concatenated).
+ * Planks keep their segment-local x; use makeSelectRowGeometry for rendering.
  */
 export const selectAllPlanks = createSelector(
   selectRooms,
@@ -91,16 +123,12 @@ export const selectAllPlanks = createSelector(
   (rooms, catalog, poseParams): Map<string, Plank[]> => {
     const result = new Map<string, Plank[]>()
     if (!poseParams) return result
-
     for (const room of rooms) {
-      const xs = room.vertices.map(v => v.x)
-      const roomWidth = xs.length >= 2 ? Math.max(...xs) - Math.min(...xs) : 0
-      const plankType = catalog.find(pt => room.rows.some(r => r.plankTypeId === pt.id))
-
-      for (const row of room.rows) {
-        const type = catalog.find(pt => pt.id === row.plankTypeId) ?? plankType
-        if (type) result.set(row.id, fillRow(row.segments[0]?.xOffset ?? 0, roomWidth, type, poseParams))
-      }
+      room.rows.forEach((row, idx) => {
+        const geom = computeRowGeometry(room, idx, catalog, poseParams)
+        if (!geom) return
+        result.set(row.id, geom.segments.flatMap(s => s.planks))
+      })
     }
     return result
   }
@@ -119,19 +147,25 @@ export const selectSummary = createSelector(
 
 export const selectViolations = createSelector(
   selectRooms,
+  selectCatalog,
   selectPoseParams,
-  selectAllPlanks,
-  (rooms, poseParams, allPlanks) => {
+  (rooms, catalog, poseParams) => {
     if (!poseParams) return []
-    return rooms.flatMap(room =>
-      room.rows.flatMap((row, idx) => {
-        const planks = allPlanks.get(row.id) ?? []
-        const prevRow = idx > 0 ? room.rows[idx - 1] : undefined
-        const prevPlanks = prevRow ? (allPlanks.get(prevRow.id) ?? []) : undefined
-        const xs = room.vertices.map(v => v.x)
-        const availableWidth = xs.length >= 2 ? Math.max(...xs) - Math.min(...xs) - 2 * poseParams.cale : 0
-        return validateRow(row.id, planks, prevPlanks, availableWidth, poseParams)
-      })
-    )
+    const out: ConstraintViolation[] = []
+    for (const room of rooms) {
+      for (let idx = 0; idx < room.rows.length; idx++) {
+        const row = room.rows[idx]
+        const geom = computeRowGeometry(room, idx, catalog, poseParams)
+        if (!geom) continue
+        const prevGeom = idx > 0 ? computeRowGeometry(room, idx - 1, catalog, poseParams) : null
+        geom.segments.forEach((seg, segIdx) => {
+          const available = (seg.xEnd - seg.xStart) - 2 * poseParams.cale
+          if (available <= 0) return
+          const prevPlanks = prevGeom?.segments[segIdx]?.planks
+          out.push(...validateRow(row.id, seg.planks, prevPlanks, available, poseParams))
+        })
+      }
+    }
+    return out
   }
 )

@@ -1,6 +1,6 @@
 import { expect } from 'vitest'
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber'
-import { computeScale } from '@/core/geometry'
+import { computeScale, intersectStripExtents } from '@/core/geometry'
 
 const feature = await loadFeature('src/core/__tests__/geometry.feature', { language: 'fr' })
 
@@ -23,6 +23,24 @@ describeFeature(feature, ({ Scenario }) => {
     })
     Then('l\'échelle est de 10 cm par pixel', () => {
       expect(scale).toBeCloseTo(10, 5)
+    })
+  })
+
+  Scenario('Extents d\'une bande sur un L inversé étend vers le x minimum', ({ When, Then, And }) => {
+    let extents: [number, number][]
+    When('je calcule les extents de la bande y=[0,20] sur le polygone L inversé (50,0) (200,0) (200,100) (0,100) (0,50)', () => {
+      const vertices = [
+        { x: 50, y: 0 }, { x: 200, y: 0 }, { x: 200, y: 100 },
+        { x: 0, y: 100 }, { x: 0, y: 50 },
+      ]
+      extents = intersectStripExtents(vertices, 0, 20)
+    })
+    Then('il y a 1 segment', () => {
+      expect(extents).toHaveLength(1)
+    })
+    And('le segment a x_start ≈ 30 et x_end = 200', () => {
+      expect(extents[0][0]).toBeCloseTo(30, 3)
+      expect(extents[0][1]).toBeCloseTo(200, 5)
     })
   })
 })

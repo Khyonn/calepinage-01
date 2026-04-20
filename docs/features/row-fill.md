@@ -8,11 +8,20 @@ Les rangées sont des strips **horizontaux** (hauteur constante = largeur du typ
 
 ## Calcul des segments par rangée
 
-Chaque rangée (strip `[y1, y2]`) est intersectée avec le polygone de la pièce via un algorithme scanline :
+Chaque rangée occupe une bande `[yStart, yEnd]` avec :
 
-1. Parcourir chaque arête du polygone
-2. Calculer les intersections de l'arête avec `y1` et `y2`
-3. Trier les points d'intersection par X et les apparier (règle pair-impair) → liste de `[xStart, xEnd]`
+- `yStart = roomMinY + cale + rowIndex × plankType.width`
+- `yEnd = yStart + plankType.width`
+
+Le décalage initial de `cale` réserve la zone de dilatation en **haut** de la pièce ; un décalage symétrique en bas est matérialisé visuellement par les strips `--plank-cale`.
+
+La bande est intersectée avec le polygone via `intersectStripExtents` (`src/core/geometry.ts`) :
+
+1. Partitionnement par **scanline au milieu** (`yMid`) — détermine le nombre de segments disjoints.
+2. Échantillonnage supplémentaire en `y1`, `y2` et à chaque `vertex.y` strictement inclus dans la bande.
+3. Pour chaque segment de base, fusion avec les échantillons qui le chevauchent horizontalement → `xStart = min`, `xEnd = max` sur toute la hauteur de la bande.
+
+Conséquence : dans un coin type "L inversé" avec un mur diagonal, la rangée s'étend jusqu'au **X minimum atteint** sur la hauteur de la bande. Les lames sont comptées comme **entières** (pour la matière), tout en étant **clippées visuellement** au polygone via un `<clipPath>` SVG (les planches seraient physiquement coupées dans leur longueur pour épouser le coin).
 
 Une pièce concave (en L, en U…) peut produire **plusieurs segments** pour une même rangée. Chaque segment est rempli indépendamment.
 
@@ -78,5 +87,17 @@ Toutes les valeurs numériques sont exprimées en centimètres, arrondies au 0,1
 ## Réutilisation des chutes
 
 L'algorithme cherche, parmi les chutes disponibles du même type de lame, la plus grande dont la longueur est inférieure ou égale à la largeur disponible. Il vérifie ensuite que cette réutilisation respecte les contraintes de longueur minimale et d'écart esthétique. Si aucune chute ne satisfait ces critères, le segment démarre avec une planche neuve entière.
+
+### Valeur par défaut à l'ajout d'une rangée
+
+`addRow(room, plankType, poseParams)` (dans `src/core/addRow.ts`) fixe le `xOffset` initial du segment 0 en consommant la chute de la rangée précédente du **même type de lame** dans la pièce :
+
+```
+prev     = dernière row de la pièce avec plankTypeId identique (s'il en existe)
+offcut   = computeOffcutLength(prev.segments[0].xOffset, roomWidth, plankType, poseParams)
+xOffset₀ = offcut > 0 ? plankType.length - offcut : 0
+```
+
+`computeOffcutLinks` (selector `selectOffcutLinks`) matérialisera le lien `sourceRowId → targetRowId` au rendu : annotation blanche = chute réutilisée, annotation rouge (`--danger`) = chute non consommée.
 
 Voir aussi [row-drag.md](row-drag.md) pour le comportement pendant le glisser-déposer.

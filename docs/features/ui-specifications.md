@@ -53,6 +53,11 @@ Piloté par l'attribut `data-theme` sur `<html>` (`"light"` ou `"dark"`). Le cho
 | `--room-fill` / `--room-stroke` | Pièces à l'état normal |
 | `--room-active-fill` | Pièce active (mode `edit`) |
 | `--room-dim-fill` / `--room-dim-stroke` | Pièces atténuées (mode `edit`, ou `plan`) |
+| `--row-dim-opacity` | Opacité des rangées d'une pièce non active |
+| `--plank-fill` / `--plank-stroke` | Remplissage et contour d'une lame |
+| `--plank-separator` | Trait de séparation entre lames |
+| `--plank-cale` | Cale de dilatation (rectangles aux 4 bords de la pièce) |
+| `--violation-fill` / `--violation-stroke` | Lame signalée en violation de contrainte |
 
 ---
 

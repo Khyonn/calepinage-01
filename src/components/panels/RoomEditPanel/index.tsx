@@ -5,6 +5,8 @@ import { projectActions } from '@/store/projectSlice'
 import { uiActions } from '@/store/uiSlice'
 import { Button } from '@/components/ui/Button'
 import { Dialog } from '@/components/ui/Dialog'
+import { AddRowForm } from './AddRowForm'
+import { RowList } from './RowList'
 import styles from './RoomEditPanel.module.css'
 
 export function RoomEditPanel() {
@@ -29,11 +31,21 @@ export function RoomEditPanel() {
         <p className={styles.name}>{room.name}</p>
         <p className={styles.meta}>{room.vertices.length} sommets — {room.rows.length} rangée{room.rows.length > 1 ? 's' : ''}</p>
       </div>
-      {!hasRows && (
-        <p className={styles.hint}>
-          Glissez les croix sur le canvas pour ajuster les sommets. Maintenez <kbd>Ctrl</kbd> pour aligner, <kbd>Shift</kbd> pour pousser le mur.
-        </p>
+
+      {hasRows ? (
+        <>
+          <AddRowForm />
+          <RowList />
+        </>
+      ) : (
+        <>
+          <p className={styles.hint}>
+            Glissez les croix sur le canvas pour ajuster les sommets. Maintenez <kbd>Ctrl</kbd> pour aligner, <kbd>Shift</kbd> pour pousser le mur.
+          </p>
+          <AddRowForm />
+        </>
       )}
+
       <Button variant="danger" onClick={() => setConfirmOpen(true)} className={styles.deleteBtn}>
         Supprimer la pièce
       </Button>
