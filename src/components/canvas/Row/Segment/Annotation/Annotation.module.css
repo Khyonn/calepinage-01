@@ -1,0 +1,13 @@
+.text {
+  font-family: var(--font-mono);
+  stroke: var(--surface);
+  paint-order: stroke;
+}
+
+.linked {
+  fill: var(--text);
+}
+
+.unlinked {
+  fill: var(--danger);
+}

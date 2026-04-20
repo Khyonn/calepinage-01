@@ -100,6 +100,7 @@ export type ConstraintViolationType =
 export interface ConstraintViolation {
   type: ConstraintViolationType
   rowId: string
+  value: number // measured value (plank length for *-too-short, gap for row-gap-too-small)
 }
 
 export interface OffcutLink {

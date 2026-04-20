@@ -1,0 +1,16 @@
+.plank {
+  fill: var(--plank-fill);
+  stroke: var(--plank-stroke);
+  stroke-width: 1;
+}
+
+.violating {
+  fill: var(--violation-fill);
+  stroke: var(--violation-stroke);
+  stroke-width: 1.5;
+}
+
+.cale {
+  fill: var(--plank-cale);
+  stroke: none;
+}

@@ -13,9 +13,16 @@ Les trois contraintes sont vérifiées à chaque rendu et pendant le drag :
 Chaque lame dont la longueur est inférieure à `minPlankLength` reçoit un fond et un contour d'erreur :
 
 ```css
-fill:   var(--error-bg)   /* rgba(220, 38, 38, 0.35) */
-stroke: var(--error)      /* #dc2626                  */
+fill:   var(--violation-fill)   /* warning-light */
+stroke: var(--violation-stroke) /* warning       */
 ```
+
+Un `ViolationBadge` (triangle d'alerte + `<title>` SVG natif) est placé dans le coin haut-droit du segment en violation. Le tooltip liste les messages contextuels, par exemple :
+- `Première lame trop courte : 12cm < 30cm`
+- `Dernière lame trop courte : 8cm < 30cm`
+- `Écart fin de rangée trop faible : 4cm < 15cm`
+
+`ConstraintViolation.value` porte la valeur mesurée (longueur de la lame pour `*-too-short`, écart pour `row-gap-too-small`) afin que le message puisse être généré sans recalcul côté vue.
 
 Ces indicateurs se mettent à jour en temps réel pendant le drag et lors de la modification des paramètres de pose.
 

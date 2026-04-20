@@ -44,8 +44,10 @@ export function PoseParamsForm() {
 
   const bind = (field: Field) => ({
     value: draft[field],
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-      setDraft(d => ({ ...d, [field]: e.currentTarget.value })),
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.currentTarget.value
+      setDraft(d => ({ ...d, [field]: value }))
+    },
     onBlur: () => commit(field),
   })
 

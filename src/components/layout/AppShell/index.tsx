@@ -6,6 +6,7 @@ import { BackgroundPlan } from '@/components/canvas/BackgroundPlan'
 import { CalibrationOverlay } from '@/components/canvas/BackgroundPlan/CalibrationOverlay'
 import { CalibrationProvider } from '@/components/panels/PlanImportForm/CalibrationProvider'
 import { RoomsLayer } from '@/components/canvas/Room/RoomsLayer'
+import { RowsLayer } from '@/components/canvas/Row/RowsLayer'
 import { DrawOverlay } from '@/components/canvas/DrawOverlay'
 import { VertexHandles } from '@/components/canvas/Room/VertexHandles'
 import { VertexEditProvider } from '@/components/canvas/Room/VertexEditContext'
@@ -21,6 +22,7 @@ export function AppShell() {
             <Scene overlay={<><CalibrationOverlay /><DrawOverlay /><VertexHandles /></>}>
               <BackgroundPlan />
               <RoomsLayer />
+              <RowsLayer />
             </Scene>
             <ContextualPanel />
             <HelperPanel />

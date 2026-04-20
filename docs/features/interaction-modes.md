@@ -71,15 +71,19 @@ Le comportement est **conditionnel** selon l'état de la pièce active :
 
 ### Pièce avec rangées — gestion des rangées
 
-**Panneau contextuel :**
-- Catalogue de lames
-- Combobox sélection du type de lame + bouton "Ajouter une rangée"
+**Panneau contextuel (ordre fixe) :**
+1. Combobox sélection du type de lame + bouton "Ajouter une rangée"
+2. Liste scrollable des rangées (1 entrée par rangée) — seule la **dernière** rangée expose le bouton de suppression
+3. Bouton "Supprimer la pièce"
 
 **Comportement canvas :**
 - La pièce active est affichée normalement avec ses rangées et annotations
-- Toutes les autres pièces sont atténuées (`opacity: 0.2`)
+- Toutes les autres pièces sont atténuées (`opacity: var(--row-dim-opacity)`)
+- Les rangées n'interceptent pas les événements pointeur (`pointer-events: none`) — le clic et le hover restent disponibles sur la pièce elle-même en mode `nav`
 - Les segments sont draggables (curseur `grab` → `grabbing`), offset quantifié à 0,1 cm
 - Violations de contraintes signalées visuellement (pas de blocage)
+
+**Règle ajout de rangée :** le `xOffset` initial du segment 0 consomme la chute produite par la rangée précédente du même type de lame (si elle existe) — sinon `0` (planche entière).
 
 Voir [row-drag.md](row-drag.md) et [constraints-annotations.md](constraints-annotations.md) pour le détail complet.
 

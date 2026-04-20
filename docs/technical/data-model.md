@@ -139,6 +139,7 @@ Les **records** (ci-dessus) sont les données brutes stockées dans IndexedDB. L
 | Donnée | Fonction | Source |
 | --- | --- | --- |
 | `Plank[]` | `fillRow(xOffset, ...)` | `xOffset` + dimensions du type |
+| `RowGeometry` | `computeRowGeometry()` + `intersectStripExtents()` | `Room.vertices` + `rowIndex` + `PoseParams` + `PlankType` |
 | `OffcutLink[]` | `computeOffcutLinks()` | Comparaison des offcuts par type, à l'échelle projet |
-| `ConstraintViolation[]` | `validateRow()` | `Plank[]` + `PoseParams` |
+| `ConstraintViolation[]` (inclut `value` mesurée) | `validateRow()` | `Plank[]` de la rangée + `Plank[]` précédente + `PoseParams` |
 | Résultats financiers | `computeSummary()` | `Plank[]` + tarifs du catalogue |
