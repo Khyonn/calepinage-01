@@ -6,9 +6,9 @@
 
 | # | Titre | Fichier | Statut |
 |---|---|---|---|
-| 09.1 | Mode `draw` : tracé polygone | [09.1-room-draw.md](09.1-room-draw.md) | ⬜ |
-| 09.2 | Composant `Room` : rendu polygone | [09.2-room-render.md](09.2-room-render.md) | ⬜ |
-| 09.3 | Mode `edit` sans rangées : sommets | [09.3-room-edit-vertices.md](09.3-room-edit-vertices.md) | ⬜ |
+| 09.1 | Mode `draw` : tracé polygone | [09.1-room-draw.md](09.1-room-draw.md) | ✅ |
+| 09.2 | Composant `Room` : rendu polygone | [09.2-room-render.md](09.2-room-render.md) | ✅ |
+| 09.3 | Mode `edit` sans rangées : sommets | [09.3-room-edit-vertices.md](09.3-room-edit-vertices.md) | ✅ |
 
 ## Ordre et parallélisation
 

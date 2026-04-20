@@ -3,6 +3,8 @@ import { useAppSelector } from '@/hooks/redux'
 import { selectInteractionMode, selectCurrentProject } from '@/store/selectors'
 import { NavPanel } from '@/components/panels/NavPanel'
 import { PlanImportForm } from '@/components/panels/PlanImportForm'
+import { DrawInstructions } from '@/components/panels/DrawInstructions'
+import { RoomEditPanel } from '@/components/panels/RoomEditPanel'
 import styles from './ContextualPanel.module.css'
 
 export function ContextualPanel() {
@@ -20,6 +22,12 @@ export function ContextualPanel() {
   } else if (mode === 'plan') {
     title = 'Plan de fond'
     content = <PlanImportForm />
+  } else if (mode === 'draw') {
+    title = 'Nouvelle pièce'
+    content = <DrawInstructions />
+  } else if (mode === 'edit') {
+    title = 'Pièce sélectionnée'
+    content = <RoomEditPanel />
   } else {
     return null
   }

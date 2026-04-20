@@ -20,3 +20,4 @@
 
 .svg.spaceDown { cursor: grab; }
 .svg.panning   { cursor: grabbing; }
+.svg.drawing   { cursor: crosshair; }

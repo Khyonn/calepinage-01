@@ -2,8 +2,17 @@
   display: inline-flex;
   border: var(--border);
   border-radius: var(--radius-sm);
-  overflow: hidden;
   background: var(--surface);
+}
+
+.first {
+  border-top-left-radius: var(--radius-sm);
+  border-bottom-left-radius: var(--radius-sm);
+}
+
+.last {
+  border-top-right-radius: var(--radius-sm);
+  border-bottom-right-radius: var(--radius-sm);
 }
 
 .btn {
@@ -28,3 +37,69 @@
   background: var(--accent);
   color: #fff;
 }
+
+.switcher {
+  position: relative;
+  display: inline-flex;
+}
+
+.switcher .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-left: var(--border);
+}
+
+.switcherLabel {
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.caret {
+  font-size: 0.7em;
+  opacity: 0.7;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  right: 0;
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+  background: var(--surface);
+  border: var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-helper);
+  min-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.option {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0.375rem 0.625rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.option:hover { background: var(--bg); }
+
+.optionSelected {
+  background: var(--accent);
+  color: #fff;
+}
+
+.optionSelected:hover { background: var(--accent); }

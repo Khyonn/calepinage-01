@@ -22,6 +22,14 @@ const PLAN_ENTRIES: Entry[] = [
   { label: "Déplacer le plan", combos: ["Grab G."] },
 ];
 
+const DRAW_ENTRIES: Entry[] = [
+  { label: "Poser un sommet", combos: ["Clic G."] },
+  { label: "Aligner (X, Y)", combos: ["Ctrl + Move"] },
+  { label: "Valider la pièce", combos: ["Entrée"] },
+  { label: "Retirer dernier sommet", combos: ["Suppr"] },
+  { label: "Annuler le tracé", combos: ["Échap"] },
+];
+
 function Combo({ text }: { text: string }) {
   const tokens = text.split(/\s*\+\s*/);
   return (
@@ -43,7 +51,21 @@ function Combo({ text }: { text: string }) {
 export function HelperPanel() {
   const [collapsed, setCollapsed] = useState(false);
   const mode = useAppSelector(selectInteractionMode);
-  const entries: Entry[] = mode === "plan" ? [...PLAN_ENTRIES, ...NAV_ENTRIES] : NAV_ENTRIES;
+  const modeEntries: Entry[] =
+    mode === "plan" ? PLAN_ENTRIES :
+    mode === "draw" ? DRAW_ENTRIES :
+    [];
+
+  const renderRow = (e: Entry) => (
+    <div key={e.label} className={styles.row}>
+      <span className={styles.label}>{e.label}</span>
+      <span className={styles.combos}>
+        {e.combos.map((c, i) => (
+          <Combo key={i} text={c} />
+        ))}
+      </span>
+    </div>
+  );
 
   return (
     <aside className={styles.panel}>
@@ -60,16 +82,9 @@ export function HelperPanel() {
       </button>
       {!collapsed && (
         <div className={styles.body}>
-          {entries.map((e) => (
-            <div key={e.label} className={styles.row}>
-              <span className={styles.label}>{e.label}</span>
-              <span className={styles.combos}>
-                {e.combos.map((c, i) => (
-                  <Combo key={i} text={c} />
-                ))}
-              </span>
-            </div>
-          ))}
+          {modeEntries.map(renderRow)}
+          {modeEntries.length > 0 && <hr className={styles.separator} />}
+          {NAV_ENTRIES.map(renderRow)}
         </div>
       )}
     </aside>
