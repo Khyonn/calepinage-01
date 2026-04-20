@@ -1,0 +1,26 @@
+.room {
+  fill: var(--room-fill);
+  stroke: var(--room-stroke);
+  stroke-width: 1;
+  transition: fill 120ms ease, stroke 120ms ease, opacity 120ms ease;
+}
+
+.active {
+  fill: var(--room-active-fill);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.dimmed {
+  fill: var(--room-dim-fill);
+  stroke: var(--room-dim-stroke);
+  opacity: 0.3;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover {
+  fill: var(--room-active-fill);
+}

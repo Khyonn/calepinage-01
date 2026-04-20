@@ -87,3 +87,10 @@
   color: var(--text-muted);
   font-size: var(--text-xs);
 }
+
+.separator {
+  border: 0;
+  border-top: var(--border);
+  margin: 0;
+  width: 100%;
+}

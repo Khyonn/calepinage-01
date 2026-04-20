@@ -47,9 +47,9 @@ Chaque jalon apporte une valeur utilisateur observable. Les sous-étapes `NN.M` 
 
 | # | Titre | Fichier | Statut |
 |---|---|---|---|
-| 09.1 | Mode `draw` : tracé polygone | [09.1-room-draw.md](09.1-room-draw.md) | ⬜ |
-| 09.2 | Composant `Room` : rendu | [09.2-room-render.md](09.2-room-render.md) | ⬜ |
-| 09.3 | Mode `edit` sans rangées | [09.3-room-edit-vertices.md](09.3-room-edit-vertices.md) | ⬜ |
+| 09.1 | Mode `draw` : tracé polygone | [09.1-room-draw.md](09.1-room-draw.md) | ✅ |
+| 09.2 | Composant `Room` : rendu | [09.2-room-render.md](09.2-room-render.md) | ✅ |
+| 09.3 | Mode `edit` sans rangées | [09.3-room-edit-vertices.md](09.3-room-edit-vertices.md) | ✅ |
 
 ### Jalon 10 — Rangées et calepinage
 [10-rows-calepinage.md](10-rows-calepinage.md) — ajout de rangées, rendu segments/lames, annotations et violations.

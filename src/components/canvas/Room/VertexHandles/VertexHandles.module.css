@@ -1,0 +1,22 @@
+.handle {
+  cursor: grab;
+}
+
+.handle.dragging {
+  cursor: grabbing;
+}
+
+.hitZone {
+  fill: transparent;
+}
+
+.cross {
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.handle:hover .cross {
+  stroke: var(--accent-hover);
+  stroke-width: 2.5;
+}

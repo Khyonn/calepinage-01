@@ -45,6 +45,11 @@ export const selectActiveRoom = createSelector(
   (rooms, activeRoomId) => rooms.find(r => r.id === activeRoomId) ?? null
 )
 
+export const selectActiveRoomHasRows = createSelector(
+  selectActiveRoom,
+  (room) => (room?.rows.length ?? 0) > 0
+)
+
 export const selectUsedPlankTypeIds = createSelector(
   selectRooms,
   (rooms): Set<string> => new Set(rooms.flatMap(r => r.rows.map(row => row.plankTypeId)))

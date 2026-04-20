@@ -1,46 +1,46 @@
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
-import { selectInteractionMode, selectActiveRoomId } from '@/store/selectors'
+import { selectInteractionMode } from '@/store/selectors'
 import { uiActions } from '@/store/uiSlice'
 import type { InteractionMode } from '@/store/types'
+import { RoomSwitcher } from './RoomSwitcher'
 import styles from './ModeSelector.module.css'
 
 interface ModeEntry {
-  value: InteractionMode
+  value: Exclude<InteractionMode, 'edit'>
   label: string
-  enabled: boolean
 }
+
+const ENTRIES: ModeEntry[] = [
+  { value: 'nav',  label: 'Vue' },
+  { value: 'plan', label: 'Plan de fond' },
+  { value: 'draw', label: 'Dessiner' },
+]
 
 export function ModeSelector() {
   const mode = useAppSelector(selectInteractionMode)
-  const activeRoomId = useAppSelector(selectActiveRoomId)
   const dispatch = useAppDispatch()
 
-  const entries: ModeEntry[] = [
-    { value: 'nav',  label: 'Vue',          enabled: true },
-    { value: 'plan', label: 'Plan de fond', enabled: true },
-    { value: 'draw', label: 'Dessiner',     enabled: false },
-  ]
-  if (activeRoomId) entries.push({ value: 'edit', label: 'Éditer', enabled: false })
-
   return (
-    <div role="radiogroup" aria-label="Mode d'interaction" className={styles.group}>
-      {entries.map((entry, i) => {
+    <div role="group" aria-label="Mode d'interaction" className={styles.group}>
+      {ENTRIES.map((entry, i) => {
         const selected = mode === entry.value
-        const position = i === 0 ? 'first' : i === entries.length - 1 ? 'last' : 'middle'
+        const position = i === 0 ? 'first' : 'middle'
         return (
           <button
             key={entry.value}
             type="button"
-            role="radio"
-            aria-checked={selected}
-            disabled={!entry.enabled}
-            onClick={() => dispatch(uiActions.setMode(entry.value))}
+            aria-pressed={selected}
+            onClick={() => {
+              if (entry.value === 'nav') dispatch(uiActions.setActiveRoom(null))
+              dispatch(uiActions.setMode(entry.value))
+            }}
             className={[styles.btn, styles[position], selected && styles.selected].filter(Boolean).join(' ')}
           >
             {entry.label}
           </button>
         )
       })}
+      <RoomSwitcher />
     </div>
   )
 }

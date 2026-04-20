@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useViewport } from '@/hooks/useViewport'
-import { ViewportContext } from './ViewportContext'
+import { useAppSelector } from '@/hooks/redux'
+import { selectInteractionMode } from '@/store/selectors'
+import { ViewportContext, type SceneContextValue } from './ViewportContext'
 import { Grid } from './Grid'
 import { ScaleBar } from './ScaleBar'
 import { useCanvasEvents } from './useCanvasEvents'
@@ -18,6 +20,8 @@ export function Scene({ children, overlay }: Props) {
   const [size, setSize] = useState({ width: 0, height: 0 })
   const [centered, setCentered] = useState(false)
   const { cursorMode } = useCanvasEvents(svgRef, api)
+  const mode = useAppSelector(selectInteractionMode)
+  const sceneValue = useMemo<SceneContextValue>(() => ({ ...api, svgRef }), [api])
 
   useEffect(() => {
     const svg = svgRef.current
@@ -38,13 +42,16 @@ export function Scene({ children, overlay }: Props) {
     setCentered(true)
   }, [centered, size, viewport.zoom, setViewport])
 
+  const drawing = mode === 'draw'
+  const cursorClass = cursorMode ? styles[cursorMode] : drawing ? styles.drawing : ''
+
   return (
-    <ViewportContext.Provider value={api}>
+    <ViewportContext.Provider value={sceneValue}>
       <div className={styles.wrapper}>
         <svg
           ref={svgRef}
           tabIndex={0}
-          className={[styles.svg, cursorMode && styles[cursorMode]].filter(Boolean).join(' ')}
+          className={[styles.svg, cursorClass].filter(Boolean).join(' ')}
           width="100%"
           height="100%"
         >

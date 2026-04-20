@@ -1,0 +1,11 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.lead {
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  margin: 0;
+}

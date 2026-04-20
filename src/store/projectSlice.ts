@@ -58,10 +58,10 @@ export const projectSlice = createSlice({
       if (state.current?.id === action.payload.id) state.current = null
     },
 
-    addRoom: (state, action: PayloadAction<{ name: string; vertices: Point[] }>) => {
+    addRoom: (state, action: PayloadAction<{ id?: string; name: string; vertices: Point[] }>) => {
       if (!state.current) return
       state.current.rooms.push({
-        id: crypto.randomUUID(),
+        id: action.payload.id ?? crypto.randomUUID(),
         projectId: state.current.id,
         name: action.payload.name,
         vertices: action.payload.vertices,
