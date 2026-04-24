@@ -6,8 +6,8 @@
 
 | # | Titre | Fichier | Statut |
 |---|---|---|---|
-| 11.1 | Drag segment + preview | [11.1-drag-preview.md](11.1-drag-preview.md) | ⬜ |
-| 11.2 | Cascade offcut-links au release | [11.2-cascade-offcut.md](11.2-cascade-offcut.md) | ⬜ |
+| 11.1 | Drag segment + preview | [11.1-drag-preview.md](11.1-drag-preview.md) | ✅ |
+| 11.2 | Cascade offcut-links au release | [11.2-cascade-offcut.md](11.2-cascade-offcut.md) | ✅ |
 
 ## Ordre et parallélisation
 
@@ -18,10 +18,13 @@
 - Jalon 10 ✅ (rangées et segments rendus).
 - Domaine : `fillRow`, `validateRow`, `computeOffcutLinks` — tous ✅ depuis étape 02/05.
 
-## Décisions ouvertes à trancher dans les sous-étapes
+## Décisions prises
 
-- **Comportement des annotations pendant le drag** (renvoyé par 10.3) : doivent-elles suivre le preview ou rester figées jusqu'au release ? À trancher dans 11.1 avec justification.
-- **Quantification du delta** : 0,1 cm par défaut, à confirmer en testant le ressenti.
+- **Annotations pendant le drag** : **figées** sur les valeurs committées, reprennent les valeurs courantes au release. Réduit le bruit visuel pendant la manipulation — feedback fourni par la position des lames et les badges de violation.
+- **Politique de contrainte** : **preview libre + violations visibles** (non-bloquant, cohérent avec 10.4). La valeur courante est commitée telle quelle au release, même si elle produit une rangée invalide.
+- **Cascade** : exécutée dans le **même reducer** que `updateSegmentOffset` via `propagateOffcuts`, un seul dispatch / un seul re-render. Appliquée uniquement pour `segments[0]` et rangées postérieures du même `plankTypeId` dans la même pièce.
+- **Quantification du delta** : **0,1 cm** (conforme à la règle d'arrondi globale).
+- **Activation** : uniquement en mode `edit` et sur la pièce active. Rangées des autres pièces (atténuées) non draggables.
 
 ## Références doc transverses
 

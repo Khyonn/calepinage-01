@@ -14,3 +14,18 @@
   fill: var(--plank-cale);
   stroke: none;
 }
+
+.interactive {
+  cursor: grab;
+  pointer-events: auto;
+}
+
+.dragging {
+  cursor: grabbing;
+}
+
+.dragging .plank {
+  opacity: 0.7;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}

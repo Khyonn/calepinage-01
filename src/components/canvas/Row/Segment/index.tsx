@@ -1,3 +1,4 @@
+import type { PointerEvent as ReactPointerEvent } from 'react'
 import type { ConstraintViolation, Plank, PlankType, PoseParams } from '@/core/types'
 import { Annotation } from './Annotation'
 import { ViolationBadge, messageForViolation } from './ViolationBadge'
@@ -10,24 +11,35 @@ interface Props {
   yStart: number
   height: number
   planks: Plank[]
+  snapshotPlanks?: Plank[]
   plankType: PlankType
   poseParams: PoseParams
   zoom: number
   startLinked: boolean
   endLinked: boolean
   rowViolations: ConstraintViolation[]
+  dragActive?: boolean
+  dragging?: boolean
+  onPointerDown?: (e: ReactPointerEvent<SVGGElement>) => void
 }
 
 const EPSILON = 0.001
 
 export function Segment({
-  roomId, xStart, xEnd, yStart, height, planks, plankType, poseParams, zoom,
-  startLinked, endLinked, rowViolations,
+  roomId, xStart, xEnd, yStart, height, planks, snapshotPlanks, plankType, poseParams, zoom,
+  startLinked, endLinked, rowViolations, dragActive, dragging, onPointerDown,
 }: Props) {
   const cale = poseParams.cale
   const minLen = poseParams.minPlankLength
   const innerX = xStart + cale
   const midY = yStart + height / 2
+
+  // Annotations read from snapshotPlanks when present (drag in progress → figées).
+  const annotationPlanks = snapshotPlanks ?? planks
+  const firstAnn = annotationPlanks[0]
+  const lastAnn = annotationPlanks[annotationPlanks.length - 1]
+
+  // Violations & rects use the live planks.
   const firstPlank = planks[0]
   const lastPlank = planks[planks.length - 1]
   const firstIndex = 0
@@ -50,11 +62,16 @@ export function Segment({
     gap: round1(rowGapViolation.value), min: poseParams.minRowGap,
   }))
 
-  const showStart = firstPlank && firstPlank.length < plankType.length - EPSILON
-  const showEnd = lastPlank && planks.length > 1 && lastPlank.length < plankType.length - EPSILON
+  const showStart = firstAnn && firstAnn.length < plankType.length - EPSILON
+  const showEnd = lastAnn && annotationPlanks.length > 1 && lastAnn.length < plankType.length - EPSILON
+
+  const interactiveClass = [
+    dragActive && styles.interactive,
+    dragging && styles.dragging,
+  ].filter(Boolean).join(' ')
 
   return (
-    <g>
+    <g className={interactiveClass || undefined} onPointerDown={onPointerDown}>
       <g clipPath={`url(#row-clip-${roomId})`}>
         <rect
           x={xStart} y={yStart} width={cale} height={height}
@@ -85,9 +102,9 @@ export function Segment({
 
       {showStart && (
         <Annotation
-          x={innerX + firstPlank.length / 2}
+          x={innerX + firstAnn.length / 2}
           y={midY}
-          length={firstPlank.length}
+          length={firstAnn.length}
           linked={startLinked}
           zoom={zoom}
           anchor="start"
@@ -95,9 +112,9 @@ export function Segment({
       )}
       {showEnd && (
         <Annotation
-          x={innerX + lastPlank.x + lastPlank.length / 2}
+          x={innerX + lastAnn.x + lastAnn.length / 2}
           y={midY}
-          length={lastPlank.length}
+          length={lastAnn.length}
           linked={endLinked}
           zoom={zoom}
           anchor="end"

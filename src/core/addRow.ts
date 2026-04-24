@@ -36,8 +36,23 @@ export function addRow(room: Room, plankType: PlankType, poseParams?: PoseParams
   }
 }
 
-function computeDefaultXOffset(room: Room, plankType: PlankType, poseParams: PoseParams): number {
-  const prev = [...room.rows].reverse().find(r => r.plankTypeId === plankType.id)
+/**
+ * Compute the default xOffset for segment[0] of a new or existing row,
+ * consuming the offcut produced by the most recent previous row of the
+ * same plank type in the same room.
+ *
+ * upToRowIndex (exclusive): look only at rows[0..upToRowIndex-1].
+ * Defaults to room.rows.length (all rows considered).
+ */
+export function computeDefaultXOffset(
+  room: Room,
+  plankType: PlankType,
+  poseParams: PoseParams,
+  upToRowIndex?: number,
+): number {
+  const end = upToRowIndex ?? room.rows.length
+  const slice = room.rows.slice(0, end)
+  const prev = [...slice].reverse().find(r => r.plankTypeId === plankType.id)
   if (!prev) return 0
 
   const prevXOffset = prev.segments[0]?.xOffset ?? 0

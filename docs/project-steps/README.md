@@ -66,8 +66,8 @@ Chaque jalon apporte une valeur utilisateur observable. Les sous-étapes `NN.M` 
 
 | # | Titre | Fichier | Statut |
 |---|---|---|---|
-| 11.1 | Drag segment + preview | [11.1-drag-preview.md](11.1-drag-preview.md) | ⬜ |
-| 11.2 | Cascade offcut-links au release | [11.2-cascade-offcut.md](11.2-cascade-offcut.md) | ⬜ |
+| 11.1 | Drag segment + preview | [11.1-drag-preview.md](11.1-drag-preview.md) | ✅ |
+| 11.2 | Cascade offcut-links au release | [11.2-cascade-offcut.md](11.2-cascade-offcut.md) | ✅ |
 
 ### Jalon 12 — Résultats et export
 [12-results-export.md](12-results-export.md) — drawer résumé, tableau des réutilisations, export CSV.

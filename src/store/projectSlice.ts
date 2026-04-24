@@ -1,6 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import type { BackgroundPlan, PlankType, PoseParams, Project, Point, Row } from '@/core/types'
 import type { ProjectState, ProjectsListEntry } from '@/store/types'
+import { propagateOffcuts } from '@/core/propagateOffcuts'
 
 const DEFAULT_POSE_PARAMS: PoseParams = {
   cale: 0.5,
@@ -98,6 +99,12 @@ export const projectSlice = createSlice({
       const segment = row.segments[action.payload.segmentIndex]
       if (!segment) return
       segment.xOffset = action.payload.xOffset
+      // Cascade : seul le segment[0] produit la chute "fin de rangée"
+      // utilisée par les rangées suivantes. Les autres segments (portions
+      // intérieures d'une pièce concave) conservent leurs offsets manuels.
+      if (action.payload.segmentIndex === 0) {
+        propagateOffcuts(room, state.current.catalog, state.current.poseParams, action.payload.rowId)
+      }
     },
 
     deleteRow: (state, action: PayloadAction<{ id: string; roomId: string }>) => {
