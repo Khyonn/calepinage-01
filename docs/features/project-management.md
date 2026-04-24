@@ -34,11 +34,17 @@ Au retour dans l'application, l'utilisateur retrouve automatiquement le dernier 
 
 ## Résultats et export
 
-Le panneau **Résultats** affiche en permanence :
-- Le récapitulatif des achats par type de lame
-- La liste des liens de réutilisation entre chutes
+Le **drawer Résumé** (bouton `☷` de la topbar) affiche à la demande :
+- Le récapitulatif des achats par type de lame (nombre de lames, coût unitaire et coût total).
+- La liste des liens de réutilisation entre chutes. Le survol d'une ligne met en surbrillance les deux rangées concernées sur le canvas.
 
-Un bouton permet d'exporter ces deux tableaux en **CSV**.
+Le drawer est fermé par défaut au démarrage et peut être redimensionné via son bord gauche. Sa largeur et son état d'ouverture ne sont pas persistés (reset à chaque session).
+
+### Export CSV
+
+Depuis le menu hamburger, l'entrée **Exporter CSV** télécharge un fichier `calepinage-<slug>-<date>.csv` contenant trois sections : résumé matière, liens de réutilisation, paramètres de pose.
+
+Format : séparateur `;`, encodage UTF-8 avec BOM, fin de ligne `\r\n`. Compatible Excel FR et LibreOffice Calc sans configuration. Les noms contenant des caractères spéciaux (`;`, `"`, sauts de ligne) sont échappés conformément à la RFC 4180.
 
 ## Fonctionnalité envisagée : clonage de projet
 

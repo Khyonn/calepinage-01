@@ -10,6 +10,7 @@ import { RowsLayer } from '@/components/canvas/Row/RowsLayer'
 import { DrawOverlay } from '@/components/canvas/DrawOverlay'
 import { VertexHandles } from '@/components/canvas/Room/VertexHandles'
 import { VertexEditProvider } from '@/components/canvas/Room/VertexEditContext'
+import { SummaryDrawer } from '@/components/panels/SummaryDrawer'
 import styles from './AppShell.module.css'
 
 export function AppShell() {
@@ -29,6 +30,7 @@ export function AppShell() {
           </VertexEditProvider>
         </CalibrationProvider>
       </main>
+      <SummaryDrawer />
     </div>
   )
 }

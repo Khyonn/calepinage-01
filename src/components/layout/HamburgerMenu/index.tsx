@@ -7,6 +7,7 @@ import { ThemeSwitcher } from '@/components/layout/ThemeSwitcher'
 import { useAppSelector } from '@/hooks/redux'
 import { selectCurrentProject, selectProjectList } from '@/store/selectors'
 import { useHamburgerMenu } from './useHamburgerMenu'
+import { useExportCsv } from './useExportCsv'
 import styles from './HamburgerMenu.module.css'
 
 type ActiveDialog = null | 'new' | 'open' | 'delete'
@@ -18,6 +19,7 @@ export function HamburgerMenu() {
 
   const current = useAppSelector(selectCurrentProject)
   const list = useAppSelector(selectProjectList)
+  const exportCsv = useExportCsv()
 
   const close = () => setOpen(false)
   const openDialog = (d: ActiveDialog) => { setDialog(d); close() }
@@ -40,6 +42,14 @@ export function HamburgerMenu() {
             disabled={!canOpenOthers}
           >
             Ouvrir un projet
+          </button>
+          <button
+            role="menuitem"
+            className={styles.item}
+            onClick={() => { exportCsv(); close() }}
+            disabled={!current}
+          >
+            Exporter CSV
           </button>
           <button
             role="menuitem"

@@ -20,6 +20,7 @@ interface Props {
   rowViolations: ConstraintViolation[]
   dragActive?: boolean
   dragging?: boolean
+  highlighted?: boolean
   onPointerDown?: (e: ReactPointerEvent<SVGGElement>) => void
 }
 
@@ -27,7 +28,7 @@ const EPSILON = 0.001
 
 export function Segment({
   roomId, xStart, xEnd, yStart, height, planks, snapshotPlanks, plankType, poseParams, zoom,
-  startLinked, endLinked, rowViolations, dragActive, dragging, onPointerDown,
+  startLinked, endLinked, rowViolations, dragActive, dragging, highlighted, onPointerDown,
 }: Props) {
   const cale = poseParams.cale
   const minLen = poseParams.minPlankLength
@@ -68,6 +69,7 @@ export function Segment({
   const interactiveClass = [
     dragActive && styles.interactive,
     dragging && styles.dragging,
+    highlighted && styles.highlighted,
   ].filter(Boolean).join(' ')
 
   return (
