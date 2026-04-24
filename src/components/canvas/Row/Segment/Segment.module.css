@@ -29,3 +29,8 @@
   stroke: var(--accent);
   stroke-width: 1.5;
 }
+
+.highlighted .plank {
+  stroke: var(--accent);
+  stroke-width: 2;
+}

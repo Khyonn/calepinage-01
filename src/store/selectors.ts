@@ -5,7 +5,11 @@ import { validateRow } from '@/core/validateRow'
 import { computeSummary } from '@/core/computeSummary'
 import { computeScale } from '@/core/calibration'
 import { computeRowGeometry, type RowGeometry } from '@/core/rowGeometry'
-import type { ConstraintViolation, Plank } from '@/core/types'
+import type { ConstraintViolation, OffcutLink, Plank } from '@/core/types'
+
+export const OFFCUT_LINK_ID_SEP = '→'
+export const offcutLinkId = (link: OffcutLink) =>
+  `${link.sourceRowId}${OFFCUT_LINK_ID_SEP}${link.targetRowId}`
 
 // ─── Base selectors ───────────────────────────────────────────────────────────
 
@@ -14,6 +18,8 @@ export const selectProjectList = (state: AppState) => state.project.list
 export const selectUI = (state: AppState) => state.ui
 export const selectActiveRoomId = (state: AppState) => state.ui.activeRoomId
 export const selectInteractionMode = (state: AppState) => state.ui.mode
+export const selectDrawerOpen = (state: AppState) => state.ui.drawerOpen
+export const selectHoveredOffcutLinkId = (state: AppState) => state.ui.hoveredOffcutLinkId
 
 export const selectRooms = createSelector(
   selectCurrentProject,
@@ -142,6 +148,18 @@ export const selectSummary = createSelector(
   (rooms, catalog, poseParams, offcutLinks) => {
     if (!poseParams) return null
     return computeSummary(rooms, catalog, poseParams, offcutLinks)
+  }
+)
+
+export const selectHighlightedRowIds = createSelector(
+  selectHoveredOffcutLinkId,
+  (hoveredId): Set<string> => {
+    if (!hoveredId) return new Set()
+    const [sourceId, targetId] = hoveredId.split(OFFCUT_LINK_ID_SEP)
+    const out = new Set<string>()
+    if (sourceId) out.add(sourceId)
+    if (targetId) out.add(targetId)
+    return out
   }
 )
 

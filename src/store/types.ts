@@ -72,6 +72,8 @@ export interface UIState {
   mode: InteractionMode
   activeRoomId: string | null
   selectedPlankTypeId: string | null
+  drawerOpen: boolean
+  hoveredOffcutLinkId: string | null
 }
 
 export interface AppState {

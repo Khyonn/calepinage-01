@@ -1,0 +1,54 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.table th,
+.table td {
+  padding: 6px 8px;
+  text-align: left;
+  border-bottom: var(--border);
+}
+
+.table thead th {
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tfoot th,
+.table tfoot td {
+  font-weight: 600;
+  border-top: var(--border);
+  border-bottom: none;
+  padding-top: 8px;
+}
+
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.typeName {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.typeDims {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.empty {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  margin: 0;
+  padding: 8px 0;
+}

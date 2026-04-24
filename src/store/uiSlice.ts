@@ -5,6 +5,8 @@ const initialState: UIState = {
   mode: 'nav',
   activeRoomId: null,
   selectedPlankTypeId: null,
+  drawerOpen: false,
+  hoveredOffcutLinkId: null,
 }
 
 export const uiSlice = createSlice({
@@ -21,6 +23,18 @@ export const uiSlice = createSlice({
 
     setSelectedPlankTypeId: (state, action: PayloadAction<string | null>) => {
       state.selectedPlankTypeId = action.payload
+    },
+
+    toggleDrawer: (state) => {
+      state.drawerOpen = !state.drawerOpen
+    },
+
+    setDrawerOpen: (state, action: PayloadAction<boolean>) => {
+      state.drawerOpen = action.payload
+    },
+
+    setHoveredOffcutLinkId: (state, action: PayloadAction<string | null>) => {
+      state.hoveredOffcutLinkId = action.payload
     },
   },
 })

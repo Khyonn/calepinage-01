@@ -3,6 +3,7 @@ import { useAppSelector } from '@/hooks/redux'
 import {
   selectPoseParams, selectOffcutLinks, selectViolations,
   selectInteractionMode, selectActiveRoomId, selectCurrentProject,
+  selectHighlightedRowIds,
 } from '@/store/selectors'
 import { useViewportContext } from '@/components/canvas/Scene/ViewportContext'
 import { fillRow } from '@/core/rowFill'
@@ -27,6 +28,7 @@ export function Row({ roomId, rowId }: Props) {
   const mode = useAppSelector(selectInteractionMode)
   const activeRoomId = useAppSelector(selectActiveRoomId)
   const project = useAppSelector(selectCurrentProject)
+  const highlightedRowIds = useAppSelector(selectHighlightedRowIds)
   const { viewport } = useViewportContext()
 
   const dragActive = activeRoomId === roomId && mode === 'edit'
@@ -82,6 +84,7 @@ export function Row({ roomId, rowId }: Props) {
           rowViolations={rowViolations}
           dragActive={dragActive}
           dragging={draggingIndex === i}
+          highlighted={highlightedRowIds.has(rowId)}
           onPointerDown={dragActive ? onSegmentPointerDown(i) : undefined}
         />
       ))}

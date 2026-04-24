@@ -74,9 +74,9 @@ Chaque jalon apporte une valeur utilisateur observable. Les sous-étapes `NN.M` 
 
 | # | Titre | Fichier | Statut |
 |---|---|---|---|
-| 12.1 | Drawer droit : résumé matière | [12.1-drawer-summary.md](12.1-drawer-summary.md) | ⬜ |
-| 12.2 | Tableau des liens de réutilisation | [12.2-offcut-table.md](12.2-offcut-table.md) | ⬜ |
-| 12.3 | Export CSV | [12.3-export-csv.md](12.3-export-csv.md) | ⬜ |
+| 12.1 | Drawer droit : résumé matière | [12.1-drawer-summary.md](12.1-drawer-summary.md) | ✅ |
+| 12.2 | Tableau des liens de réutilisation | [12.2-offcut-table.md](12.2-offcut-table.md) | ✅ |
+| 12.3 | Export CSV | [12.3-export-csv.md](12.3-export-csv.md) | ✅ |
 
 ## Remarques
 
