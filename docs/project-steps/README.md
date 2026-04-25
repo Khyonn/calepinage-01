@@ -93,13 +93,14 @@ Après la livraison du jalon 12, retours d'usage → trois jalons polish ciblent
 | 13.4 | Robustesse pose auto, géométrie réelle, ordre persisté | [13.4-robustesse-pose-persistance.md](13.4-robustesse-pose-persistance.md) | ✅ |
 
 ### Jalon 14 — Drawer résumé & récapitulatif
-[14-drawer-recap.md](14-drawer-recap.md) — primitive tooltip, restructuration tableau coûts, récapitulatif par rangée avec hover granulaire.
+[14-drawer-recap.md](14-drawer-recap.md) — primitive tooltip, restructuration tableau coûts, récapitulatif par rangée avec hover granulaire, édition inline canvas.
 
 | # | Titre | Fichier | Statut |
 |---|---|---|---|
-| 14.1 | Primitive `Tooltip` (design system) | [14.1-tooltip-primitive.md](14.1-tooltip-primitive.md) | ⬜ |
+| 14.1 | Primitive `Tooltip` (design system) | [14.1-tooltip-primitive.md](14.1-tooltip-primitive.md) | ✅ |
 | 14.2 | SummaryTable : colonnes « Lames / Quantité / Coût unit. / Coût total » | [14.2-summary-columns.md](14.2-summary-columns.md) | ⬜ |
 | 14.3 | Récapitulatif par rangée avec hover granulaire | [14.3-row-recap.md](14.3-row-recap.md) | ⬜ |
+| 14.4 | Édition inline de la longueur de planche depuis le canvas | [14.4-inline-edit-plank.md](14.4-inline-edit-plank.md) | ✅ |
 
 ### Jalon 15 — Navigation & menus
 [15-navigation-menus.md](15-navigation-menus.md) — fusion `nav`/`edit`, auto-fit viewport, menus hiérarchiques, import/clone de projet.

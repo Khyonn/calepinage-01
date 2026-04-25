@@ -102,6 +102,7 @@
   --z-topbar:        30;
   --z-dialog:        40;
   --z-menu:          50;
+  --z-tooltip:       60;
 }
 
 :root[data-theme=dark] {

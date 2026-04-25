@@ -63,4 +63,15 @@ La cascade est déclenchée **dans le même reducer** que `updateSegmentOffset` 
 - Si la rangée dragué n'a pas de chute exploitable, les rangées suivantes retombent à `xOffset = 0`.
 - Chaque rangée recalcule son `xOffset` via `computeDefaultXOffset` et hérite donc du **bornage par `minPlankLength`** (voir [row-fill.md](row-fill.md)) : la cascade ne propage pas de violations évitables. En revanche, le segment **explicitement dragué** par l'utilisateur reste permissif — une violation délibérée reste visible.
 
+## Édition inline alternative
+
+Le drag souris est limité par la résolution écran et le zoom. Pour un ajustement précis au mm près, l'utilisateur peut **double-cliquer** sur l'annotation chiffrée d'une première ou dernière planche et taper la longueur souhaitée :
+
+- **Double-clic** sur le texte d'annotation → l'annotation devient un input éditable, valeur sélectionnée.
+- **Blur** (clic ailleurs) ou **Entrée** → commit. La longueur est convertie en `xOffset` via `xOffsetFromFirstLength` (formule directe `xOffset = L − f`) ou `xOffsetFromLastLength` (recherche par simulation pas 0,1 cm). La cascade `propagateOffcuts` se déclenche comme pour le drag.
+- **Échap** → annule.
+- Hors mode `edit`, l'annotation reste en lecture seule.
+
+Les annotations sont **toujours visibles** sur la première et la dernière planche d'un segment (même quand pleines), pour rester un point d'entrée d'édition fiable.
+
 Voir aussi [row-fill.md](row-fill.md) pour l'algorithme de remplissage et [constraints-annotations.md](constraints-annotations.md) pour les indicateurs visuels pendant le drag.
