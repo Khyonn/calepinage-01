@@ -127,6 +127,17 @@ La recherche dans les deux cas est une simulation pas-à-pas via `fillRow` — s
 
 **Bornage `minRowGap`** : la recherche tente d'abord de satisfaire **simultanément** `minPlankLength` (première et dernière planches) **et** `minRowGap` (écart entre le joint de fin de la rangée précédente — quel que soit son type — et celui de la nouvelle rangée). Si aucun xOffset n'y parvient, elle retombe sur le bornage `minPlankLength` seul (la contrainte esthétique est alors signalée visuellement). Permet à la pose auto de résoudre le cas trivial où deux rangées consécutives auraient des joints superposés (gap = 0).
 
+## Édition manuelle (drag + saisie inline)
+
+Le `xOffset` peut aussi être modifié manuellement par l'utilisateur, sans passer par la pose auto :
+
+- **Drag** d'un segment au pointeur — voir [row-drag.md](row-drag.md).
+- **Saisie inline** : double-clic sur l'annotation chiffrée d'une première ou dernière planche → input éditable. La longueur saisie est convertie en `xOffset` :
+  - **Première planche** : formule directe `xOffset = plankType.length − firstLength` (clamp `[0, L)`, sliver minimal `L − 0,1` si valeur ≤ 0).
+  - **Dernière planche** : recherche par simulation (pas 0,1 cm) du `xOffset` dont la dernière planche minimise `|last − target|`. Robuste face aux configurations où la formule directe échoue (dernière initialement pleine, traversée d'un boundary).
+
+Les deux modes manuels sont **permissifs** : le bornage automatique (`minPlankLength`, `minRowGap`) **ne s'applique pas**. L'utilisateur peut créer une violation, qui reste signalée visuellement (badge + lame en `--danger`). Au commit, la cascade `propagateOffcuts` se déclenche sur les rangées suivantes du même type dans la même pièce, comme pour le drag.
+
 - Cas trivial : rangée tenant en une seule lame → toujours valide.
 - Cas trivial : dernière lame entière (division exacte) → toujours valide.
 - Fallback : aucun `x` du domaine ne satisfait → `xOffset = 0`.

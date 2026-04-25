@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
+import { Tooltip } from '@/components/ui/Tooltip'
 import { NewProjectDialog } from '@/components/layout/NewProjectDialog'
 import { OpenProjectDialog } from '@/components/layout/OpenProjectDialog'
 import { DeleteProjectConfirm } from '@/components/layout/DeleteProjectConfirm'
@@ -31,9 +32,11 @@ export function HamburgerMenu() {
 
   return (
     <div className={styles.anchor} ref={ref}>
-      <Button variant="ghost" iconOnly aria-label="Menu" onClick={() => setOpen(o => !o)}>
-        ☰
-      </Button>
+      <Tooltip content="Menu" placement="bottom">
+        <Button variant="ghost" iconOnly aria-label="Menu" onClick={() => setOpen(o => !o)}>
+          ☰
+        </Button>
+      </Tooltip>
       {open && (
         <div role="menu" className={styles.menu}>
           <button role="menuitem" className={styles.item} onClick={() => openDialog('new')}>

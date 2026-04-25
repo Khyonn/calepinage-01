@@ -1,14 +1,16 @@
 import { useMemo } from 'react'
-import { useAppSelector } from '@/hooks/redux'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import {
   selectPoseParams, selectOffcutLinks, selectViolations,
   selectInteractionMode, selectActiveRoomId, selectCurrentProject,
   selectHighlightedRowIds,
 } from '@/store/selectors'
+import { projectActions } from '@/store/projectSlice'
 import { useViewportContext } from '@/components/canvas/Scene/ViewportContext'
 import { fillRow } from '@/core/rowFill'
 import { validateRow } from '@/core/validateRow'
 import { computeRowGeometry } from '@/core/rowGeometry'
+import { xOffsetFromFirstLength, xOffsetFromLastLength } from '@/core/xOffsetFromPlankLength'
 import type { ConstraintViolation, PoseParams, Project } from '@/core/types'
 import type { RowSegmentGeometry } from '@/core/rowGeometry'
 import { Segment } from './Segment'
@@ -21,6 +23,7 @@ interface Props {
 }
 
 export function Row({ roomId, rowId }: Props) {
+  const dispatch = useAppDispatch()
   const geometry = useRowGeometry(roomId, rowId)
   const poseParams = useAppSelector(selectPoseParams)
   const links = useAppSelector(selectOffcutLinks)
@@ -64,30 +67,44 @@ export function Row({ roomId, rowId }: Props) {
   const endLinked = links.some(l => l.sourceRowId === rowId)
   const height = geometry.yEnd - geometry.yStart
 
+  const commitSegment = (segmentIndex: number, xOffset: number) => {
+    dispatch(projectActions.updateSegmentOffset({ roomId, rowId, segmentIndex, xOffset }))
+  }
+
   return (
     <g>
-      {effectiveSegments.map((seg, i) => (
-        <Segment
-          key={i}
-          roomId={roomId}
-          xStart={seg.xStart}
-          xEnd={seg.xEnd}
-          yStart={geometry.yStart}
-          height={height}
-          planks={seg.planks}
-          snapshotPlanks={isDragging ? geometry.segments[i]?.planks : undefined}
-          plankType={geometry.plankType}
-          poseParams={poseParams}
-          zoom={viewport.zoom}
-          startLinked={startLinked}
-          endLinked={endLinked}
-          rowViolations={rowViolations}
-          dragActive={dragActive}
-          dragging={draggingIndex === i}
-          highlighted={highlightedRowIds.has(rowId)}
-          onPointerDown={dragActive ? onSegmentPointerDown(i) : undefined}
-        />
-      ))}
+      {effectiveSegments.map((seg, i) => {
+        const segWidth = seg.xEnd - seg.xStart
+        return (
+          <Segment
+            key={i}
+            roomId={roomId}
+            xStart={seg.xStart}
+            xEnd={seg.xEnd}
+            yStart={geometry.yStart}
+            height={height}
+            planks={seg.planks}
+            snapshotPlanks={isDragging ? geometry.segments[i]?.planks : undefined}
+            poseParams={poseParams}
+            zoom={viewport.zoom}
+            startLinked={startLinked}
+            endLinked={endLinked}
+            rowViolations={rowViolations}
+            dragActive={dragActive}
+            dragging={draggingIndex === i}
+            highlighted={highlightedRowIds.has(rowId)}
+            onPointerDown={dragActive ? onSegmentPointerDown(i) : undefined}
+            onCommitFirstLength={dragActive ? (newLength) => {
+              const x = xOffsetFromFirstLength(newLength, geometry.plankType)
+              commitSegment(i, x)
+            } : undefined}
+            onCommitLastLength={dragActive ? (newLength) => {
+              const x = xOffsetFromLastLength(newLength, geometry.plankType, segWidth, poseParams)
+              commitSegment(i, x)
+            } : undefined}
+          />
+        )
+      })}
     </g>
   )
 }

@@ -76,6 +76,7 @@ Tous dans `src/components/ui/`. Structure par dossier : `NomComposant/index.tsx`
 | `Combobox` | `options`, filtre par saisie, navigation clavier ↑↓, `clearable` |
 | `Dialog` | `title`, `actions` — portal, piégeage du focus, fermeture Échap |
 | `Drawer` | panneau latéral droit — largeur variable entre `min(50vw, 20rem)` et `50vw`, redimensionnable par drag sur le bord gauche, toggle via topbar |
+| `Tooltip` | `content`, `placement` (top · bottom · left · right), `delay` (300 ms par défaut). Wrap un trigger HTML ou SVG, portail sur `document.body`. Show on hover après délai, on focus immédiat. Hide on leave / blur / Escape / pointerdown. ARIA `role="tooltip"` + `aria-describedby`. |
 
 ---
 

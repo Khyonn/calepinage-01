@@ -1,5 +1,5 @@
 import type { PointerEvent as ReactPointerEvent } from 'react'
-import type { ConstraintViolation, Plank, PlankType, PoseParams } from '@/core/types'
+import type { ConstraintViolation, Plank, PoseParams } from '@/core/types'
 import { Annotation } from './Annotation'
 import { ViolationBadge, messageForViolation } from './ViolationBadge'
 import styles from './Segment.module.css'
@@ -12,7 +12,6 @@ interface Props {
   height: number
   planks: Plank[]
   snapshotPlanks?: Plank[]
-  plankType: PlankType
   poseParams: PoseParams
   zoom: number
   startLinked: boolean
@@ -22,13 +21,14 @@ interface Props {
   dragging?: boolean
   highlighted?: boolean
   onPointerDown?: (e: ReactPointerEvent<SVGGElement>) => void
+  onCommitFirstLength?: (newLength: number) => void
+  onCommitLastLength?: (newLength: number) => void
 }
 
-const EPSILON = 0.001
-
 export function Segment({
-  roomId, xStart, xEnd, yStart, height, planks, snapshotPlanks, plankType, poseParams, zoom,
+  roomId, xStart, xEnd, yStart, height, planks, snapshotPlanks, poseParams, zoom,
   startLinked, endLinked, rowViolations, dragActive, dragging, highlighted, onPointerDown,
+  onCommitFirstLength, onCommitLastLength,
 }: Props) {
   const cale = poseParams.cale
   const minLen = poseParams.minPlankLength
@@ -63,8 +63,10 @@ export function Segment({
     gap: round1(rowGapViolation.value), min: poseParams.minRowGap,
   }))
 
-  const showStart = firstAnn && firstAnn.length < plankType.length - EPSILON
-  const showEnd = lastAnn && annotationPlanks.length > 1 && lastAnn.length < plankType.length - EPSILON
+  // Annotations toujours visibles (cf. 14.4) — l'utilisateur peut éditer la
+  // première et la dernière planche même quand elles sont pleines.
+  const showStart = !!firstAnn
+  const showEnd = !!lastAnn && annotationPlanks.length > 1
 
   const interactiveClass = [
     dragActive && styles.interactive,
@@ -110,6 +112,8 @@ export function Segment({
           linked={startLinked}
           zoom={zoom}
           anchor="start"
+          editable={dragActive}
+          onCommit={onCommitFirstLength}
         />
       )}
       {showEnd && (
@@ -120,6 +124,8 @@ export function Segment({
           linked={endLinked}
           zoom={zoom}
           anchor="end"
+          editable={dragActive}
+          onCommit={onCommitLastLength}
         />
       )}
 

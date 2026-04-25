@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/Button'
+import { Tooltip } from '@/components/ui/Tooltip'
 import { ModeSelector } from '@/components/layout/ModeSelector'
 import { HamburgerMenu } from '@/components/layout/HamburgerMenu'
 import { ProjectNameEditable } from '@/components/layout/ProjectNameEditable'
@@ -21,13 +22,15 @@ export function Topbar() {
         <ModeSelector />
       </div>
       <div className={styles.right}>
-        <Button
-          variant="ghost"
-          iconOnly
-          aria-label="Résumé"
-          aria-pressed={drawerOpen}
-          onClick={() => dispatch(uiActions.toggleDrawer())}
-        >☷</Button>
+        <Tooltip content="Résumé matière" placement="bottom">
+          <Button
+            variant="ghost"
+            iconOnly
+            aria-label="Résumé"
+            aria-pressed={drawerOpen}
+            onClick={() => dispatch(uiActions.toggleDrawer())}
+          >☷</Button>
+        </Tooltip>
       </div>
     </header>
   )

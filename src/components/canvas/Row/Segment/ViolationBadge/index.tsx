@@ -1,4 +1,5 @@
 import type { ConstraintViolationType } from '@/core/types'
+import { Tooltip } from '@/components/ui/Tooltip'
 import styles from './ViolationBadge.module.css'
 
 interface Props {
@@ -13,25 +14,26 @@ const SIZE_PX = 14
 export function ViolationBadge({ x, y, zoom, messages }: Props) {
   const size = SIZE_PX / zoom
   const half = size / 2
-  const title = messages.join(' — ')
+  const content = messages.join('\n')
   return (
-    <g transform={`translate(${x - size}, ${y})`} className={styles.badge}>
-      <title>{title}</title>
-      <polygon
-        points={`${half},0 ${size},${size} 0,${size}`}
-        className={styles.shape}
-        strokeWidth={1.5 / zoom}
-      />
-      <text
-        x={half}
-        y={size * 0.85}
-        textAnchor="middle"
-        fontSize={size * 0.7}
-        className={styles.bang}
-      >
-        !
-      </text>
-    </g>
+    <Tooltip content={content} placement="top">
+      <g transform={`translate(${x - size}, ${y})`} className={styles.badge} tabIndex={-1}>
+        <polygon
+          points={`${half},0 ${size},${size} 0,${size}`}
+          className={styles.shape}
+          strokeWidth={1.5 / zoom}
+        />
+        <text
+          x={half}
+          y={size * 0.85}
+          textAnchor="middle"
+          fontSize={size * 0.7}
+          className={styles.bang}
+        >
+          !
+        </text>
+      </g>
+    </Tooltip>
   )
 }
 

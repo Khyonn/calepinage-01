@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import type { ButtonHTMLAttributes, ReactNode, Ref } from 'react'
 import styles from './Button.module.css'
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
@@ -9,6 +9,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: Size
   iconOnly?: boolean
   children: ReactNode
+  ref?: Ref<HTMLButtonElement>
 }
 
 export function Button({
@@ -17,6 +18,7 @@ export function Button({
   iconOnly = false,
   className,
   children,
+  ref,
   ...rest
 }: ButtonProps) {
   const cls = [
@@ -28,7 +30,7 @@ export function Button({
   ].filter(Boolean).join(' ')
 
   return (
-    <button className={cls} {...rest}>
+    <button ref={ref} className={cls} {...rest}>
       {children}
     </button>
   )
