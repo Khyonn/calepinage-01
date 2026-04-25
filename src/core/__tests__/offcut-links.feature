@@ -9,9 +9,13 @@ Fonctionnalité: Liens de réutilisation de chutes entre rangées
     Soit une pièce avec une rangée A au décalage 0 cm et une rangée B au décalage 30.1 cm
     Alors un lien est établi de A vers B avec une chute d'environ 89.9 cm
 
-  Scénario: Aucun lien quand les chutes ne correspondent à aucune rangée
-    Soit une pièce avec une rangée A au décalage 0 cm et une rangée B au décalage 50 cm
+  Scénario: Aucun lien quand la chute est trop petite pour couvrir le début de la rangée suivante
+    Soit une pièce avec une rangée A au décalage 0 cm et une rangée B au décalage 10 cm
     Alors aucun lien de réutilisation n'est établi
+
+  Scénario: Réutilisation partielle — la chute couvre le début sans match exact
+    Soit une pièce avec une rangée A au décalage 0 cm et une rangée B au décalage 50 cm
+    Alors un lien est établi de A vers B avec une longueur réutilisée d'environ 70 cm
 
   Scénario: Aucun lien quand toutes les rangées démarrent à zéro
     Soit une pièce avec deux rangées démarrant au décalage 0 cm

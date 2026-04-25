@@ -35,6 +35,7 @@ Le stockage est **relationnel** : chaque entité a son propre object store, avec
 | `projectId` | `string` | FK → `projects` (dénormalisé pour cleanup — absent du modèle domaine) |
 | `plankTypeId` | `string` | FK → `plankTypes` |
 | `segments` | `{ xOffset: number }[]` | Un élément par segment géométrique de la rangée (pièces concaves → plusieurs segments). Seul le `xOffset` de chaque segment est persisté ; la géométrie des segments est recalculée à partir des `vertices` de la pièce. |
+| `order` | `number` | Index de la rangée dans `room.rows` (0 = top). Persisté explicitement car `IDBIndex.getAll()` trie par clé primaire (UUID) à index keys égales — l'ordre d'insertion n'est pas conservé sans ce champ. |
 
 #### `plankTypes`
 | Champ | Type | Description |
@@ -133,6 +134,46 @@ Les **records** (ci-dessus) sont les données brutes stockées dans IndexedDB. L
 | `Room` | `rooms` + ses `rows` |
 | `PlankType` | `plankTypes` |
 | `BackgroundPlan` | `plans` + `files` (résolution du `File`) |
+
+## Format de sérialisation JSON (export / import)
+
+Schéma versionné utilisé par l'export / import JSON (voir [features/project-management.md](../features/project-management.md)). Contrairement au stockage IndexedDB (relationnel), le JSON est **imbriqué** : un seul fichier contient le projet complet plus l'image encodée en base64.
+
+### Schéma v1
+
+```json
+{
+  "version": 1,
+  "exportedAt": "2026-04-24T10:00:00.000Z",
+  "project": {
+    "id": "…",
+    "name": "Appartement",
+    "poseParams": { "cale": 0.5, "sawWidth": 0.1, "minPlankLength": 30, "minRowGap": 15 },
+    "catalog": [ { "id": "…", "projectId": "…", "name": "Chêne", "length": 120, "width": 14,
+                   "pricing": { "type": "lot", "pricePerLot": 45, "lotSize": 8 }, "description": "" } ],
+    "rooms": [ { "id": "…", "projectId": "…", "name": "Salon", "vertices": [ { "x": 0, "y": 0 } ],
+                 "rows": [ { "id": "…", "roomId": "…", "plankTypeId": "…",
+                             "segments": [ { "xOffset": 0 } ] } ] } ],
+    "backgroundPlan": { "id": "…", "projectId": "…",
+                        "calibration": { "point1": {…}, "point2": {…}, "realDistance": 200 },
+                        "opacity": 0.7, "rotation": 0, "x": 0, "y": 0 }
+  },
+  "image": { "name": "plan.png", "mimeType": "image/png",
+             "dataUrl": "data:image/png;base64,iVBORw0KGgo…" }
+}
+```
+
+### Invariants
+
+- `project.backgroundPlan.imageFile` n'existe **jamais** dans le JSON — l'image est factorisée au niveau racine (`image`).
+- `image` est omis si le projet n'a pas de plan de fond.
+- À l'import : tous les ids (projet, catalogue, pièces, rangées, plan) sont **régénérés** ; les FK (`row.plankTypeId`, `row.roomId`, `plankType.projectId`, etc.) sont remappées via un `Map<oldId, newId>`. Primitive réutilisable pour le clonage de projet (jalon futur 15.5).
+- Validation à l'import : `version === 1`, champs requis (`project.id`, `project.name`, `project.poseParams`, `project.catalog` tableau, `project.rooms` tableau). Pas de dépendance externe (validation manuelle).
+- Encodage UTF-8, indentation 2 espaces. Pas de BOM.
+
+### Migrations futures
+
+Une v2 nécessitera une migration explicite dans `src/core/projectSerialize.ts` (lecture v1 → upgrade → hydratation). `version` inconnu → erreur `Format non supporté`, jamais de tentative silencieuse.
 
 ## Ce qui est recalculé à chaque rendu
 

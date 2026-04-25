@@ -50,20 +50,43 @@ describeFeature(feature, ({ Background, Scenario }) => {
     })
   })
 
-  Scenario('Aucun lien quand les chutes ne correspondent à aucune rangée', ({ Given, Then }) => {
-    // Rangée A → chute 89.9 cm, Rangée B commence à xOffset=50 (besoin de 70cm) → pas de match
-    Given('une pièce avec une rangée A au décalage 0 cm et une rangée B au décalage 50 cm', () => {
+  Scenario('Aucun lien quand la chute est trop petite pour couvrir le début de la rangée suivante', ({ Given, Then }) => {
+    // Rangée A → chute 89.9 cm, Rangée B commence à xOffset=10 (besoin de 110 cm) → pas de match
+    Given('une pièce avec une rangée A au décalage 0 cm et une rangée B au décalage 10 cm', () => {
       rooms = [{
         id: 'room-1', projectId: 'proj-1', name: 'Salon',
         vertices: [{ x: 0, y: 0 }, { x: 400, y: 0 }, { x: 400, y: 300 }, { x: 0, y: 300 }],
         rows: [
           { id: 'row-a', roomId: 'room-1', plankTypeId: 'pt-1', segments: [{ xOffset: 0 }] },
-          { id: 'row-b', roomId: 'room-1', plankTypeId: 'pt-1', segments: [{ xOffset: 50 }] },
+          { id: 'row-b', roomId: 'room-1', plankTypeId: 'pt-1', segments: [{ xOffset: 10 }] },
         ],
       }]
     })
     Then("aucun lien de réutilisation n'est établi", () => {
       expect(computeOffcutLinks(rooms, [plankType], poseParams)).toHaveLength(0)
+    })
+  })
+
+  Scenario('Réutilisation partielle — la chute couvre le début sans match exact', ({ Given, Then }) => {
+    // Rangée A → chute 89.9 cm, Rangée B commence à xOffset=50 (besoin de 70 cm) → match partiel, lien avec length=70
+    Given('une pièce avec une rangée A au décalage 0 cm et une rangée B au décalage 50 cm', () => {
+      rowAId = 'row-a'
+      rowBId = 'row-b'
+      rooms = [{
+        id: 'room-1', projectId: 'proj-1', name: 'Salon',
+        vertices: [{ x: 0, y: 0 }, { x: 400, y: 0 }, { x: 400, y: 300 }, { x: 0, y: 300 }],
+        rows: [
+          { id: rowAId, roomId: 'room-1', plankTypeId: 'pt-1', segments: [{ xOffset: 0 }] },
+          { id: rowBId, roomId: 'room-1', plankTypeId: 'pt-1', segments: [{ xOffset: 50 }] },
+        ],
+      }]
+    })
+    Then("un lien est établi de A vers B avec une longueur réutilisée d'environ 70 cm", () => {
+      const links = computeOffcutLinks(rooms, [plankType], poseParams)
+      expect(links).toHaveLength(1)
+      expect(links[0].sourceRowId).toBe(rowAId)
+      expect(links[0].targetRowId).toBe(rowBId)
+      expect(links[0].length).toBeCloseTo(70, 1)
     })
   })
 

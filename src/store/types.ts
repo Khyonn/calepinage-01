@@ -26,6 +26,7 @@ export interface RowRecord {
   projectId: string  // denormalized for cleanup (not in domain model)
   plankTypeId: string
   segments: { xOffset: number }[]
+  order: number      // index within room.rows — IDB getAll() sorts by primary key, so order must be persisted explicitly
 }
 
 export interface PlankTypeRecord {

@@ -43,6 +43,6 @@ Fonctionnalité: Règles de pose et calculs dérivés
     Et une pièce "Salon" de 400 cm de large dans le projet
     Et un type de lame "Chêne 120cm" de longueur 120 cm dans le catalogue
     Et une rangée avec un décalage de 0 cm dans la pièce "Salon"
-    Et une rangée avec un décalage de 80 cm dans la pièce "Salon"
+    Et une rangée avec un décalage de 10 cm dans la pièce "Salon"
     Alors le résumé indique 8 lames à commander pour "Chêne 120cm"
     Et aucun lien de réutilisation de chute n'est établi

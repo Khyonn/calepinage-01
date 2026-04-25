@@ -61,5 +61,6 @@ La cascade est déclenchée **dans le même reducer** que `updateSegmentOffset` 
 - Ne s'applique qu'au drag de `segments[0]`. Les segments d'index > 0 (portions intérieures d'une pièce concave) ne produisent pas la chute « fin de rangée » utilisée par les rangées suivantes — leur drag n'entraîne pas de cascade.
 - Ne concerne que les rangées **postérieures** du **même `plankTypeId`** dans la **même pièce**. Les rangées d'un autre type ou d'une autre pièce restent inchangées.
 - Si la rangée dragué n'a pas de chute exploitable, les rangées suivantes retombent à `xOffset = 0`.
+- Chaque rangée recalcule son `xOffset` via `computeDefaultXOffset` et hérite donc du **bornage par `minPlankLength`** (voir [row-fill.md](row-fill.md)) : la cascade ne propage pas de violations évitables. En revanche, le segment **explicitement dragué** par l'utilisateur reste permissif — une violation délibérée reste visible.
 
 Voir aussi [row-fill.md](row-fill.md) pour l'algorithme de remplissage et [constraints-annotations.md](constraints-annotations.md) pour les indicateurs visuels pendant le drag.

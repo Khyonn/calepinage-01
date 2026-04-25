@@ -144,4 +144,31 @@ describeFeature(feature, ({ Scenario }) => {
     })
   })
 
+  Scenario('Pièce 400×49 — la 4e rangée déborde mais reste visible (bug correctif)', ({ Given, And, When, Then }) => {
+    let plankType: PlankType
+    let room: Room
+    let pose: PoseParams
+    let geom: RowGeometry | null
+
+    Given('une pièce rectangulaire 400 cm sur 49 cm à l\'origine', () => {
+      room = makeRectRoom(400, 49, 4, 'pt-Chêne')
+    })
+    And('un type de lame "Chêne" de 100 cm par 14 cm', () => {
+      plankType = makePlankType('Chêne', 100, 14)
+    })
+    And('des paramètres de pose par défaut', () => {
+      pose = DEFAULT_POSE
+    })
+    When('je calcule la géométrie de la rangée d\'index 3', () => {
+      geom = computeRowGeometry(room, 3, [plankType], pose)
+    })
+    Then('la rangée compte 1 segment', () => {
+      expect(geom?.segments).toHaveLength(1)
+    })
+    And('le segment couvre X de 0 à 400', () => {
+      expect(geom?.segments[0].xStart).toBeCloseTo(0, 5)
+      expect(geom?.segments[0].xEnd).toBeCloseTo(400, 5)
+    })
+  })
+
 })

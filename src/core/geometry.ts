@@ -43,41 +43,43 @@ export function intersectStripWithPolygon(
  * widest bounds on the whole band (min X and max X reached anywhere between
  * y1 and y2) — not just the midpoint scanline.
  *
- * Partition comes from the midpoint scanline; each base segment is then
- * extended using samples at y1, y2, and any vertex.y strictly inside the band.
- * This handles diagonal walls (e.g. "L inversé" corners) where the row must
- * start at the leftmost X reached over its own height.
+ * Samples the polygon at the midpoint, just inside y1 and y2, and any vertex
+ * strictly inside the band. Merges all scanline segments across samples into
+ * disjoint extents. Handles diagonal walls (e.g. "L inversé") where the row
+ * must start at the leftmost X reached over its own height, and degenerate
+ * cases where the strip exceeds the polygon on one side (last row with
+ * `remainingHeight < plankWidth/2`) — the midpoint may be outside, but
+ * samples at y1 remain inside.
  */
 export function intersectStripExtents(
   vertices: Point[],
   y1: number,
   y2: number,
 ): [number, number][] {
-  const base = intersectStripWithPolygon(vertices, y1, y2)
-  if (base.length === 0) return []
-
   const eps = 1e-6
-  const sampleYs = new Set<number>([y1 + eps, y2 - eps])
+  const sampleYs = new Set<number>([(y1 + y2) / 2, y1 + eps, y2 - eps])
   for (const v of vertices) {
     if (v.y > y1 + eps && v.y < y2 - eps) sampleYs.add(v.y)
   }
 
-  const extents = base.map(([a, b]) => ({ min: a, max: b }))
-
+  const allSegs: [number, number][] = []
   for (const y of sampleYs) {
-    const segs = scanlineAt(vertices, y)
-    for (const [sa, sb] of segs) {
-      for (const ext of extents) {
-        if (sa < ext.max && sb > ext.min) {
-          if (sa < ext.min) ext.min = sa
-          if (sb > ext.max) ext.max = sb
-          break
-        }
-      }
+    for (const seg of scanlineAt(vertices, y)) allSegs.push(seg)
+  }
+  if (allSegs.length === 0) return []
+
+  allSegs.sort((a, b) => a[0] - b[0])
+  const merged: [number, number][] = [[allSegs[0][0], allSegs[0][1]]]
+  for (let i = 1; i < allSegs.length; i++) {
+    const [sa, sb] = allSegs[i]
+    const last = merged[merged.length - 1]
+    if (sa <= last[1]) {
+      last[1] = Math.max(last[1], sb)
+    } else {
+      merged.push([sa, sb])
     }
   }
-
-  return extents.map(e => [e.min, e.max])
+  return merged
 }
 
 /**

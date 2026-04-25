@@ -78,10 +78,43 @@ Chaque jalon apporte une valeur utilisateur observable. Les sous-étapes `NN.M` 
 | 12.2 | Tableau des liens de réutilisation | [12.2-offcut-table.md](12.2-offcut-table.md) | ✅ |
 | 12.3 | Export CSV | [12.3-export-csv.md](12.3-export-csv.md) | ✅ |
 
+## Roadmap polish (jalons 13 → 15)
+
+Après la livraison du jalon 12, retours d'usage → trois jalons polish ciblent la robustesse domaine, le drawer de résumé, et la navigation générale.
+
+### Jalon 13 — Robustesse domaine & portabilité
+[13-domain-robustness.md](13-domain-robustness.md) — pose auto bornée par `minPlankLength`, fix rendu dernière rangée, export/import JSON, robustesse pose auto et persistance.
+
+| # | Titre | Fichier | Statut |
+|---|---|---|---|
+| 13.1 | Pose auto : respecter `minPlankLength` | [13.1-pose-min-length.md](13.1-pose-min-length.md) | ✅ |
+| 13.2 | Fix dernière rangée invisible (`R < plankWidth/2`) | [13.2-last-row-visible.md](13.2-last-row-visible.md) | ✅ |
+| 13.3 | Export / Import JSON | [13.3-json-import-export.md](13.3-json-import-export.md) | ✅ |
+| 13.4 | Robustesse pose auto, géométrie réelle, ordre persisté | [13.4-robustesse-pose-persistance.md](13.4-robustesse-pose-persistance.md) | ✅ |
+
+### Jalon 14 — Drawer résumé & récapitulatif
+[14-drawer-recap.md](14-drawer-recap.md) — primitive tooltip, restructuration tableau coûts, récapitulatif par rangée avec hover granulaire.
+
+| # | Titre | Fichier | Statut |
+|---|---|---|---|
+| 14.1 | Primitive `Tooltip` (design system) | [14.1-tooltip-primitive.md](14.1-tooltip-primitive.md) | ⬜ |
+| 14.2 | SummaryTable : colonnes « Lames / Quantité / Coût unit. / Coût total » | [14.2-summary-columns.md](14.2-summary-columns.md) | ⬜ |
+| 14.3 | Récapitulatif par rangée avec hover granulaire | [14.3-row-recap.md](14.3-row-recap.md) | ⬜ |
+
+### Jalon 15 — Navigation & menus
+[15-navigation-menus.md](15-navigation-menus.md) — fusion `nav`/`edit`, auto-fit viewport, menus hiérarchiques, import/clone de projet.
+
+| # | Titre | Fichier | Statut |
+|---|---|---|---|
+| 15.1 | Catalogue & pose params visibles en édition | [15.1-catalog-in-edit.md](15.1-catalog-in-edit.md) | ⬜ |
+| 15.2 | Fusion modes `nav` + `edit` | [15.2-merge-nav-edit.md](15.2-merge-nav-edit.md) | ⬜ |
+| 15.3 | Auto-fit viewport à l'ouverture | [15.3-viewport-autofit.md](15.3-viewport-autofit.md) | ⬜ |
+| 15.4 | Ouvrir projet via sous-menu | [15.4-open-submenu.md](15.4-open-submenu.md) | ⬜ |
+| 15.5 | Nouveau projet — sous-menu scratch / import / clone | [15.5-new-submenu.md](15.5-new-submenu.md) | ⬜ |
+
 ## Remarques
 
-- **Pas de jalon 13** : le polish (dark mode, helper raccourcis, nom projet éditable) est intégré dès les jalons 06 et 07, pas reporté en fin de roadmap.
-- **Service Worker / mode hors-ligne** reporté après le jalon 12 : non critique pour une première version utilisable. Sera ajouté comme jalon 13 ou hors-roadmap.
+- **Service Worker / mode hors-ligne** reste hors roadmap polish. À cadrer en jalon dédié si besoin (manifest + `vite-plugin-pwa`).
 - Structure attendue pour une sous-étape : voir [`_template.md`](_template.md).
 - Parallélisation possible au sein d'un jalon : voir la section "Ordre et parallélisation" de chaque fichier `NN-…md`.
 - Les étapes peuvent être insérées en cours de route si une décision de conception révèle des besoins non anticipés — renuméroter les suivantes en conséquence.
