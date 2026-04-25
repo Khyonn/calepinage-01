@@ -13,8 +13,8 @@ interface CalepinageDB extends DBSchema {
   plans:      { key: string; value: PlanRecord;       indexes: { projectId: string } }
 }
 
-const dbPromise = openDB<CalepinageDB>('calepinage', 1, {
-  upgrade(db, oldVersion) {
+const dbPromise = openDB<CalepinageDB>('calepinage', 2, {
+  async upgrade(db, oldVersion, _newVersion, tx) {
     if (oldVersion < 1) {
       db.createObjectStore('projects', { keyPath: 'id' })
       db.createObjectStore('rooms', { keyPath: 'id' }).createIndex('projectId', 'projectId')
@@ -24,6 +24,27 @@ const dbPromise = openDB<CalepinageDB>('calepinage', 1, {
       db.createObjectStore('plankTypes', { keyPath: 'id' }).createIndex('projectId', 'projectId')
       db.createObjectStore('files', { keyPath: 'id' })
       db.createObjectStore('plans', { keyPath: 'id' }).createIndex('projectId', 'projectId')
+    }
+    if (oldVersion < 2) {
+      // v2 — RowRecord gains `order: number`. Original insertion order is
+      // unrecoverable from existing data (cursor walks by primary key UUID).
+      // Backfill assigns order = encounter index per roomId so every record
+      // has the field populated; the next save of any project rewrites
+      // order from the live `room.rows` array (correct order). Until that
+      // save occurs, row layout may visibly shift on first reload —
+      // documented as a known limitation of the v1 → v2 migration.
+      const rowsStore = tx.objectStore('rows')
+      const perRoomCount = new Map<string, number>()
+      let cursor = await rowsStore.openCursor()
+      while (cursor) {
+        const value = cursor.value as RowRecord & { order?: number }
+        if (value.order === undefined) {
+          const idx = perRoomCount.get(value.roomId) ?? 0
+          await cursor.update({ ...value, order: idx })
+          perRoomCount.set(value.roomId, idx + 1)
+        }
+        cursor = await cursor.continue()
+      }
     }
   },
 })
@@ -62,9 +83,12 @@ export async function loadProject(id: string): Promise<Project | null> {
 
   const rooms: Room[] = roomRecords.map((room, i) => ({
     id: room.id, projectId: room.projectId, name: room.name, vertices: room.vertices,
-    rows: (rowGroups[i] ?? []).map((row): Row => ({
-      id: row.id, roomId: row.roomId, plankTypeId: row.plankTypeId, segments: row.segments,
-    })),
+    rows: (rowGroups[i] ?? [])
+      .slice()
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+      .map((row): Row => ({
+        id: row.id, roomId: row.roomId, plankTypeId: row.plankTypeId, segments: row.segments,
+      })),
   }))
 
   const catalog: PlankType[] = plankTypeRecords.map(pt => ({
@@ -112,9 +136,9 @@ export async function saveProject(project: Project): Promise<void> {
       })
     ),
     ...project.rooms.flatMap(room =>
-      room.rows.map(row => tx.objectStore('rows').put({
+      room.rows.map((row, order) => tx.objectStore('rows').put({
         id: row.id, roomId: row.roomId, projectId: project.id,
-        plankTypeId: row.plankTypeId, segments: row.segments,
+        plankTypeId: row.plankTypeId, segments: row.segments, order,
       }))
     ),
     ...project.catalog.map(pt =>

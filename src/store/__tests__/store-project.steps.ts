@@ -186,10 +186,10 @@ describeFeature(feature, ({ Scenario }) => {
       const plankTypeId = selectCatalog(buildAppState(state))[0].id
       state = projectReducer(state, projectActions.addRow({ roomId, row: { id: crypto.randomUUID(), roomId, plankTypeId, segments: [{ xOffset: 0 }] } }))
     })
-    And('une rangée avec un décalage de 80 cm dans la pièce "Salon"', () => {
+    And('une rangée avec un décalage de 10 cm dans la pièce "Salon"', () => {
       const roomId = selectRooms(buildAppState(state))[0].id
       const plankTypeId = selectCatalog(buildAppState(state))[0].id
-      state = projectReducer(state, projectActions.addRow({ roomId, row: { id: crypto.randomUUID(), roomId, plankTypeId, segments: [{ xOffset: 80 }] } }))
+      state = projectReducer(state, projectActions.addRow({ roomId, row: { id: crypto.randomUUID(), roomId, plankTypeId, segments: [{ xOffset: 10 }] } }))
     })
     Then('le résumé indique 8 lames à commander pour "Chêne 120cm"', () => {
       const plankTypeId = selectCatalog(buildAppState(state))[0].id

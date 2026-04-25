@@ -24,3 +24,11 @@ Fonctionnalité: Géométrie d'une rangée — strip Y + segments X + lames
     Et des paramètres de pose par défaut
     Quand je calcule la géométrie de la rangée d'index 5
     Alors la rangée compte 1 segment
+
+  Scénario: Pièce 400×49 — la 4e rangée déborde mais reste visible (bug correctif)
+    Étant donné une pièce rectangulaire 400 cm sur 49 cm à l'origine
+    Et un type de lame "Chêne" de 100 cm par 14 cm
+    Et des paramètres de pose par défaut
+    Quand je calcule la géométrie de la rangée d'index 3
+    Alors la rangée compte 1 segment
+    Et le segment couvre X de 0 à 400

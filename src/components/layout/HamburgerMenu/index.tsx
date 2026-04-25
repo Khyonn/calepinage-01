@@ -8,6 +8,8 @@ import { useAppSelector } from '@/hooks/redux'
 import { selectCurrentProject, selectProjectList } from '@/store/selectors'
 import { useHamburgerMenu } from './useHamburgerMenu'
 import { useExportCsv } from './useExportCsv'
+import { useExportJson } from './useExportJson'
+import { useImportJson } from './useImportJson'
 import styles from './HamburgerMenu.module.css'
 
 type ActiveDialog = null | 'new' | 'open' | 'delete'
@@ -20,6 +22,8 @@ export function HamburgerMenu() {
   const current = useAppSelector(selectCurrentProject)
   const list = useAppSelector(selectProjectList)
   const exportCsv = useExportCsv()
+  const exportJson = useExportJson()
+  const importJson = useImportJson()
 
   const close = () => setOpen(false)
   const openDialog = (d: ActiveDialog) => { setDialog(d); close() }
@@ -50,6 +54,21 @@ export function HamburgerMenu() {
             disabled={!current}
           >
             Exporter CSV
+          </button>
+          <button
+            role="menuitem"
+            className={styles.item}
+            onClick={() => { void exportJson(); close() }}
+            disabled={!current}
+          >
+            Exporter JSON
+          </button>
+          <button
+            role="menuitem"
+            className={styles.item}
+            onClick={() => { importJson(); close() }}
+          >
+            Importer JSON
           </button>
           <button
             role="menuitem"

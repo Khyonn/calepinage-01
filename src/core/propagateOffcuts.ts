@@ -34,6 +34,6 @@ export function propagateOffcuts(
     if (row.plankTypeId !== changedRow.plankTypeId) continue
     if (!row.segments[0]) continue
 
-    row.segments[0].xOffset = computeDefaultXOffset(room, plankType, poseParams, i)
+    row.segments[0].xOffset = computeDefaultXOffset(room, plankType, poseParams, i, plankTypes)
   }
 }

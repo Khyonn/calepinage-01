@@ -12,6 +12,6 @@ export const addRowThunk = () => (dispatch: AppDispatch, getState: () => AppStat
   const poseParams = state.project.current.poseParams
   if (!room || !plankType) return
 
-  const row = addRowCore(room, plankType, poseParams)
+  const row = addRowCore(room, plankType, poseParams, state.project.current.catalog)
   dispatch(projectActions.addRow({ roomId: activeRoomId, row }))
 }

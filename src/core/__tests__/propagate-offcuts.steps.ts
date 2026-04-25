@@ -1,6 +1,7 @@
 import { expect } from 'vitest'
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber'
 import { propagateOffcuts } from '@/core/propagateOffcuts'
+import { fillRow } from '@/core/rowFill'
 import type { PlankType, PoseParams, Room } from '@/core/types'
 
 const feature = await loadFeature('src/core/__tests__/propagate-offcuts.feature', { language: 'fr' })
@@ -95,7 +96,32 @@ describeFeature(feature, ({ Background, Scenario }) => {
     })
   })
 
-  Scenario('Source sans chute — downstream retombe à zéro', ({ Given, When, Then }) => {
+  Scenario('Cascade post-drag borne la reuse pour respecter minPlankLength', ({ Given, When, Then, And }) => {
+    let plankD: PlankType
+    Given('une pièce 161×200 avec cale 0.5 contenant 2 rangées du type "D" 100×10 avec xOffsets [0, 99]', () => {
+      plankD = makePlankType('pt-d', 'D', 100, 10)
+      poseParams = { cale: 0.5, sawWidth: 0.1, minPlankLength: 30, minRowGap: 15 }
+      room = makeRectRoom(161, 200)
+      room.rows = [
+        { id: 'd0', roomId: room.id, plankTypeId: plankD.id, segments: [{ xOffset: 0 }] },
+        { id: 'd1', roomId: room.id, plankTypeId: plankD.id, segments: [{ xOffset: 99 }] },
+      ]
+    })
+    When('je propage à partir de la rangée d\'index 0', () => {
+      propagateOffcuts(room, [plankD], poseParams, 'd0')
+    })
+    Then('la rangée d\'index 1 a un xOffset strictement inférieur à 60.1', () => {
+      expect(room.rows[1].segments[0].xOffset).toBeLessThan(60.1)
+    })
+    And('la dernière lame de la rangée d\'index 1 est supérieure ou égale à 30 cm', () => {
+      const planks = fillRow(room.rows[1].segments[0].xOffset, 161, plankD, poseParams)
+      const last = planks[planks.length - 1]
+      const isFull = Math.abs(last.length - plankD.length) < 0.001
+      if (!isFull) expect(last.length).toBeGreaterThanOrEqual(30 - 0.001)
+    })
+  })
+
+  Scenario('Source sans chute — downstream choisit un xOffset respectant minRowGap', ({ Given, And, When, Then }) => {
     let plankC: PlankType
     Given('une pièce 400×300 sans cale contenant 2 rangées du type "C" 100 cm avec xOffsets [0, 55]', () => {
       plankC = makePlankType('pt-c', 'C', 100, 10)
@@ -109,8 +135,16 @@ describeFeature(feature, ({ Background, Scenario }) => {
     When('je propage à partir de la rangée d\'index 0', () => {
       propagateOffcuts(room, [plankC], poseParams, 'c0')
     })
-    Then('la rangée d\'index 1 a un xOffset de 0 cm', () => {
-      expect(room.rows[1].segments[0].xOffset).toBe(0)
+    Then('la rangée d\'index 1 a un xOffset strictement positif', () => {
+      expect(room.rows[1].segments[0].xOffset).toBeGreaterThan(0)
+    })
+    And('l\'écart de joint final entre les deux rangées est supérieur ou égal à 15 cm', () => {
+      const prevPlanks = fillRow(room.rows[0].segments[0].xOffset, 400, plankC, poseParams)
+      const newPlanks = fillRow(room.rows[1].segments[0].xOffset, 400, plankC, poseParams)
+      const available = 400 - 2 * poseParams.cale
+      const prevJoint = available - prevPlanks[prevPlanks.length - 1].length
+      const newJoint = available - newPlanks[newPlanks.length - 1].length
+      expect(Math.abs(newJoint - prevJoint)).toBeGreaterThanOrEqual(poseParams.minRowGap - 0.001)
     })
   })
 })

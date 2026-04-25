@@ -17,11 +17,17 @@ Le décalage initial de `cale` réserve la zone de dilatation en **haut** de la 
 
 La bande est intersectée avec le polygone via `intersectStripExtents` (`src/core/geometry.ts`) :
 
-1. Partitionnement par **scanline au milieu** (`yMid`) — détermine le nombre de segments disjoints.
-2. Échantillonnage supplémentaire en `y1`, `y2` et à chaque `vertex.y` strictement inclus dans la bande.
-3. Pour chaque segment de base, fusion avec les échantillons qui le chevauchent horizontalement → `xStart = min`, `xEnd = max` sur toute la hauteur de la bande.
+1. Échantillonnage de scanlines au **milieu** (`yMid`), juste au-dessus de `y1`, juste en-dessous de `y2`, et à chaque `vertex.y` strictement inclus dans la bande.
+2. Union des segments X collectés à travers tous les échantillons.
+3. Fusion des intervalles qui se chevauchent → liste ordonnée de segments disjoints, couvrant les **bornes X extrêmes** atteintes sur la hauteur de la bande.
 
 Conséquence : dans un coin type "L inversé" avec un mur diagonal, la rangée s'étend jusqu'au **X minimum atteint** sur la hauteur de la bande. Les lames sont comptées comme **entières** (pour la matière), tout en étant **clippées visuellement** au polygone via un `<clipPath>` SVG (les planches seraient physiquement coupées dans leur longueur pour épouser le coin).
+
+### Cas dégénéré — dernière rangée qui déborde
+
+Si la hauteur restante de la pièce est inférieure à la largeur d'une lame, la bande `[yStart, yEnd]` dépasse la limite haute du polygone. Tant qu'un des échantillons (typiquement `y1 + eps`) reste à l'intérieur, la rangée est produite avec ses bornes X correctes. La lame elle-même conserve sa largeur nominale dans le modèle, mais le rendu canvas la clippe au polygone via le `<clipPath>` de la pièce. C'est un signal visuel explicite d'un débord sans bloquer l'utilisateur.
+
+Si aucun échantillon n'atteint l'intérieur (bande entièrement hors polygone), `intersectStripExtents` renvoie une liste vide et aucun segment n'est rendu — cas marginal qui correspond à une rangée totalement hors de la pièce.
 
 Une pièce concave (en L, en U…) peut produire **plusieurs segments** pour une même rangée. Chaque segment est rempli indépendamment.
 
@@ -90,14 +96,43 @@ L'algorithme cherche, parmi les chutes disponibles du même type de lame, la plu
 
 ### Valeur par défaut à l'ajout d'une rangée
 
-`addRow(room, plankType, poseParams)` (dans `src/core/addRow.ts`) fixe le `xOffset` initial du segment 0 en consommant la chute de la rangée précédente du **même type de lame** dans la pièce :
+`addRow(room, plankType, poseParams)` (dans `src/core/addRow.ts`) fixe le `xOffset` initial du segment 0 en consommant la chute de la rangée précédente du **même type de lame** dans la pièce (s'il en existe une), puis **borne** ce xOffset pour que la dernière lame respecte `minPlankLength`.
+
+**Cas A — chute exploitable** (`offcut ≥ minPlankLength`) :
 
 ```
-prev     = dernière row de la pièce avec plankTypeId identique (s'il en existe)
-offcut   = computeOffcutLength(prev.segments[0].xOffset, roomWidth, plankType, poseParams)
-xOffset₀ = offcut > 0 ? plankType.length - offcut : 0
+prev       = dernière row de la pièce avec plankTypeId identique
+offcut     = computeOffcutLength(prev.segments[0].xOffset, roomWidth, plankType, poseParams)
+xOffset_full = plankType.length - offcut
+xOffset₀   = plus grand x ∈ [0, xOffset_full] (pas 0,1 cm) tel que
+             la première ET la dernière lame de fillRow(x, …) soient
+             ≥ minPlankLength (ou de longueur nominale entière),
+             ou 0 à défaut.
 ```
 
-`computeOffcutLinks` (selector `selectOffcutLinks`) matérialisera le lien `sourceRowId → targetRowId` au rendu : annotation blanche = chute réutilisée, annotation rouge (`--danger`) = chute non consommée.
+Recherche descendante : on part de la consommation maximale de la chute et on **réduit** l'usage (quitte à perdre une partie de la chute) jusqu'à trouver un xOffset qui valide les deux extrémités. Une chute < `minPlankLength` ne peut pas servir de première lame sans créer une violation — elle est traitée comme "absente" et bascule en Cas B.
+
+**Cas B — pas de chute exploitable** (première rangée du type, prev sans chute, ou chute < minPlankLength) :
+
+```
+xOffset₀ = plus petit x ∈ [0, plankType.length) (pas 0,1 cm) tel que
+           la première ET la dernière lame de fillRow(x, …) soient
+           ≥ minPlankLength (ou de longueur nominale entière),
+           ou 0 à défaut.
+```
+
+Recherche montante : on part de `x = 0` (première lame entière) et on **augmente** progressivement (perte volontaire en début de rangée) jusqu'à pousser la dernière lame au-dessus du seuil. Dans la majorité des cas `x = 0` satisfait directement ; ce bornage ne s'active que pour les configurations problématiques (dimension pièce produisant une dernière lame trop courte).
+
+La recherche dans les deux cas est une simulation pas-à-pas via `fillRow` — simple et déterministe. La largeur utilisée est celle du **segment[0] réel** de la rangée à l'index considéré (via `intersectStripExtents`), **pas** la bbox de la pièce — important pour les pièces non rectangulaires où le bump/notch d'un mur peut faire diverger les deux.
+
+**Bornage `minRowGap`** : la recherche tente d'abord de satisfaire **simultanément** `minPlankLength` (première et dernière planches) **et** `minRowGap` (écart entre le joint de fin de la rangée précédente — quel que soit son type — et celui de la nouvelle rangée). Si aucun xOffset n'y parvient, elle retombe sur le bornage `minPlankLength` seul (la contrainte esthétique est alors signalée visuellement). Permet à la pose auto de résoudre le cas trivial où deux rangées consécutives auraient des joints superposés (gap = 0).
+
+- Cas trivial : rangée tenant en une seule lame → toujours valide.
+- Cas trivial : dernière lame entière (division exacte) → toujours valide.
+- Fallback : aucun `x` du domaine ne satisfait → `xOffset = 0`.
+
+Le **drag manuel** d'un segment n'applique **pas** cette règle (voir [row-drag.md](row-drag.md)) : l'utilisateur reste libre de créer sciemment une violation, qui reste signalée visuellement. En revanche la **cascade** post-drag (`propagateOffcuts`) délègue à `computeDefaultXOffset` et bénéficie donc du bornage.
+
+`computeOffcutLinks` (selector `selectOffcutLinks`) matérialise le lien `sourceRowId → targetRowId` au rendu : annotation blanche = chute réutilisée, annotation rouge (`--danger`) = chute non consommée. La réutilisation est **partielle** : un lien est établi dès qu'une chute disponible est ≥ à la portion consommée par la rangée cible (`plankType.length − xOffset`). Le résidu de la chute source (chute − consommé) est considéré perdu — une coupe de scie supplémentaire serait nécessaire pour le récupérer. La longueur stockée dans le lien (`OffcutLink.length`) est la portion **consommée**, pas la chute brute.
 
 Voir aussi [row-drag.md](row-drag.md) pour le comportement pendant le glisser-déposer.

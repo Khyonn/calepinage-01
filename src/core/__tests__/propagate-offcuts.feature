@@ -20,7 +20,14 @@ Fonctionnalité: Propagation en cascade du xOffset après modification d'une ran
     Et la rangée B0 garde son xOffset de 33 cm
     Et la rangée B1 garde son xOffset de 77 cm
 
-  Scénario: Source sans chute — downstream retombe à zéro
+  Scénario: Source sans chute — downstream choisit un xOffset respectant minRowGap
     Soit une pièce 400×300 sans cale contenant 2 rangées du type "C" 100 cm avec xOffsets [0, 55]
     Quand je propage à partir de la rangée d'index 0
-    Alors la rangée d'index 1 a un xOffset de 0 cm
+    Alors la rangée d'index 1 a un xOffset strictement positif
+    Et l'écart de joint final entre les deux rangées est supérieur ou égal à 15 cm
+
+  Scénario: Cascade post-drag borne la reuse pour respecter minPlankLength
+    Soit une pièce 161×200 avec cale 0.5 contenant 2 rangées du type "D" 100×10 avec xOffsets [0, 99]
+    Quand je propage à partir de la rangée d'index 0
+    Alors la rangée d'index 1 a un xOffset strictement inférieur à 60.1
+    Et la dernière lame de la rangée d'index 1 est supérieure ou égale à 30 cm

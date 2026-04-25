@@ -1,4 +1,5 @@
 import type { OffcutLink, Plank, PlankType, PoseParams, Room } from '@/core/types'
+import { intersectStripExtents } from '@/core/geometry'
 
 const EPSILON = 0.001 // cm — float comparison tolerance
 
@@ -88,13 +89,26 @@ export function computeOffcutLinks(
   const links: OffcutLink[] = []
 
   for (const plankType of plankTypes) {
-    // Collect all rows of this type across all rooms, in order
+    // Collect all rows of this type across all rooms, in order. Use the
+    // actual segment[0] width derived from `intersectStripExtents` —
+    // matches what the renderer sees. Bbox would diverge in non-rectangular
+    // rooms, producing wrong offcut sizes and missed links.
     const rows: RowWithContext[] = []
     for (const room of rooms) {
-      for (const row of room.rows) {
-        if (row.plankTypeId === plankType.id) {
-          rows.push({ rowId: row.id, roomId: room.id, xOffset: row.segments[0]?.xOffset ?? 0, roomWidth: computeRoomWidth(room) })
-        }
+      const roomMinY = room.vertices.length > 0 ? Math.min(...room.vertices.map(v => v.y)) : 0
+      for (let i = 0; i < room.rows.length; i++) {
+        const row = room.rows[i]
+        if (row.plankTypeId !== plankType.id) continue
+        const yStart = roomMinY + poseParams.cale + i * plankType.width
+        const yEnd = yStart + plankType.width
+        const segs = intersectStripExtents(room.vertices, yStart, yEnd)
+        const segWidth = segs.length > 0 ? segs[0][1] - segs[0][0] : 0
+        rows.push({
+          rowId: row.id,
+          roomId: room.id,
+          xOffset: row.segments[0]?.xOffset ?? 0,
+          roomWidth: segWidth,
+        })
       }
     }
 
@@ -105,11 +119,14 @@ export function computeOffcutLinks(
       const consumed = row.xOffset > 0 ? plankType.length - row.xOffset : 0
 
       if (consumed > EPSILON) {
-        // Try to match with an available offcut
-        const idx = offcuts.findIndex(o => Math.abs(o.length - consumed) < EPSILON)
+        // Match with the first offcut large enough to cover the target's
+        // first-plank need. Partial reuse (consumed < offcut.length) is
+        // allowed — the residual of the source offcut is considered lost
+        // (one more saw cut wasted). Exact match is a special case of this.
+        const idx = offcuts.findIndex(o => o.length + EPSILON >= consumed)
         if (idx !== -1) {
           const match = offcuts.splice(idx, 1)[0]
-          links.push({ sourceRowId: match.sourceRowId, targetRowId: row.rowId, length: match.length })
+          links.push({ sourceRowId: match.sourceRowId, targetRowId: row.rowId, length: consumed })
         }
       }
 
@@ -124,8 +141,3 @@ export function computeOffcutLinks(
   return links
 }
 
-function computeRoomWidth(room: Room): number {
-  if (room.vertices.length < 2) return 0
-  const xs = room.vertices.map(v => v.x)
-  return Math.max(...xs) - Math.min(...xs)
-}

@@ -13,3 +13,17 @@ Fonctionnalité: Géométrie — calibration et intersections
     Quand je calcule les extents de la bande y=[0,20] sur le polygone L inversé (50,0) (200,0) (200,100) (0,100) (0,50)
     Alors il y a 1 segment
     Et le segment a x_start ≈ 30 et x_end = 200
+
+  Scénario: Bande partiellement hors polygone — midpoint hors, y1 dedans
+    Quand je calcule les extents de la bande y=[42,56] sur un rectangle 400×49 à l'origine
+    Alors il y a 1 segment
+    Et le segment a x_start = 0 et x_end = 400
+
+  Scénario: Bande entièrement hors polygone
+    Quand je calcule les extents de la bande y=[60,74] sur un rectangle 400×49 à l'origine
+    Alors il n'y a aucun segment
+
+  Scénario: Bande hors polygone — midpoint dedans, y2 hors
+    Quand je calcule les extents de la bande y=[40,54] sur un rectangle 400×49 à l'origine
+    Alors il y a 1 segment
+    Et le segment a x_start = 0 et x_end = 400

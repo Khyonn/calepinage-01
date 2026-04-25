@@ -43,4 +43,54 @@ describeFeature(feature, ({ Scenario }) => {
       expect(extents[0][1]).toBeCloseTo(200, 5)
     })
   })
+
+  Scenario('Bande partiellement hors polygone — midpoint hors, y1 dedans', ({ When, Then, And }) => {
+    let extents: [number, number][]
+    When('je calcule les extents de la bande y=[42,56] sur un rectangle 400×49 à l\'origine', () => {
+      const vertices = rectangle(400, 49)
+      extents = intersectStripExtents(vertices, 42, 56)
+    })
+    Then('il y a 1 segment', () => {
+      expect(extents).toHaveLength(1)
+    })
+    And('le segment a x_start = 0 et x_end = 400', () => {
+      expect(extents[0][0]).toBeCloseTo(0, 5)
+      expect(extents[0][1]).toBeCloseTo(400, 5)
+    })
+  })
+
+  Scenario('Bande entièrement hors polygone', ({ When, Then }) => {
+    let extents: [number, number][]
+    When('je calcule les extents de la bande y=[60,74] sur un rectangle 400×49 à l\'origine', () => {
+      const vertices = rectangle(400, 49)
+      extents = intersectStripExtents(vertices, 60, 74)
+    })
+    Then('il n\'y a aucun segment', () => {
+      expect(extents).toHaveLength(0)
+    })
+  })
+
+  Scenario('Bande hors polygone — midpoint dedans, y2 hors', ({ When, Then, And }) => {
+    let extents: [number, number][]
+    When('je calcule les extents de la bande y=[40,54] sur un rectangle 400×49 à l\'origine', () => {
+      const vertices = rectangle(400, 49)
+      extents = intersectStripExtents(vertices, 40, 54)
+    })
+    Then('il y a 1 segment', () => {
+      expect(extents).toHaveLength(1)
+    })
+    And('le segment a x_start = 0 et x_end = 400', () => {
+      expect(extents[0][0]).toBeCloseTo(0, 5)
+      expect(extents[0][1]).toBeCloseTo(400, 5)
+    })
+  })
 })
+
+function rectangle(width: number, height: number) {
+  return [
+    { x: 0, y: 0 },
+    { x: width, y: 0 },
+    { x: width, y: height },
+    { x: 0, y: height },
+  ]
+}
