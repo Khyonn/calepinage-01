@@ -112,4 +112,47 @@ describeFeature(feature, ({ Background, BeforeEachScenario, Scenario }) => {
       expect(result.totalCost).toBe(0)
     })
   })
+
+  Scenario('Pièce non-rectangulaire — la dernière rangée utilise la largeur réelle du segment', ({ Given, And, Then }) => {
+    // Régression : avant le fix, computeSummary utilisait la bbox de la pièce
+    // (400 cm de large) pour toutes les rangées, surcomptant les lames pour
+    // les rangées situées dans la zone étroite (100 cm de large).
+    // Forme L : zone large 0..400 sur y 0..40, zone étroite 0..100 sur y 40..60.
+    // Rangée 1 (y 0-20) → segWidth 400, 4 lames.
+    // Rangée 2 (y 20-40) → segWidth 400, 4 lames.
+    // Rangée 3 (y 40-60) → segWidth 100, 1 lame (pas 4 comme avec bbox).
+    Given('une pièce en L avec une zone étroite en bas', () => {
+      rooms = [{
+        id: 'room-l', projectId: 'proj-1', name: 'L',
+        vertices: [
+          { x: 0, y: 0 }, { x: 400, y: 0 },
+          { x: 400, y: 40 }, { x: 100, y: 40 },
+          { x: 100, y: 60 }, { x: 0, y: 60 },
+        ],
+        rows: [],
+      }]
+    })
+    And('trois rangées en pose droite au décalage 0', () => {
+      rooms[0].rows = [
+        { id: 'r1', roomId: 'room-l', plankTypeId: 'pt-1', segments: [{ xOffset: 0 }] },
+        { id: 'r2', roomId: 'room-l', plankTypeId: 'pt-1', segments: [{ xOffset: 0 }] },
+        { id: 'r3', roomId: 'room-l', plankTypeId: 'pt-1', segments: [{ xOffset: 0 }] },
+      ]
+    })
+    And('un type de lame de longueur 120 cm largeur 20 cm au prix unitaire de 1 €', () => {
+      plankType = {
+        id: 'pt-1', projectId: 'proj-1', name: 'Test',
+        length: 120, width: 20,
+        pricing: { type: 'unit', pricePerUnit: 1 },
+        description: '',
+      }
+    })
+    And('des paramètres de pose cale 0 scie 0.1 minimum 30', () => {
+      poseParams = { cale: 0, sawWidth: 0.1, minPlankLength: 30, minRowGap: 15 }
+    })
+    Then('le résumé indique 9 lames nécessaires', () => {
+      const result = computeSummary(rooms, [plankType], poseParams, offcutLinks)
+      expect(result.byType[0].planksNeeded).toBe(9)
+    })
+  })
 })

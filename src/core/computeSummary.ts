@@ -1,5 +1,6 @@
 import type { OffcutLink, PlankType, PoseParams, Room, SummaryResult } from '@/core/types'
 import { fillRow } from '@/core/rowFill'
+import { intersectStripExtents } from '@/core/geometry'
 
 /**
  * Compute how many planks need to be purchased per type, and the total cost.
@@ -7,6 +8,10 @@ import { fillRow } from '@/core/rowFill'
  * A row starting with a reused offcut (= has an inbound OffcutLink) does not
  * require purchasing a plank for its first piece — it was already counted in
  * the source row.
+ *
+ * Multi-segment rows (non-rectangular rooms) are summed across all geometric
+ * segments. Each row's segment widths come from `intersectStripExtents`,
+ * matching the renderer and `computeOffcutLinks` (cf. 13.4).
  */
 export function computeSummary(
   rooms: Room[],
@@ -20,21 +25,35 @@ export function computeSummary(
     let planksNeeded = 0
 
     for (const room of rooms) {
-      const roomWidth = computeRoomWidth(room)
+      const roomMinY = room.vertices.length > 0
+        ? Math.min(...room.vertices.map(v => v.y))
+        : 0
 
-      for (const row of room.rows) {
+      for (let i = 0; i < room.rows.length; i++) {
+        const row = room.rows[i]
         if (row.plankTypeId !== plankType.id) continue
 
-        const planks = fillRow(row.segments[0]?.xOffset ?? 0, roomWidth, plankType, poseParams)
-        if (planks.length === 0) continue
+        const yStart = roomMinY + poseParams.cale + i * plankType.width
+        const yEnd = yStart + plankType.width
+        const segments = intersectStripExtents(room.vertices, yStart, yEnd)
+        if (segments.length === 0) continue
 
         const startsFromOffcut = consumingRowIds.has(row.id)
 
-        // First piece: needs a fresh plank unless it comes from a reused offcut
-        if (!startsFromOffcut) planksNeeded++
+        segments.forEach(([xStart, xEnd], segIdx) => {
+          const segWidth = xEnd - xStart
+          const xOffset = row.segments[segIdx]?.xOffset ?? 0
+          const planks = fillRow(xOffset, segWidth, plankType, poseParams)
+          if (planks.length === 0) return
 
-        // Middle + last planks (index 1 onward), each cut from a fresh plank
-        planksNeeded += planks.length - 1
+          // First piece of segment[0]: covered by the reused offcut when the
+          // row is a target. Other segments are independent and always need
+          // a fresh first plank.
+          const firstFromOffcut = segIdx === 0 && startsFromOffcut
+          if (!firstFromOffcut) planksNeeded++
+
+          planksNeeded += planks.length - 1
+        })
       }
     }
 
@@ -52,10 +71,4 @@ function computeCost(planksNeeded: number, plankType: PlankType): number {
     return planksNeeded * pricing.pricePerUnit
   }
   return Math.ceil(planksNeeded / pricing.lotSize) * pricing.pricePerLot
-}
-
-function computeRoomWidth(room: Room): number {
-  if (room.vertices.length < 2) return 0
-  const xs = room.vertices.map(v => v.x)
-  return Math.max(...xs) - Math.min(...xs)
 }
