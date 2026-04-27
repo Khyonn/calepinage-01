@@ -110,8 +110,8 @@ Après la livraison du jalon 12, retours d'usage → trois jalons polish ciblent
 | 15.1 | Catalogue & pose params visibles en édition | [15.1-catalog-in-edit.md](15.1-catalog-in-edit.md) | ⬜ |
 | 15.2 | Fusion modes `nav` + `edit` | [15.2-merge-nav-edit.md](15.2-merge-nav-edit.md) | ⬜ |
 | 15.3 | Auto-fit viewport à l'ouverture | [15.3-viewport-autofit.md](15.3-viewport-autofit.md) | ⬜ |
-| 15.4 | Ouvrir projet via sous-menu | [15.4-open-submenu.md](15.4-open-submenu.md) | ⬜ |
-| 15.5 | Nouveau projet — sous-menu scratch / import / clone | [15.5-new-submenu.md](15.5-new-submenu.md) | ⬜ |
+| 15.4 | Ouvrir projet via sous-menu | [15.4-open-submenu.md](15.4-open-submenu.md) | ✅ |
+| 15.5 | Nouveau projet — sous-menu scratch / import / clone | [15.5-new-submenu.md](15.5-new-submenu.md) | ✅ |
 
 ## Remarques
 

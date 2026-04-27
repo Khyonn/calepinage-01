@@ -2,13 +2,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import type { BackgroundPlan, PlankType, PoseParams, Project, Point, Row } from '@/core/types'
 import type { ProjectState, ProjectsListEntry } from '@/store/types'
 import { propagateOffcuts } from '@/core/propagateOffcuts'
-
-const DEFAULT_POSE_PARAMS: PoseParams = {
-  cale: 0.5,
-  sawWidth: 0.1,
-  minPlankLength: 30,
-  minRowGap: 15,
-}
+import { DEFAULT_POSE_PARAMS } from '@/core/defaults'
 
 const initialState: ProjectState = {
   list: [],
