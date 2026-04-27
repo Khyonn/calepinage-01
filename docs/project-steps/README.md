@@ -98,8 +98,8 @@ Après la livraison du jalon 12, retours d'usage → trois jalons polish ciblent
 | # | Titre | Fichier | Statut |
 |---|---|---|---|
 | 14.1 | Primitive `Tooltip` (design system) | [14.1-tooltip-primitive.md](14.1-tooltip-primitive.md) | ✅ |
-| 14.2 | SummaryTable : colonnes « Lames / Quantité / Coût unit. / Coût total » | [14.2-summary-columns.md](14.2-summary-columns.md) | ⬜ |
-| 14.3 | Récapitulatif par rangée avec hover granulaire | [14.3-row-recap.md](14.3-row-recap.md) | ⬜ |
+| 14.2 | SummaryTable : colonnes « Lames / Quantité / Coût unit. / Coût total » | [14.2-summary-columns.md](14.2-summary-columns.md) | ✅ |
+| 14.3 | Récapitulatif par rangée avec hover granulaire | [14.3-row-recap.md](14.3-row-recap.md) | ✅ |
 | 14.4 | Édition inline de la longueur de planche depuis le canvas | [14.4-inline-edit-plank.md](14.4-inline-edit-plank.md) | ✅ |
 
 ### Jalon 15 — Navigation & menus

@@ -3,14 +3,49 @@ import { selectCatalog, selectSummary } from '@/store/selectors'
 import type { PlankType, PlankTypeSummary } from '@/core/types'
 import styles from './SummaryTable.module.css'
 
+const euro = new Intl.NumberFormat('fr-FR', {
+  style: 'currency',
+  currency: 'EUR',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})
+
 function formatEuro(value: number): string {
-  return `${value.toFixed(2)} €`
+  return euro.format(value)
 }
 
-function unitCost(plankType: PlankType): number {
-  return plankType.pricing.type === 'unit'
-    ? plankType.pricing.pricePerUnit
-    : plankType.pricing.pricePerLot / plankType.pricing.lotSize
+function plankCountLabel(n: number): string {
+  return `${n} lame${n > 1 ? 's' : ''}`
+}
+
+interface QuantityDisplay {
+  primary: string
+  secondary?: string
+}
+
+function quantityDisplay(planksNeeded: number, plankType: PlankType): QuantityDisplay {
+  const { pricing } = plankType
+  if (pricing.type === 'unit') {
+    return { primary: `${planksNeeded} unité${planksNeeded > 1 ? 's' : ''}` }
+  }
+  const lots = Math.ceil(planksNeeded / pricing.lotSize)
+  return {
+    primary: `${lots} lot${lots > 1 ? 's' : ''} de ${pricing.lotSize}`,
+    secondary: `${planksNeeded} unité${planksNeeded > 1 ? 's' : ''}`,
+  }
+}
+
+interface UnitCostDisplay {
+  amount: string
+  basis: string
+}
+
+function unitCostDisplay(plankType: PlankType): UnitCostDisplay {
+  const { pricing } = plankType
+  if (pricing.type === 'unit') {
+    return { amount: formatEuro(pricing.pricePerUnit), basis: '/ unité' }
+  }
+  return { amount: formatEuro(pricing.pricePerLot), basis: '/ lot' }
 }
 
 export function SummaryTable() {
@@ -33,9 +68,9 @@ export function SummaryTable() {
     <table className={styles.table}>
       <thead>
         <tr>
-          <th scope="col">Type de lame</th>
+          <th scope="col">Lames</th>
           <th scope="col" className={styles.num}>Quantité</th>
-          <th scope="col" className={styles.num}>Coût unitaire</th>
+          <th scope="col" className={styles.num}>Coût unit.</th>
           <th scope="col" className={styles.num}>Coût total</th>
         </tr>
       </thead>
@@ -43,16 +78,25 @@ export function SummaryTable() {
         {rows.map((s: PlankTypeSummary) => {
           const plankType = catalogById.get(s.plankTypeId)
           if (!plankType) return null
+          const qty = quantityDisplay(s.planksNeeded, plankType)
+          const unit = unitCostDisplay(plankType)
           return (
             <tr key={s.plankTypeId}>
               <td>
+                <div className={styles.typePrimary}>{plankCountLabel(s.planksNeeded)}</div>
                 <div className={styles.typeName}>{plankType.name}</div>
                 <div className={styles.typeDims}>
                   {plankType.length} × {plankType.width} cm
                 </div>
               </td>
-              <td className={styles.num}>{s.planksNeeded}</td>
-              <td className={styles.num}>{formatEuro(unitCost(plankType))}</td>
+              <td className={styles.num}>
+                <div>{qty.primary}</div>
+                {qty.secondary && <div className={styles.secondary}>{qty.secondary}</div>}
+              </td>
+              <td className={styles.num}>
+                <div>{unit.amount}</div>
+                <div className={styles.secondary}>{unit.basis}</div>
+              </td>
               <td className={styles.num}>{formatEuro(s.cost)}</td>
             </tr>
           )

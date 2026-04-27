@@ -151,14 +151,19 @@ export const selectSummary = createSelector(
   }
 )
 
-export const selectHighlightedRowIds = createSelector(
+export interface HighlightedPlank {
+  rowId: string
+  position: 'first' | 'last'
+}
+
+export const selectHighlightedPlanks = createSelector(
   selectHoveredOffcutLinkId,
-  (hoveredId): Set<string> => {
-    if (!hoveredId) return new Set()
+  (hoveredId): HighlightedPlank[] => {
+    if (!hoveredId) return []
     const [sourceId, targetId] = hoveredId.split(OFFCUT_LINK_ID_SEP)
-    const out = new Set<string>()
-    if (sourceId) out.add(sourceId)
-    if (targetId) out.add(targetId)
+    const out: HighlightedPlank[] = []
+    if (sourceId) out.push({ rowId: sourceId, position: 'last' })
+    if (targetId) out.push({ rowId: targetId, position: 'first' })
     return out
   }
 )

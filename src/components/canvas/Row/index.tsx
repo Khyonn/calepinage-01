@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import {
   selectPoseParams, selectOffcutLinks, selectViolations,
   selectInteractionMode, selectActiveRoomId, selectCurrentProject,
-  selectHighlightedRowIds,
+  selectHighlightedPlanks,
 } from '@/store/selectors'
 import { projectActions } from '@/store/projectSlice'
 import { useViewportContext } from '@/components/canvas/Scene/ViewportContext'
@@ -31,7 +31,7 @@ export function Row({ roomId, rowId }: Props) {
   const mode = useAppSelector(selectInteractionMode)
   const activeRoomId = useAppSelector(selectActiveRoomId)
   const project = useAppSelector(selectCurrentProject)
-  const highlightedRowIds = useAppSelector(selectHighlightedRowIds)
+  const highlightedPlanks = useAppSelector(selectHighlightedPlanks)
   const { viewport } = useViewportContext()
 
   const dragActive = activeRoomId === roomId && mode === 'edit'
@@ -71,6 +71,11 @@ export function Row({ roomId, rowId }: Props) {
     dispatch(projectActions.updateSegmentOffset({ roomId, rowId, segmentIndex, xOffset }))
   }
 
+  // Offcut links se dérivent du segment[0] seulement (cf. computeOffcutLinks).
+  // Highlight first/last cible donc la première/dernière planche de segment[0].
+  const highlightFirst = highlightedPlanks.some(h => h.rowId === rowId && h.position === 'first')
+  const highlightLast = highlightedPlanks.some(h => h.rowId === rowId && h.position === 'last')
+
   return (
     <g>
       {effectiveSegments.map((seg, i) => {
@@ -92,7 +97,8 @@ export function Row({ roomId, rowId }: Props) {
             rowViolations={rowViolations}
             dragActive={dragActive}
             dragging={draggingIndex === i}
-            highlighted={highlightedRowIds.has(rowId)}
+            highlightFirst={i === 0 && highlightFirst}
+            highlightLast={i === 0 && highlightLast}
             onPointerDown={dragActive ? onSegmentPointerDown(i) : undefined}
             onCommitFirstLength={dragActive ? (newLength) => {
               const x = xOffsetFromFirstLength(newLength, geometry.plankType)
