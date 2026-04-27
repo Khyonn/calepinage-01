@@ -1,24 +1,28 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Tooltip } from '@/components/ui/Tooltip'
+import { Menu, MenuItem, MenuSubmenu, MenuSeparator } from '@/components/ui/Menu'
 import { NewProjectDialog } from '@/components/layout/NewProjectDialog'
-import { OpenProjectDialog } from '@/components/layout/OpenProjectDialog'
+import { CloneProjectDialog } from '@/components/layout/CloneProjectDialog'
 import { DeleteProjectConfirm } from '@/components/layout/DeleteProjectConfirm'
 import { ThemeSwitcher } from '@/components/layout/ThemeSwitcher'
-import { useAppSelector } from '@/hooks/redux'
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { selectCurrentProject, selectProjectList } from '@/store/selectors'
+import { openProjectThunk } from '@/store/thunks'
+import { localStorageLastProjectId } from '@/persistence/lastProjectId'
 import { useHamburgerMenu } from './useHamburgerMenu'
 import { useExportCsv } from './useExportCsv'
 import { useExportJson } from './useExportJson'
 import { useImportJson } from './useImportJson'
 import styles from './HamburgerMenu.module.css'
 
-type ActiveDialog = null | 'new' | 'open' | 'delete'
+type ActiveDialog = null | 'new' | 'clone' | 'delete'
 
 export function HamburgerMenu() {
   const [open, setOpen] = useState(false)
   const [dialog, setDialog] = useState<ActiveDialog>(null)
   const { ref } = useHamburgerMenu(open, () => setOpen(false))
+  const dispatch = useAppDispatch()
 
   const current = useAppSelector(selectCurrentProject)
   const list = useAppSelector(selectProjectList)
@@ -28,7 +32,13 @@ export function HamburgerMenu() {
 
   const close = () => setOpen(false)
   const openDialog = (d: ActiveDialog) => { setDialog(d); close() }
-  const canOpenOthers = list.some(p => p.id !== current?.id)
+  const others = list.filter(p => p.id !== current?.id)
+  const canOpenOthers = others.length > 0
+
+  const chooseProject = (id: string) => {
+    void dispatch(openProjectThunk(id, localStorageLastProjectId))
+    close()
+  }
 
   return (
     <div className={styles.anchor} ref={ref}>
@@ -38,56 +48,46 @@ export function HamburgerMenu() {
         </Button>
       </Tooltip>
       {open && (
-        <div role="menu" className={styles.menu}>
-          <button role="menuitem" className={styles.item} onClick={() => openDialog('new')}>
-            Nouveau projet
-          </button>
-          <button
-            role="menuitem"
-            className={styles.item}
-            onClick={() => openDialog('open')}
-            disabled={!canOpenOthers}
-          >
-            Ouvrir un projet
-          </button>
-          <button
-            role="menuitem"
-            className={styles.item}
-            onClick={() => { exportCsv(); close() }}
-            disabled={!current}
-          >
+        <Menu className={styles.menu}>
+          <MenuSubmenu label="Nouveau projet">
+            <MenuItem onSelect={() => openDialog('new')}>À partir de rien</MenuItem>
+            <MenuItem onSelect={() => { importJson(); close() }}>
+              Depuis un fichier JSON
+            </MenuItem>
+            <MenuItem
+              disabled={list.length === 0}
+              onSelect={() => openDialog('clone')}
+            >
+              Depuis un projet existant
+            </MenuItem>
+          </MenuSubmenu>
+          <MenuSubmenu label="Ouvrir un projet" disabled={!canOpenOthers}>
+            {others.map(p => (
+              <MenuItem key={p.id} onSelect={() => chooseProject(p.id)}>
+                {p.name}
+              </MenuItem>
+            ))}
+          </MenuSubmenu>
+          <MenuItem disabled={!current} onSelect={() => { exportCsv(); close() }}>
             Exporter CSV
-          </button>
-          <button
-            role="menuitem"
-            className={styles.item}
-            onClick={() => { void exportJson(); close() }}
-            disabled={!current}
-          >
+          </MenuItem>
+          <MenuItem disabled={!current} onSelect={() => { void exportJson(); close() }}>
             Exporter JSON
-          </button>
-          <button
-            role="menuitem"
-            className={styles.item}
-            onClick={() => { importJson(); close() }}
-          >
-            Importer JSON
-          </button>
-          <button
-            role="menuitem"
-            className={`${styles.item} ${styles.danger}`}
-            onClick={() => openDialog('delete')}
+          </MenuItem>
+          <MenuItem
             disabled={!current}
+            onSelect={() => openDialog('delete')}
+            className={styles.danger}
           >
             Supprimer le projet
-          </button>
-          <hr className={styles.separator} />
+          </MenuItem>
+          <MenuSeparator />
           <ThemeSwitcher />
-        </div>
+        </Menu>
       )}
 
       <NewProjectDialog open={dialog === 'new'} onClose={() => setDialog(null)} />
-      <OpenProjectDialog open={dialog === 'open'} onClose={() => setDialog(null)} />
+      <CloneProjectDialog open={dialog === 'clone'} onClose={() => setDialog(null)} />
       <DeleteProjectConfirm open={dialog === 'delete'} onClose={() => setDialog(null)} />
     </div>
   )

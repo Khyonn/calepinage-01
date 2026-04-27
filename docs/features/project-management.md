@@ -48,19 +48,44 @@ Format : séparateur `;`, encodage UTF-8 avec BOM, fin de ligne `\r\n`. Compatib
 
 ### Export / Import JSON
 
-Depuis le menu hamburger :
+L'export reste accessible depuis le menu hamburger ; l'import est intégré au sous-menu **Nouveau projet** (cf. ci-dessous).
 
 - **Exporter JSON** — télécharge `calepinage-<slug>-<date>.json` contenant l'intégralité du projet (catalogue, paramètres de pose, pièces, rangées, plan de fond avec image en base64). Désactivé si pas de projet courant.
-- **Importer JSON** — ouvre un file picker, lit un fichier exporté précédemment, **crée un nouveau projet** avec des ids régénérés. Toujours activé.
+- **Nouveau projet → Depuis un fichier JSON** — ouvre un file picker, lit un fichier exporté précédemment, **crée un nouveau projet** avec des ids régénérés. Toujours activé.
 
 Format : JSON indenté 2 espaces, encodage UTF-8. Schéma versionné (`version: 1`) — voir [technical/data-model.md](../technical/data-model.md). Un import avec un nom déjà utilisé appendera ` (importé)` au nom (puis ` (importé 2)`, etc.). L'image du plan de fond est encodée en base64 dans le JSON (gonflement ~+33 %). Aucun schéma serveur : tout reste local.
 
 Erreurs gérées : JSON invalide (`Fichier corrompu`), version non reconnue (`Format non supporté`), champs requis manquants (`Fichier corrompu`). Une alerte s'affiche, aucun projet n'est modifié.
 
-## Fonctionnalité envisagée : clonage de projet
+## Sous-menu Nouveau projet
 
-L'utilisateur pourrait choisir les éléments à dupliquer parmi :
-- Le catalogue de lames
-- Les paramètres de pose
-- Les pièces dessinées
-- Le plan de fond
+L'entrée **Nouveau projet** du menu hamburger expose trois points d'entrée :
+
+- **À partir de rien** — formulaire « nom du projet » + bouton Créer. Un projet vide est créé.
+- **Depuis un fichier JSON** — file picker, parsing, création (cf. section ci-dessus).
+- **Depuis un projet existant** — clonage configurable (cf. section suivante).
+
+## Cloner un projet
+
+L'utilisateur sélectionne un projet source dans la liste, choisit les éléments à reprendre via des cases à cocher, puis donne un nom au nouveau projet. Le clone reçoit des identifiants UUID régénérés ; le projet source reste inchangé.
+
+**Éléments clonables :**
+- Catalogue
+- Paramètres de pose
+- Plan de fond (avec image)
+- Pièces (sommets uniquement, sans rangées)
+- Rangées
+
+**Dépendances enforcées :**
+- Cocher *Rangées* coche automatiquement *Pièces* et *Catalogue* (et désactive leur décochage).
+- Décocher *Pièces* ou *Catalogue* décoche aussi *Rangées*.
+
+**Comportement par défaut :** Catalogue, Paramètres de pose, Pièces et Rangées cochés ; Plan de fond décoché.
+
+**Pose non clonée :** si *Paramètres de pose* est décoché, le clone démarre avec les valeurs par défaut (`cale 0.5`, `sawWidth 0.1`, `minPlankLength 30`, `minRowGap 15`).
+
+**Nom :** par défaut `<source> (copie)`. Si déjà utilisé, suffixé via la même règle que l'import (` (importé)`, etc.).
+
+## Sous-menu Ouvrir un projet
+
+L'entrée **Ouvrir un projet** déploie en flyout la liste des autres projets disponibles. Click sur un projet → switch immédiat. Désactivée s'il n'y a aucun autre projet en base.

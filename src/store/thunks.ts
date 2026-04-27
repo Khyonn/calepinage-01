@@ -5,6 +5,7 @@ import type { LastProjectIdStore } from '@/persistence/lastProjectId'
 
 export { addRowThunk } from './addRowThunk'
 export { importProjectThunk } from './importProjectThunk'
+export { cloneProjectThunk } from './cloneProjectThunk'
 
 export const openProjectThunk = (id: string, lastStore: LastProjectIdStore) =>
   async (dispatch: AppDispatch) => {
