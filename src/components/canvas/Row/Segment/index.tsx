@@ -19,7 +19,8 @@ interface Props {
   rowViolations: ConstraintViolation[]
   dragActive?: boolean
   dragging?: boolean
-  highlighted?: boolean
+  highlightFirst?: boolean
+  highlightLast?: boolean
   onPointerDown?: (e: ReactPointerEvent<SVGGElement>) => void
   onCommitFirstLength?: (newLength: number) => void
   onCommitLastLength?: (newLength: number) => void
@@ -27,7 +28,8 @@ interface Props {
 
 export function Segment({
   roomId, xStart, xEnd, yStart, height, planks, snapshotPlanks, poseParams, zoom,
-  startLinked, endLinked, rowViolations, dragActive, dragging, highlighted, onPointerDown,
+  startLinked, endLinked, rowViolations, dragActive, dragging,
+  highlightFirst, highlightLast, onPointerDown,
   onCommitFirstLength, onCommitLastLength,
 }: Props) {
   const cale = poseParams.cale
@@ -71,7 +73,6 @@ export function Segment({
   const interactiveClass = [
     dragActive && styles.interactive,
     dragging && styles.dragging,
-    highlighted && styles.highlighted,
   ].filter(Boolean).join(' ')
 
   return (
@@ -85,7 +86,15 @@ export function Segment({
           const violates =
             (i === firstIndex && firstViolates) ||
             (i === lastIndex && lastViolates && planks.length > 1)
-          const cls = [styles.plank, violates && styles.violating].filter(Boolean).join(' ')
+          const isHighlighted =
+            (i === firstIndex && highlightFirst) ||
+            (i === lastIndex && highlightLast && planks.length > 1) ||
+            (i === firstIndex && highlightLast && planks.length === 1)
+          const cls = [
+            styles.plank,
+            violates && styles.violating,
+            isHighlighted && styles.plankHighlighted,
+          ].filter(Boolean).join(' ')
           return (
             <rect
               key={i}

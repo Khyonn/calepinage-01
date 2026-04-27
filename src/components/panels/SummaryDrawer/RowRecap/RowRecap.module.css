@@ -1,0 +1,95 @@
+.recap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.room {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.roomName {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+.rowList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.rowItem {
+  border-bottom: var(--border);
+  padding-bottom: var(--space-2);
+}
+
+.rowItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.rowHeader {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.endpoints {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.endpoint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.endpointLabel {
+  color: var(--text-muted);
+  min-width: 60px;
+}
+
+.endpointValue {
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.chip {
+  font: inherit;
+  font-size: var(--text-xs);
+  background: var(--accent-light);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-sm);
+  padding: 2px var(--space-2);
+  cursor: pointer;
+  transition: background .1s, color .1s;
+}
+
+.chip:hover,
+.chip:focus-visible {
+  background: var(--accent);
+  color: var(--surface);
+  outline: none;
+}
+
+.empty {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  margin: 0;
+  padding: var(--space-2) 0;
+}

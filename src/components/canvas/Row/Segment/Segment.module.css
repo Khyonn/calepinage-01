@@ -30,7 +30,7 @@
   stroke-width: 1.5;
 }
 
-.highlighted .plank {
+.plankHighlighted {
   stroke: var(--accent);
   stroke-width: 2;
 }

@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { uiActions } from '@/store/uiSlice'
 import { selectDrawerOpen } from '@/store/selectors'
 import { SummaryTable } from './SummaryTable'
-import { OffcutTable } from './OffcutTable'
+import { RowRecap } from './RowRecap'
 import styles from './SummaryDrawer.module.css'
 
 export function SummaryDrawer() {
@@ -21,8 +21,8 @@ export function SummaryDrawer() {
         <SummaryTable />
       </section>
       <section className={styles.section}>
-        <h3 className={styles.sectionTitle}>Liens de réutilisation</h3>
-        <OffcutTable />
+        <h3 className={styles.sectionTitle}>Détail par rangée</h3>
+        <RowRecap />
       </section>
     </Drawer>
   )
