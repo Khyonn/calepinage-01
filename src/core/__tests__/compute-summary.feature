@@ -21,3 +21,10 @@ Fonctionnalité: Résumé du calepinage et calcul du coût
   Scénario: Un type de lame sans rangée associée n'engendre aucun coût
     Soit un type de lame de longueur 100 cm non utilisé dans la pièce
     Alors le résumé indique 0 lames nécessaires au coût total de 0 €
+
+  Scénario: Pièce non-rectangulaire — la dernière rangée utilise la largeur réelle du segment
+    Soit une pièce en L avec une zone étroite en bas
+    Et trois rangées en pose droite au décalage 0
+    Et un type de lame de longueur 120 cm largeur 20 cm au prix unitaire de 1 €
+    Et des paramètres de pose cale 0 scie 0.1 minimum 30
+    Alors le résumé indique 9 lames nécessaires
