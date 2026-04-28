@@ -144,6 +144,48 @@ describeFeature(feature, ({ Scenario }) => {
     })
   })
 
+  Scenario('Pièce avec rangées de types alternés — Y cumulatif et non rowIndex × width courant', ({ Given, And, When, Then }) => {
+    let catalog: PlankType[]
+    let room: Room
+    let pose: PoseParams
+    let geom: RowGeometry | null
+
+    Given('une pièce rectangulaire 300 cm sur 200 cm avec 3 rangées de types alternés A 15 / B 22 / C 18', () => {
+      catalog = [
+        makePlankType('A', 100, 15),
+        makePlankType('B', 100, 22),
+        makePlankType('C', 100, 18),
+      ]
+      room = {
+        id: 'room-alt',
+        projectId: 'proj',
+        name: 'Alt',
+        vertices: [
+          { x: 0, y: 0 }, { x: 300, y: 0 },
+          { x: 300, y: 200 }, { x: 0, y: 200 },
+        ],
+        rows: [
+          { id: 'r0', roomId: 'room-alt', plankTypeId: 'pt-A', segments: [{ xOffset: 0 }] },
+          { id: 'r1', roomId: 'room-alt', plankTypeId: 'pt-B', segments: [{ xOffset: 0 }] },
+          { id: 'r2', roomId: 'room-alt', plankTypeId: 'pt-C', segments: [{ xOffset: 0 }] },
+        ],
+      }
+    })
+    And('des paramètres de pose par défaut', () => {
+      pose = DEFAULT_POSE
+    })
+    When('je calcule la géométrie de la rangée d\'index 2', () => {
+      geom = computeRowGeometry(room, 2, catalog, pose)
+    })
+    Then('la bande occupe Y de 37,5 à 55,5', () => {
+      // yStart correct = cale 0.5 + width(A=15) + width(B=22) = 37.5
+      // yEnd correct = 37.5 + width(C=18) = 55.5
+      // Ancien bug aurait donné 2 * 18 + 0.5 = 36.5 → 54.5.
+      expect(geom?.yStart).toBeCloseTo(37.5, 5)
+      expect(geom?.yEnd).toBeCloseTo(55.5, 5)
+    })
+  })
+
   Scenario('Pièce 400×49 — la 4e rangée déborde mais reste visible (bug correctif)', ({ Given, And, When, Then }) => {
     let plankType: PlankType
     let room: Room

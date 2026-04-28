@@ -5,6 +5,7 @@ import { validateRow } from '@/core/validateRow'
 import { computeSummary } from '@/core/computeSummary'
 import { computeScale } from '@/core/calibration'
 import { computeRowGeometry, type RowGeometry } from '@/core/rowGeometry'
+import { canAppendRow } from '@/core/rowYStart'
 import type { ConstraintViolation, OffcutLink, Plank } from '@/core/types'
 
 export const OFFCUT_LINK_ID_SEP = '→'
@@ -55,6 +56,25 @@ export const selectActiveRoom = createSelector(
 export const selectActiveRoomHasRows = createSelector(
   selectActiveRoom,
   (room) => (room?.rows.length ?? 0) > 0
+)
+
+export const selectSelectedPlankTypeId = (state: AppState) => state.ui.selectedPlankTypeId
+
+/**
+ * True when a new row can still be appended in the active room — i.e. the
+ * previous row's bottom edge does not exceed roomMaxY. Independent of the
+ * selected plank type's width: the rule only checks that vertical room
+ * remains, not whether the new row fits entirely.
+ */
+export const selectCanAppendRowToActiveRoom = createSelector(
+  selectActiveRoom,
+  selectCatalog,
+  selectPoseParams,
+  selectSelectedPlankTypeId,
+  (room, catalog, poseParams, selectedId) => {
+    if (!room || !poseParams || !selectedId) return false
+    return canAppendRow(room, catalog, poseParams)
+  }
 )
 
 export const selectUsedPlankTypeIds = createSelector(

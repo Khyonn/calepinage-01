@@ -3,7 +3,7 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber'
 import { projectReducer, projectActions } from '@/store/projectSlice'
 import { uiReducer, uiActions } from '@/store/uiSlice'
 import { addRowThunk } from '@/store/addRowThunk'
-import { selectActiveRoom, selectCatalog, selectRooms } from '@/store/selectors'
+import { selectActiveRoom, selectCanAppendRowToActiveRoom, selectCatalog, selectRooms } from '@/store/selectors'
 import type { AppState, ProjectState, UIState, AppDispatch } from '@/store/types'
 import type { UnknownAction } from '@reduxjs/toolkit'
 
@@ -103,6 +103,24 @@ describeFeature(feature, ({ Background, Scenario }) => {
       // Offcut = 120 − 39 − 0.1 = 80.9 → row 2 xOffset = 120 − 80.9 = 39.1.
       const row2 = selectActiveRoom(s())!.rows[1]
       expect(row2.segments[0].xOffset).toBeCloseTo(39.1, 5)
+    })
+  })
+
+  Scenario('Ajouter une rangée est ignoré quand la fin de la précédente dépasse Y max', ({ When, Then, And }) => {
+    // Room 400×300, plankType 12 cm width, cale 0.5.
+    // Avant ajout de la rangée K (0-indexée à K rangées existantes) :
+    //   prevYEnd = cale + K × 12
+    // Règle : prevYEnd ≤ roomMaxY (300). Bloque dès K = 25 (300.5 > 300).
+    // → max 25 rangées ajoutées, la dernière déborde légèrement
+    //   (end = 300.5) mais le moteur l'autorise une fois.
+    When('je déclenche le thunk addRow 30 fois', () => {
+      for (let i = 0; i < 30; i++) fixture.dispatch(addRowThunk())
+    })
+    Then('la pièce active contient exactement 25 rangées', () => {
+      expect(selectActiveRoom(s())?.rows.length).toBe(25)
+    })
+    And('le sélecteur indique qu\'aucune rangée supplémentaire ne peut être ajoutée', () => {
+      expect(selectCanAppendRowToActiveRoom(s())).toBe(false)
     })
   })
 

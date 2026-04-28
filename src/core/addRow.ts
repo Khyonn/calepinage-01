@@ -1,14 +1,18 @@
 import type { PlankType, PoseParams, Room, Row } from '@/core/types'
 import { intersectStripExtents } from '@/core/geometry'
 import { computeOffcutLength, fillRow } from '@/core/rowFill'
+import { canAppendRow, computeRowYStart } from '@/core/rowYStart'
 
 const EPSILON = 0.001
 
 /**
  * Build a new Row for the given room and plank type.
  *
- * Y position is derived from the number of existing rows × plankType.width
- * (simplified: assumes all prior rows share the same width).
+ * Y position is the cumulative sum of prior rows' widths (each via its own
+ * plankType — see `computeRowYStart`).
+ *
+ * Returns null if the new row would overflow the room
+ * (yEnd > roomMaxY - cale).
  *
  * Default xOffset for segment[0] consumes the offcut produced by the most
  * recent previous row of the same plank type within this room (if any).
@@ -17,19 +21,17 @@ const EPSILON = 0.001
 export function addRow(
   room: Room,
   plankType: PlankType,
-  poseParams?: PoseParams,
-  plankTypes?: PlankType[],
-): Row {
-  const roomMinY = room.vertices.length > 0 ? Math.min(...room.vertices.map(v => v.y)) : 0
-  const caleY = poseParams?.cale ?? 0
-  const yStart = roomMinY + caleY + room.rows.length * plankType.width
+  poseParams: PoseParams,
+  catalog: PlankType[],
+): Row | null {
+  if (!canAppendRow(room, catalog, poseParams)) return null
+
+  const yStart = computeRowYStart(room, room.rows.length, catalog, poseParams)
   const yEnd = yStart + plankType.width
 
   const xSegments = intersectStripExtents(room.vertices, yStart, yEnd)
 
-  const firstXOffset = poseParams
-    ? computeDefaultXOffset(room, plankType, poseParams, undefined, plankTypes)
-    : 0
+  const firstXOffset = computeDefaultXOffset(room, plankType, poseParams, undefined, catalog)
 
   const segments = xSegments.length > 0
     ? xSegments.map((_, i) => ({ xOffset: i === 0 ? firstXOffset : 0 }))
@@ -59,21 +61,20 @@ export function addRow(
  * over a layout violation.
  *
  * upToRowIndex (exclusive): look only at rows[0..upToRowIndex-1].
- * plankTypes: required to look up the plankType of the row at index-1
- *   for `minRowGap` enforcement when it differs from the new row's type.
- *   If omitted, only same-type previous rows participate in row-gap.
+ * catalog: required to look up the plankType of each prior row for
+ *   `minRowGap` enforcement and yStart cumulative width.
  */
 export function computeDefaultXOffset(
   room: Room,
   plankType: PlankType,
   poseParams: PoseParams,
   upToRowIndex?: number,
-  plankTypes?: PlankType[],
+  catalog: PlankType[] = [plankType],
 ): number {
   const rowIndex = upToRowIndex ?? room.rows.length
   const slice = room.rows.slice(0, rowIndex)
-  const segWidth = computeFirstSegmentWidth(room, plankType, poseParams, rowIndex)
-  const prevJoint = computePrevJointInfo(room, slice, plankTypes ?? [plankType], poseParams)
+  const segWidth = computeFirstSegmentWidth(room, plankType, poseParams, rowIndex, catalog)
+  const prevJoint = computePrevJointInfo(room, slice, catalog, poseParams)
 
   let prevSameTypeIndex = -1
   for (let i = slice.length - 1; i >= 0; i--) {
@@ -85,7 +86,7 @@ export function computeDefaultXOffset(
   }
 
   const prev = slice[prevSameTypeIndex]
-  const prevSegWidth = computeFirstSegmentWidth(room, plankType, poseParams, prevSameTypeIndex)
+  const prevSegWidth = computeFirstSegmentWidth(room, plankType, poseParams, prevSameTypeIndex, catalog)
   const prevXOffset = prev.segments[0]?.xOffset ?? 0
   const offcut = computeOffcutLength(prevXOffset, prevSegWidth, plankType, poseParams)
   if (offcut + EPSILON < poseParams.minPlankLength) {
@@ -104,15 +105,15 @@ interface PrevJointInfo {
 function computePrevJointInfo(
   room: Room,
   slice: Row[],
-  plankTypes: PlankType[],
+  catalog: PlankType[],
   poseParams: PoseParams,
 ): PrevJointInfo | null {
   if (slice.length === 0) return null
   const prevIndex = slice.length - 1
   const prevRow = slice[prevIndex]
-  const prevPlankType = plankTypes.find(pt => pt.id === prevRow.plankTypeId)
+  const prevPlankType = catalog.find(pt => pt.id === prevRow.plankTypeId)
   if (!prevPlankType) return null
-  const prevWidth = computeFirstSegmentWidth(room, prevPlankType, poseParams, prevIndex)
+  const prevWidth = computeFirstSegmentWidth(room, prevPlankType, poseParams, prevIndex, catalog)
   if (prevWidth <= 0) return null
   const planks = fillRow(prevRow.segments[0]?.xOffset ?? 0, prevWidth, prevPlankType, poseParams)
   if (planks.length === 0) return null
@@ -136,10 +137,10 @@ function computeFirstSegmentWidth(
   plankType: PlankType,
   poseParams: PoseParams,
   rowIndex: number,
+  catalog: PlankType[],
 ): number {
   if (room.vertices.length === 0) return 0
-  const roomMinY = Math.min(...room.vertices.map(v => v.y))
-  const yStart = roomMinY + poseParams.cale + rowIndex * plankType.width
+  const yStart = computeRowYStart(room, rowIndex, catalog, poseParams)
   const yEnd = yStart + plankType.width
   const segments = intersectStripExtents(room.vertices, yStart, yEnd)
   if (segments.length === 0) return 0
@@ -228,4 +229,3 @@ function checkConstraints(
   }
   return true
 }
-

@@ -54,7 +54,7 @@ describe('Bornage minRowGap — pièce A (étroite, allongée) deuxième rangée
   }
 
   it('rangée 2 doit respecter minRowGap par rapport à rangée 1', () => {
-    const row = addRow(room, plankType, poseParams, [plankType])
+    const row = addRow(room, plankType, poseParams, [plankType])!
     const xOffset = row.segments[0].xOffset
 
     const roomMinY = Math.min(...room.vertices.map(v => v.y))
@@ -130,7 +130,7 @@ describe('Bornage minPlankLength — pièce B (concave, chute prev quasi nulle)'
   }
 
   it('chute du prev quasi nulle → ne tente pas de reuse, première planche entière', () => {
-    const row = addRow(room, plankType, poseParams)
+    const row = addRow(room, plankType, poseParams, [plankType])!
 
     const roomMinY = Math.min(...room.vertices.map(v => v.y))
     const yStart = roomMinY + poseParams.cale + room.rows.length * plankType.width
@@ -188,7 +188,7 @@ describe('Bornage minPlankLength — pièce C (concave avec notch latéral)', ()
   }
 
   it('rangée fraîchement ajoutée → dernière lame ≥ minPlankLength', () => {
-    const row = addRow(room, plankType, poseParams)
+    const row = addRow(room, plankType, poseParams, [plankType])!
 
     // Reproduire la géométrie réelle du segment[0] (comme au rendu)
     const roomMinY = Math.min(...room.vertices.map(v => v.y))

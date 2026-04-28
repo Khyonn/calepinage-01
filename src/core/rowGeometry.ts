@@ -1,6 +1,7 @@
 import type { Plank, PlankType, PoseParams, Room } from '@/core/types'
 import { intersectStripExtents } from '@/core/geometry'
 import { fillRow } from '@/core/rowFill'
+import { computeRowYStart } from '@/core/rowYStart'
 
 export interface RowSegmentGeometry {
   xStart: number
@@ -33,8 +34,7 @@ export function computeRowGeometry(
   const plankType = catalog.find(pt => pt.id === row.plankTypeId)
   if (!plankType) return null
 
-  const roomMinY = room.vertices.length > 0 ? Math.min(...room.vertices.map(v => v.y)) : 0
-  const yStart = roomMinY + poseParams.cale + rowIndex * plankType.width
+  const yStart = computeRowYStart(room, rowIndex, catalog, poseParams)
   const yEnd = yStart + plankType.width
 
   const xSegments = intersectStripExtents(room.vertices, yStart, yEnd)

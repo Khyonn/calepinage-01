@@ -1,5 +1,6 @@
 import type { OffcutLink, Plank, PlankType, PoseParams, Room } from '@/core/types'
 import { intersectStripExtents } from '@/core/geometry'
+import { computeRowYStart } from '@/core/rowYStart'
 
 const EPSILON = 0.001 // cm — float comparison tolerance
 
@@ -95,11 +96,10 @@ export function computeOffcutLinks(
     // rooms, producing wrong offcut sizes and missed links.
     const rows: RowWithContext[] = []
     for (const room of rooms) {
-      const roomMinY = room.vertices.length > 0 ? Math.min(...room.vertices.map(v => v.y)) : 0
       for (let i = 0; i < room.rows.length; i++) {
         const row = room.rows[i]
         if (row.plankTypeId !== plankType.id) continue
-        const yStart = roomMinY + poseParams.cale + i * plankType.width
+        const yStart = computeRowYStart(room, i, plankTypes, poseParams)
         const yEnd = yStart + plankType.width
         const segs = intersectStripExtents(room.vertices, yStart, yEnd)
         const segWidth = segs.length > 0 ? segs[0][1] - segs[0][0] : 0

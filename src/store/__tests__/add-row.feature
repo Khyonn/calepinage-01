@@ -18,3 +18,8 @@ Fonctionnalité: Ajout de rangées via le thunk addRow
   Scénario: Ajouter une rangée consomme la chute de la rangée précédente
     Quand je déclenche le thunk addRow 2 fois
     Alors le xOffset du segment 0 de la rangée 2 consomme la chute de la rangée 1
+
+  Scénario: Ajouter une rangée est ignoré quand la fin de la précédente dépasse Y max
+    Quand je déclenche le thunk addRow 30 fois
+    Alors la pièce active contient exactement 25 rangées
+    Et le sélecteur indique qu'aucune rangée supplémentaire ne peut être ajoutée
