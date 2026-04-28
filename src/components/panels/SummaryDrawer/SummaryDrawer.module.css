@@ -14,3 +14,11 @@
   letter-spacing: 0.04em;
   margin: 0 0 8px 0;
 }
+
+.exportBtn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}

@@ -25,6 +25,9 @@
   color: var(--text);
   cursor: pointer;
   line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
 }
 
 .btn:not(.first) { border-left: var(--border); }

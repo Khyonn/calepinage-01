@@ -1,3 +1,4 @@
+import { Trash2 } from 'lucide-react'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { selectActiveRoom, selectCatalog } from '@/store/selectors'
 import { projectActions } from '@/store/projectSlice'
@@ -29,7 +30,7 @@ export function RowList() {
                 onClick={() => dispatch(projectActions.deleteRow({ id: row.id, roomId: room.id }))}
                 aria-label={`Supprimer la rangée ${idx + 1}`}
               >
-                ×
+                <Trash2 size={14} />
               </Button>
             )}
           </li>

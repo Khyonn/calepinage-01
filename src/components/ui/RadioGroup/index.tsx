@@ -1,10 +1,10 @@
-import { useId } from 'react'
+import { useId, type ReactNode } from 'react'
 import styles from './RadioGroup.module.css'
 import { useRadioGroup } from './useRadioGroup'
 
 export interface RadioOption {
   value: string
-  label: string
+  label: ReactNode
 }
 
 export interface RadioGroupProps {

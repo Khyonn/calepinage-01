@@ -1,19 +1,22 @@
+import { Hand, Image as ImageIcon, Pencil } from 'lucide-react'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { selectInteractionMode } from '@/store/selectors'
 import { uiActions } from '@/store/uiSlice'
 import type { InteractionMode } from '@/store/types'
 import { RoomSwitcher } from './RoomSwitcher'
 import styles from './ModeSelector.module.css'
+import type { ComponentType, SVGProps } from 'react'
 
 interface ModeEntry {
   value: Exclude<InteractionMode, 'edit'>
   label: string
+  Icon: ComponentType<SVGProps<SVGSVGElement> & { size?: number | string }>
 }
 
 const ENTRIES: ModeEntry[] = [
-  { value: 'nav',  label: 'Vue' },
-  { value: 'plan', label: 'Plan de fond' },
-  { value: 'draw', label: 'Dessiner' },
+  { value: 'nav',  label: 'Vue',          Icon: Hand },
+  { value: 'plan', label: 'Plan de fond', Icon: ImageIcon },
+  { value: 'draw', label: 'Dessiner',     Icon: Pencil },
 ]
 
 export function ModeSelector() {
@@ -25,6 +28,7 @@ export function ModeSelector() {
       {ENTRIES.map((entry, i) => {
         const selected = mode === entry.value
         const position = i === 0 ? 'first' : 'middle'
+        const { Icon } = entry
         return (
           <button
             key={entry.value}
@@ -36,7 +40,8 @@ export function ModeSelector() {
             }}
             className={[styles.btn, styles[position], selected && styles.selected].filter(Boolean).join(' ')}
           >
-            {entry.label}
+            <Icon size={16} aria-hidden />
+            <span>{entry.label}</span>
           </button>
         )
       })}

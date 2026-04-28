@@ -35,6 +35,13 @@
 }
 .secondary:hover:not(:disabled) { background: var(--bg); }
 
+.outline {
+  background: transparent;
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.outline:hover:not(:disabled) { background: var(--accent-light); }
+
 .ghost {
   background: transparent;
   color: var(--text);

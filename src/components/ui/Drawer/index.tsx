@@ -8,9 +8,10 @@ export interface DrawerProps {
   onClose: () => void
   title: string
   children: ReactNode
+  footer?: ReactNode
 }
 
-export function Drawer({ open, onClose, title, children }: DrawerProps) {
+export function Drawer({ open, onClose, title, children, footer }: DrawerProps) {
   const { drawerRef, width, onResizeMouseDown } = useDrawer(open, onClose)
 
   return createPortal(
@@ -33,6 +34,8 @@ export function Drawer({ open, onClose, title, children }: DrawerProps) {
       </div>
 
       <div className={styles.body}>{children}</div>
+
+      {footer && <div className={styles.footer}>{footer}</div>}
     </div>,
     document.body
   )
