@@ -40,6 +40,7 @@ function makeSource(opts: { customPose?: boolean; withPlan?: boolean } = {}): Pr
         vertices: [
           { x: 0, y: 0 }, { x: 400, y: 0 }, { x: 400, y: 300 }, { x: 0, y: 300 },
         ],
+        yOffset: 0,
         rows: [
           { id: 'row-1', roomId: 'room-1', plankTypeId: 'pt-a', segments: [{ xOffset: 0 }] },
           { id: 'row-2', roomId: 'room-1', plankTypeId: 'pt-a', segments: [{ xOffset: 30 }] },

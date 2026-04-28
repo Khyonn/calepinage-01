@@ -25,6 +25,7 @@ describeFeature(feature, ({ Background, BeforeEachScenario, Scenario }) => {
       rooms = [{
         id: 'room-1', projectId: 'proj-1', name: 'Salon',
         vertices: BASE_VERTICES,
+        yOffset: 0,
         rows: [{ id: 'row-a', roomId: 'room-1', plankTypeId: 'pt-1', segments: [{ xOffset: 0 }] }],
       }]
     })
@@ -83,6 +84,7 @@ describeFeature(feature, ({ Background, BeforeEachScenario, Scenario }) => {
       rooms = [{
         id: 'room-1', projectId: 'proj-1', name: 'Salon',
         vertices: BASE_VERTICES,
+        yOffset: 0,
         rows: [
           { id: 'row-a', roomId: 'room-1', plankTypeId: 'pt-1', segments: [{ xOffset: 0 }] },
           { id: 'row-b', roomId: 'room-1', plankTypeId: 'pt-1', segments: [{ xOffset: 30.1 }] },
@@ -129,6 +131,7 @@ describeFeature(feature, ({ Background, BeforeEachScenario, Scenario }) => {
           { x: 400, y: 40 }, { x: 100, y: 40 },
           { x: 100, y: 60 }, { x: 0, y: 60 },
         ],
+        yOffset: 0,
         rows: [],
       }]
     })

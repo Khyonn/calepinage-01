@@ -5,7 +5,7 @@ import { validateRow } from '@/core/validateRow'
 import { computeSummary } from '@/core/computeSummary'
 import { computeScale } from '@/core/calibration'
 import { computeRowGeometry, type RowGeometry } from '@/core/rowGeometry'
-import { canAppendRow } from '@/core/rowYStart'
+import { canAppendRow, maxPlankWidth } from '@/core/rowYStart'
 import type { ConstraintViolation, OffcutLink, Plank } from '@/core/types'
 
 export const OFFCUT_LINK_ID_SEP = '→'
@@ -75,6 +75,15 @@ export const selectCanAppendRowToActiveRoom = createSelector(
     if (!room || !poseParams || !selectedId) return false
     return canAppendRow(room, catalog, poseParams)
   }
+)
+
+/**
+ * Bornes du yOffset de pièce (cm). max=0, min=-max(catalog.width).
+ * Avec catalog vide, min=max=0 → champ neutralisé côté UI.
+ */
+export const selectRoomYOffsetBounds = createSelector(
+  selectCatalog,
+  (catalog) => ({ min: -maxPlankWidth(catalog), max: 0 })
 )
 
 export const selectUsedPlankTypeIds = createSelector(

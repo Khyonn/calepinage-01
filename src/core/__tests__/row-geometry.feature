@@ -38,3 +38,17 @@ Fonctionnalité: Géométrie d'une rangée — strip Y + segments X + lames
     Et des paramètres de pose par défaut
     Quand je calcule la géométrie de la rangée d'index 2
     Alors la bande occupe Y de 37,5 à 55,5
+
+  Scénario: yOffset négatif décale la première rangée vers le haut
+    Étant donné une pièce rectangulaire 300 cm sur 100 cm avec yOffset -1,5 cm
+    Et un type de lame "Chêne" de 100 cm par 20 cm
+    Et des paramètres de pose par défaut
+    Quand je calcule la géométrie de la rangée d'index 0
+    Alors la bande occupe Y de -1 à 19
+
+  Scénario: yOffset hors bornes est clampé au calcul
+    Étant donné une pièce rectangulaire 300 cm sur 100 cm avec yOffset -50 cm
+    Et un type de lame "Chêne" de 100 cm par 20 cm
+    Et des paramètres de pose par défaut
+    Quand je calcule la géométrie de la rangée d'index 0
+    Alors la bande occupe Y de -19,5 à 0,5

@@ -18,6 +18,7 @@ export interface RoomRecord {
   projectId: string
   name: string
   vertices: Point[]
+  yOffset: number
 }
 
 export interface RowRecord {

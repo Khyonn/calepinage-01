@@ -13,7 +13,7 @@ interface CalepinageDB extends DBSchema {
   plans:      { key: string; value: PlanRecord;       indexes: { projectId: string } }
 }
 
-const dbPromise = openDB<CalepinageDB>('calepinage', 2, {
+const dbPromise = openDB<CalepinageDB>('calepinage', 3, {
   async upgrade(db, oldVersion, _newVersion, tx) {
     if (oldVersion < 1) {
       db.createObjectStore('projects', { keyPath: 'id' })
@@ -42,6 +42,19 @@ const dbPromise = openDB<CalepinageDB>('calepinage', 2, {
           const idx = perRoomCount.get(value.roomId) ?? 0
           await cursor.update({ ...value, order: idx })
           perRoomCount.set(value.roomId, idx + 1)
+        }
+        cursor = await cursor.continue()
+      }
+    }
+    if (oldVersion < 3) {
+      // v3 — RoomRecord gains `yOffset: number`. Backfill 0 (default,
+      // preserves existing rendering) for every room without the field.
+      const roomsStore = tx.objectStore('rooms')
+      let cursor = await roomsStore.openCursor()
+      while (cursor) {
+        const value = cursor.value as RoomRecord & { yOffset?: number }
+        if (value.yOffset === undefined) {
+          await cursor.update({ ...value, yOffset: 0 })
         }
         cursor = await cursor.continue()
       }
@@ -83,6 +96,7 @@ export async function loadProject(id: string): Promise<Project | null> {
 
   const rooms: Room[] = roomRecords.map((room, i) => ({
     id: room.id, projectId: room.projectId, name: room.name, vertices: room.vertices,
+    yOffset: room.yOffset ?? 0,
     rows: (rowGroups[i] ?? [])
       .slice()
       .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
@@ -133,6 +147,7 @@ export async function saveProject(project: Project): Promise<void> {
     ...project.rooms.map(room =>
       tx.objectStore('rooms').put({
         id: room.id, projectId: room.projectId, name: room.name, vertices: room.vertices,
+        yOffset: room.yOffset,
       })
     ),
     ...project.rooms.flatMap(room =>

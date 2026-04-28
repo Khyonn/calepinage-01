@@ -10,8 +10,12 @@ Les rangées sont des strips **horizontaux** (hauteur constante = largeur du typ
 
 Chaque rangée occupe une bande `[yStart, yEnd]` avec :
 
-- `yStart = roomMinY + cale + rowIndex × plankType.width`
-- `yEnd = yStart + plankType.width`
+- `yStart = roomMinY + clamp(yOffset, [-max(catalog.width), 0]) + cale + Σ(largeurs des rangées 0..rowIndex-1)`
+- `yEnd = yStart + plankType.width` (largeur du type de la rangée courante)
+
+La somme cumulative `Σ` est calculée via le catalogue : chaque rangée précédente contribue avec la largeur de **son propre type de lame**. Cela permet d'alterner des types de largeurs différentes sans glisser les rangées entre elles.
+
+Le `yOffset` (cm, défaut 0, borné dans `[-max(catalog.width), 0]`) décale verticalement la première rangée vers le haut. Cas d'usage : aligner les joints entre deux pièces adjacentes dont les bords de référence diffèrent. Le clamp est appliqué au calcul (lazy) — si le catalogue change et que l'ancien `yOffset` sort des bornes, la valeur stockée est conservée mais le rendu utilise la valeur clampée.
 
 Le décalage initial de `cale` réserve la zone de dilatation en **haut** de la pièce ; un décalage symétrique en bas est matérialisé visuellement par les strips `--plank-cale`.
 

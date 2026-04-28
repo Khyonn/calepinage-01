@@ -112,6 +112,7 @@ Après la livraison du jalon 12, retours d'usage → trois jalons polish ciblent
 | 15.3 | Auto-fit viewport à l'ouverture | [15.3-viewport-autofit.md](15.3-viewport-autofit.md) | ⬜ |
 | 15.4 | Ouvrir projet via sous-menu | [15.4-open-submenu.md](15.4-open-submenu.md) | ✅ |
 | 15.5 | Nouveau projet — sous-menu scratch / import / clone | [15.5-new-submenu.md](15.5-new-submenu.md) | ✅ |
+| 15.6 | yOffset par pièce | [15.6-yoffset-piece.md](15.6-yoffset-piece.md) | ✅ |
 
 ## Remarques
 
