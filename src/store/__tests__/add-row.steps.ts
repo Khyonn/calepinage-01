@@ -3,6 +3,7 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber'
 import { projectReducer, projectActions } from '@/store/projectSlice'
 import { uiReducer, uiActions } from '@/store/uiSlice'
 import { addRowThunk } from '@/store/addRowThunk'
+import { bulkFillRoomThunk } from '@/store/bulkFillRoomThunk'
 import { selectActiveRoom, selectCanAppendRowToActiveRoom, selectCatalog, selectRooms } from '@/store/selectors'
 import type { AppState, ProjectState, UIState, AppDispatch } from '@/store/types'
 import type { UnknownAction } from '@reduxjs/toolkit'
@@ -115,6 +116,18 @@ describeFeature(feature, ({ Background, Scenario }) => {
     //   (end = 300.5) mais le moteur l'autorise une fois.
     When('je déclenche le thunk addRow 30 fois', () => {
       for (let i = 0; i < 30; i++) fixture.dispatch(addRowThunk())
+    })
+    Then('la pièce active contient exactement 25 rangées', () => {
+      expect(selectActiveRoom(s())?.rows.length).toBe(25)
+    })
+    And('le sélecteur indique qu\'aucune rangée supplémentaire ne peut être ajoutée', () => {
+      expect(selectCanAppendRowToActiveRoom(s())).toBe(false)
+    })
+  })
+
+  Scenario('Le thunk bulkFillRoom remplit la pièce en une fois', ({ When, Then, And }) => {
+    When('je déclenche le thunk bulkFillRoom une fois', () => {
+      fixture.dispatch(bulkFillRoomThunk())
     })
     Then('la pièce active contient exactement 25 rangées', () => {
       expect(selectActiveRoom(s())?.rows.length).toBe(25)

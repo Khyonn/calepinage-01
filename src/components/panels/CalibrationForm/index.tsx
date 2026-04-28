@@ -1,4 +1,5 @@
 import { useState, type KeyboardEvent } from 'react'
+import { Check, X } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import styles from './CalibrationForm.module.css'
@@ -54,10 +55,10 @@ export function CalibrationForm({ initialDistance, onCancel, onValidate }: Props
           />
         </div>
         <Button variant="ghost" size="sm" iconOnly onClick={onCancel} aria-label="Annuler la calibration" className={styles.actionBtn}>
-          ✕
+          <X size={16} />
         </Button>
         <Button variant="primary" size="sm" iconOnly onClick={commit} aria-label="Valider la calibration" className={styles.actionBtn}>
-          ✓
+          <Check size={16} />
         </Button>
       </div>
     </div>

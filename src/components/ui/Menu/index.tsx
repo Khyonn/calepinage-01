@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import { ChevronRight } from 'lucide-react'
 import { useSubmenuPosition } from './useSubmenuPosition'
 import styles from './Menu.module.css'
 
@@ -107,8 +108,10 @@ export function MenuSubmenu({ label, disabled, delay = 150, children }: MenuSubm
         onClick={!disabled ? () => setOpen(o => !o) : undefined}
         onKeyDown={!disabled ? onTriggerKey : undefined}
       >
-        <span>{label}</span>
-        <span aria-hidden className={styles.chevron}>▸</span>
+        <span className={styles.label}>{label}</span>
+        <span aria-hidden className={styles.chevron}>
+          <ChevronRight size={16} />
+        </span>
       </button>
       {open && createPortal(
         <div

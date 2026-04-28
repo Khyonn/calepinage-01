@@ -23,3 +23,8 @@ Fonctionnalité: Ajout de rangées via le thunk addRow
     Quand je déclenche le thunk addRow 30 fois
     Alors la pièce active contient exactement 25 rangées
     Et le sélecteur indique qu'aucune rangée supplémentaire ne peut être ajoutée
+
+  Scénario: Le thunk bulkFillRoom remplit la pièce en une fois
+    Quand je déclenche le thunk bulkFillRoom une fois
+    Alors la pièce active contient exactement 25 rangées
+    Et le sélecteur indique qu'aucune rangée supplémentaire ne peut être ajoutée

@@ -1,3 +1,4 @@
+import { PanelRightOpen, PanelRightClose } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Tooltip } from '@/components/ui/Tooltip'
 import { ModeSelector } from '@/components/layout/ModeSelector'
@@ -29,7 +30,9 @@ export function Topbar() {
             aria-label="Résumé"
             aria-pressed={drawerOpen}
             onClick={() => dispatch(uiActions.toggleDrawer())}
-          >☷</Button>
+          >
+            {drawerOpen ? <PanelRightClose size={18} /> : <PanelRightOpen size={18} />}
+          </Button>
         </Tooltip>
       </div>
     </header>

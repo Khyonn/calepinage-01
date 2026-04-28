@@ -1,4 +1,8 @@
 import { useState } from 'react'
+import {
+  Copy, FileDown, FilePlus, FileUp,
+  FolderOpen, Menu as MenuIcon, Trash2,
+} from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Tooltip } from '@/components/ui/Tooltip'
 import { Menu, MenuItem, MenuSubmenu, MenuSeparator } from '@/components/ui/Menu'
@@ -11,7 +15,6 @@ import { selectCurrentProject, selectProjectList } from '@/store/selectors'
 import { openProjectThunk } from '@/store/thunks'
 import { localStorageLastProjectId } from '@/persistence/lastProjectId'
 import { useHamburgerMenu } from './useHamburgerMenu'
-import { useExportCsv } from './useExportCsv'
 import { useExportJson } from './useExportJson'
 import { useImportJson } from './useImportJson'
 import styles from './HamburgerMenu.module.css'
@@ -26,7 +29,6 @@ export function HamburgerMenu() {
 
   const current = useAppSelector(selectCurrentProject)
   const list = useAppSelector(selectProjectList)
-  const exportCsv = useExportCsv()
   const exportJson = useExportJson()
   const importJson = useImportJson()
 
@@ -44,42 +46,44 @@ export function HamburgerMenu() {
     <div className={styles.anchor} ref={ref}>
       <Tooltip content="Menu" placement="bottom">
         <Button variant="ghost" iconOnly aria-label="Menu" onClick={() => setOpen(o => !o)}>
-          ☰
+          <MenuIcon size={18} />
         </Button>
       </Tooltip>
       {open && (
         <Menu className={styles.menu}>
-          <MenuSubmenu label="Nouveau projet">
-            <MenuItem onSelect={() => openDialog('new')}>À partir de rien</MenuItem>
+          <MenuSubmenu label={<><FilePlus size={16} /><span>Nouveau projet</span></>}>
+            <MenuItem onSelect={() => openDialog('new')}>
+              <FilePlus size={16} /><span>À partir de rien</span>
+            </MenuItem>
             <MenuItem onSelect={() => { importJson(); close() }}>
-              Depuis un fichier JSON
+              <FileUp size={16} /><span>Depuis un fichier JSON</span>
             </MenuItem>
             <MenuItem
               disabled={list.length === 0}
               onSelect={() => openDialog('clone')}
             >
-              Depuis un projet existant
+              <Copy size={16} /><span>Depuis un projet existant</span>
             </MenuItem>
           </MenuSubmenu>
-          <MenuSubmenu label="Ouvrir un projet" disabled={!canOpenOthers}>
+          <MenuSubmenu
+            label={<><FolderOpen size={16} /><span>Ouvrir un projet</span></>}
+            disabled={!canOpenOthers}
+          >
             {others.map(p => (
               <MenuItem key={p.id} onSelect={() => chooseProject(p.id)}>
                 {p.name}
               </MenuItem>
             ))}
           </MenuSubmenu>
-          <MenuItem disabled={!current} onSelect={() => { exportCsv(); close() }}>
-            Exporter CSV
-          </MenuItem>
           <MenuItem disabled={!current} onSelect={() => { void exportJson(); close() }}>
-            Exporter JSON
+            <FileDown size={16} /><span>Exporter JSON</span>
           </MenuItem>
           <MenuItem
             disabled={!current}
             onSelect={() => openDialog('delete')}
             className={styles.danger}
           >
-            Supprimer le projet
+            <Trash2 size={16} /><span>Supprimer le projet</span>
           </MenuItem>
           <MenuSeparator />
           <ThemeSwitcher />

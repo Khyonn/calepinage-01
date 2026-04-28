@@ -4,6 +4,7 @@ import { loadProject } from '@/persistence/db'
 import type { LastProjectIdStore } from '@/persistence/lastProjectId'
 
 export { addRowThunk } from './addRowThunk'
+export { bulkFillRoomThunk } from './bulkFillRoomThunk'
 export { importProjectThunk } from './importProjectThunk'
 export { cloneProjectThunk } from './cloneProjectThunk'
 
