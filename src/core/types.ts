@@ -62,6 +62,7 @@ export interface Room {
   projectId: string
   name: string
   vertices: Point[]
+  yOffset: number  // cm — décalage vertical de la première rangée, borné dans [-max(catalog.width), 0]
   rows: Row[]
 }
 

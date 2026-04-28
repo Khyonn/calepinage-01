@@ -35,3 +35,8 @@ Fonctionnalité: Sérialisation JSON des projets — export / import / round-tri
     Étant donné une liste de projets existants ["Appart", "Appart (importé)"]
     Quand je désambiguïse le nom "Appart"
     Alors le nom résultant est "Appart (importé 2)"
+
+  Scénario: Import JSON clampe un yOffset hors bornes
+    Étant donné un JSON valide avec une pièce yOffset -99 cm et un type de lame de largeur 14 cm
+    Quand je parse le JSON
+    Alors la pièce importée a un yOffset clampé à -14 cm

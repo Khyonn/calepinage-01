@@ -1,4 +1,5 @@
 import type { BackgroundPlan, PlankType, Project, Room, Row } from '@/core/types'
+import { clampYOffset } from '@/core/rowYStart'
 
 export const JSON_SCHEMA_VERSION = 1
 
@@ -106,7 +107,8 @@ export function remapProjectIds(source: SerializedProject['project']): Project {
       roomId: newRoomId,
       plankTypeId: plankIdMap.get(row.plankTypeId) ?? row.plankTypeId,
     }))
-    return { ...room, id: newRoomId, projectId: newProjectId, rows }
+    const yOffset = clampYOffset(room.yOffset ?? 0, catalog)
+    return { ...room, id: newRoomId, projectId: newProjectId, yOffset, rows }
   })
 
   const project: Project = {

@@ -3,6 +3,7 @@ import type { BackgroundPlan, PlankType, PoseParams, Project, Point, Row } from 
 import type { ProjectState, ProjectsListEntry } from '@/store/types'
 import { propagateOffcuts } from '@/core/propagateOffcuts'
 import { DEFAULT_POSE_PARAMS } from '@/core/defaults'
+import { clampYOffset } from '@/core/rowYStart'
 
 const initialState: ProjectState = {
   list: [],
@@ -60,6 +61,7 @@ export const projectSlice = createSlice({
         projectId: state.current.id,
         name: action.payload.name,
         vertices: action.payload.vertices,
+        yOffset: 0,
         rows: [],
       })
     },
@@ -70,6 +72,13 @@ export const projectSlice = createSlice({
       if (!room) return
       if (action.payload.name !== undefined) room.name = action.payload.name
       if (action.payload.vertices !== undefined) room.vertices = action.payload.vertices
+    },
+
+    setRoomYOffset: (state, action: PayloadAction<{ id: string; yOffset: number }>) => {
+      if (!state.current) return
+      const room = state.current.rooms.find(r => r.id === action.payload.id)
+      if (!room) return
+      room.yOffset = clampYOffset(action.payload.yOffset, state.current.catalog)
     },
 
     deleteRoom: (state, action: PayloadAction<{ id: string }>) => {

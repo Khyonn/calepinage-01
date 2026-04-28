@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { Dialog } from '@/components/ui/Dialog'
 import { AddRowForm } from './AddRowForm'
 import { RowList } from './RowList'
+import { YOffsetField } from './YOffsetField'
 import styles from './RoomEditPanel.module.css'
 
 export function RoomEditPanel() {
@@ -31,6 +32,8 @@ export function RoomEditPanel() {
         <p className={styles.name}>{room.name}</p>
         <p className={styles.meta}>{room.vertices.length} sommets — {room.rows.length} rangée{room.rows.length > 1 ? 's' : ''}</p>
       </div>
+
+      <YOffsetField roomId={room.id} yOffsetCm={room.yOffset} />
 
       {hasRows ? (
         <>

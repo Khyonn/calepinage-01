@@ -30,6 +30,7 @@ function makeProject(name: string, withPlan = false): Project {
           { x: 0, y: 0 }, { x: 400, y: 0 },
           { x: 400, y: 300 }, { x: 0, y: 300 },
         ],
+        yOffset: 0,
         rows: [
           { id: 'row-1', roomId: 'room-1', plankTypeId: 'pt-1', segments: [{ xOffset: 0 }] },
           { id: 'row-2', roomId: 'room-1', plankTypeId: 'pt-1', segments: [{ xOffset: 30 }] },
@@ -174,6 +175,24 @@ describeFeature(feature, ({ Scenario }) => {
     })
     Then('le nom résultant est "Appart (importé 2)"', () => {
       expect(result).toBe('Appart (importé 2)')
+    })
+  })
+
+  Scenario('Import JSON clampe un yOffset hors bornes', ({ Given, When, Then }) => {
+    let json: string
+    let imported: Project
+
+    Given('un JSON valide avec une pièce yOffset -99 cm et un type de lame de largeur 14 cm', () => {
+      const base = makeProject('OffOut')
+      base.rooms[0].yOffset = -99
+      json = projectToJson(base)
+    })
+    When('je parse le JSON', () => {
+      imported = projectFromJson(json).project
+    })
+    Then('la pièce importée a un yOffset clampé à -14 cm', () => {
+      // catalog max width = 14 → clamp à -14
+      expect(imported.rooms[0].yOffset).toBeCloseTo(-14, 5)
     })
   })
 

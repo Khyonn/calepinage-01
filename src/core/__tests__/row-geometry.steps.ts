@@ -19,7 +19,7 @@ function makePlankType(name: string, length: number, width: number): PlankType {
   }
 }
 
-function makeRectRoom(width: number, height: number, rowCount: number, plankTypeId: string): Room {
+function makeRectRoom(width: number, height: number, rowCount: number, plankTypeId: string, yOffset = 0): Room {
   return {
     id: 'room-rect',
     projectId: 'proj',
@@ -30,6 +30,7 @@ function makeRectRoom(width: number, height: number, rowCount: number, plankType
       { x: width, y: height },
       { x: 0, y: height },
     ],
+    yOffset,
     rows: Array.from({ length: rowCount }, (_, i) => ({
       id: `row-${i}`,
       roomId: 'room-rect',
@@ -53,6 +54,7 @@ function makeURoom(rowCount: number, plankTypeId: string): Room {
       { x: 150, y: 0 }, { x: 200, y: 0 },
       { x: 200, y: 120 }, { x: 0, y: 120 },
     ],
+    yOffset: 0,
     rows: Array.from({ length: rowCount }, (_, i) => ({
       id: `row-${i}`,
       roomId: 'room-u',
@@ -164,6 +166,7 @@ describeFeature(feature, ({ Scenario }) => {
           { x: 0, y: 0 }, { x: 300, y: 0 },
           { x: 300, y: 200 }, { x: 0, y: 200 },
         ],
+        yOffset: 0,
         rows: [
           { id: 'r0', roomId: 'room-alt', plankTypeId: 'pt-A', segments: [{ xOffset: 0 }] },
           { id: 'r1', roomId: 'room-alt', plankTypeId: 'pt-B', segments: [{ xOffset: 0 }] },
@@ -183,6 +186,59 @@ describeFeature(feature, ({ Scenario }) => {
       // Ancien bug aurait donné 2 * 18 + 0.5 = 36.5 → 54.5.
       expect(geom?.yStart).toBeCloseTo(37.5, 5)
       expect(geom?.yEnd).toBeCloseTo(55.5, 5)
+    })
+  })
+
+  Scenario('yOffset négatif décale la première rangée vers le haut', ({ Given, And, When, Then }) => {
+    let plankType: PlankType
+    let room: Room
+    let pose: PoseParams
+    let geom: RowGeometry | null
+
+    Given('une pièce rectangulaire 300 cm sur 100 cm avec yOffset -1,5 cm', () => {
+      room = makeRectRoom(300, 100, 1, 'pt-Chêne', -1.5)
+    })
+    And('un type de lame "Chêne" de 100 cm par 20 cm', () => {
+      plankType = makePlankType('Chêne', 100, 20)
+    })
+    And('des paramètres de pose par défaut', () => {
+      pose = DEFAULT_POSE
+    })
+    When('je calcule la géométrie de la rangée d\'index 0', () => {
+      geom = computeRowGeometry(room, 0, [plankType], pose)
+    })
+    Then('la bande occupe Y de -1 à 19', () => {
+      // yStart = roomMinY(0) + yOffset(-1.5) + cale(0.5) = -1
+      // yEnd = -1 + width(20) = 19
+      expect(geom?.yStart).toBeCloseTo(-1, 5)
+      expect(geom?.yEnd).toBeCloseTo(19, 5)
+    })
+  })
+
+  Scenario('yOffset hors bornes est clampé au calcul', ({ Given, And, When, Then }) => {
+    let plankType: PlankType
+    let room: Room
+    let pose: PoseParams
+    let geom: RowGeometry | null
+
+    Given('une pièce rectangulaire 300 cm sur 100 cm avec yOffset -50 cm', () => {
+      // -50 hors bornes (catalog max width = 20). clampYOffset → -20.
+      room = makeRectRoom(300, 100, 1, 'pt-Chêne', -50)
+    })
+    And('un type de lame "Chêne" de 100 cm par 20 cm', () => {
+      plankType = makePlankType('Chêne', 100, 20)
+    })
+    And('des paramètres de pose par défaut', () => {
+      pose = DEFAULT_POSE
+    })
+    When('je calcule la géométrie de la rangée d\'index 0', () => {
+      geom = computeRowGeometry(room, 0, [plankType], pose)
+    })
+    Then('la bande occupe Y de -19,5 à 0,5', () => {
+      // yOffset clampé à -20 → yStart = 0 + (-20) + 0.5 = -19.5
+      // yEnd = -19.5 + 20 = 0.5
+      expect(geom?.yStart).toBeCloseTo(-19.5, 5)
+      expect(geom?.yEnd).toBeCloseTo(0.5, 5)
     })
   })
 

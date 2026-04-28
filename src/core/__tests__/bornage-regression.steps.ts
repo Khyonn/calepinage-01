@@ -48,6 +48,7 @@ describe('Bornage minRowGap — pièce A (étroite, allongée) deuxième rangée
       { x: -318.114827143039, y: 263.2850059894957 },
       { x: -318.114827143039, y: 253.35021006911055 },
     ],
+    yOffset: 0,
     rows: [
       { id: '800a9221', roomId: '94fdf526-4cae-49a6-b540-088ac40daf0c', plankTypeId: '37bd5114-f7d8-4102-a427-1ad4dcc723bc', segments: [{ xOffset: 0 }] },
     ],
@@ -122,6 +123,7 @@ describe('Bornage minPlankLength — pièce B (concave, chute prev quasi nulle)'
       { x: -187.1205802718433, y: -127.21046220941375 },
       { x: -125.46999999999997, y: -127.21046220941375 },
     ],
+    yOffset: 0,
     rows: [
       { id: '2b727400', roomId: '370bb543-1e1f-4bdd-9159-215029462d2a', plankTypeId: '37bd5114-f7d8-4102-a427-1ad4dcc723bc', segments: [{ xOffset: 13.6 }] },
       { id: 'adb17636', roomId: '370bb543-1e1f-4bdd-9159-215029462d2a', plankTypeId: '37bd5114-f7d8-4102-a427-1ad4dcc723bc', segments: [{ xOffset: 30.4 }] },
@@ -184,6 +186,7 @@ describe('Bornage minPlankLength — pièce C (concave avec notch latéral)', ()
       { x: -327.4022817964733, y: 443.046069315958 },
       { x: -606.2143327964734, y: 443.046069315958 },
     ],
+    yOffset: 0,
     rows: [],
   }
 
