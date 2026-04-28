@@ -1,0 +1,48 @@
+import type { PlankType, PoseParams, Room } from '@/core/types'
+
+const EPSILON = 0.001
+
+/**
+ * Sum widths of rows[0..rowIndex-1] using each row's own plankType width.
+ * Returns the y of that row's top edge (= roomMinY + cale + Σ prior widths).
+ *
+ * Replaces the legacy `rowIndex × plankType.width` formula, which assumed
+ * every prior row shared the new row's width and produced wrong Y positions
+ * when types alternated (cf. bug "largeur planche").
+ */
+export function computeRowYStart(
+  room: Room,
+  rowIndex: number,
+  catalog: PlankType[],
+  poseParams: PoseParams,
+): number {
+  const roomMinY = room.vertices.length > 0 ? Math.min(...room.vertices.map(v => v.y)) : 0
+  let y = roomMinY + poseParams.cale
+  const upTo = Math.min(rowIndex, room.rows.length)
+  for (let i = 0; i < upTo; i++) {
+    const pt = catalog.find(p => p.id === room.rows[i].plankTypeId)
+    if (!pt) continue
+    y += pt.width
+  }
+  return y
+}
+
+/**
+ * True if a new row can be appended at the end of `room.rows`.
+ *
+ * Rule: the previous row must end inside the room — i.e. the y at which
+ * the new row would start (= sum of prior row widths + cale) must not
+ * exceed `roomMaxY`. The new row itself may extend beyond `roomMaxY`;
+ * the renderer truncates via `intersectStripExtents`. Only forbid
+ * adding when no vertical room is left at all.
+ */
+export function canAppendRow(
+  room: Room,
+  catalog: PlankType[],
+  poseParams: PoseParams,
+): boolean {
+  if (room.vertices.length === 0) return false
+  const roomMaxY = Math.max(...room.vertices.map(v => v.y))
+  const yStart = computeRowYStart(room, room.rows.length, catalog, poseParams)
+  return yStart <= roomMaxY + EPSILON
+}

@@ -1,6 +1,7 @@
 import type { OffcutLink, PlankType, PoseParams, Room, SummaryResult } from '@/core/types'
 import { fillRow } from '@/core/rowFill'
 import { intersectStripExtents } from '@/core/geometry'
+import { computeRowYStart } from '@/core/rowYStart'
 
 /**
  * Compute how many planks need to be purchased per type, and the total cost.
@@ -25,15 +26,11 @@ export function computeSummary(
     let planksNeeded = 0
 
     for (const room of rooms) {
-      const roomMinY = room.vertices.length > 0
-        ? Math.min(...room.vertices.map(v => v.y))
-        : 0
-
       for (let i = 0; i < room.rows.length; i++) {
         const row = room.rows[i]
         if (row.plankTypeId !== plankType.id) continue
 
-        const yStart = roomMinY + poseParams.cale + i * plankType.width
+        const yStart = computeRowYStart(room, i, catalog, poseParams)
         const yEnd = yStart + plankType.width
         const segments = intersectStripExtents(room.vertices, yStart, yEnd)
         if (segments.length === 0) continue

@@ -32,3 +32,9 @@ Fonctionnalité: Géométrie d'une rangée — strip Y + segments X + lames
     Quand je calcule la géométrie de la rangée d'index 3
     Alors la rangée compte 1 segment
     Et le segment couvre X de 0 à 400
+
+  Scénario: Pièce avec rangées de types alternés — Y cumulatif et non rowIndex × width courant
+    Étant donné une pièce rectangulaire 300 cm sur 200 cm avec 3 rangées de types alternés A 15 / B 22 / C 18
+    Et des paramètres de pose par défaut
+    Quand je calcule la géométrie de la rangée d'index 2
+    Alors la bande occupe Y de 37,5 à 55,5
