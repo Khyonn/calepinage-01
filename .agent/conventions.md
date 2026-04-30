@@ -57,11 +57,38 @@ Fallbacks : projet introuvable → `/new`. Pièce introuvable → `/:projetId/ma
 
 ## Tests
 
-- Logique pure → `src/core/__tests__/*.feature` + `*.steps.ts`.
-- Reducers / sélecteurs / thunks → `src/store/__tests__/*.feature` + `*.steps.ts`.
-- **Composants React** : pas de nouveaux tests JSDOM. Si un comportement UI a vraiment besoin d'un test, on ajoute un test smoke côté core (pour la logique extraite) ou un test E2E manuel décrit dans la PR.
-- Pattern store : **état initial → action(s) → état attendu**. Pas de mocks de service. Voir `.agent/patterns/new-store-test.md`.
+### Philosophie
+
+> Un test BDD exprime un **comportement utilisateur observable** sous la forme :
+> **état initial du store → action ou thunk déclenché → données renvoyées par un sélecteur**.
+
+Le composant React est une simple liaison clavier/souris/DOM ↔ store : si le store + le sélecteur sont corrects, le composant l'est. Changer de framework demain n'invalide aucun test.
+
+Conséquences pratiques :
+
+- Le **store est le sujet par défaut** des tests. Reducers, thunks, sélecteurs sont testés ensemble dans le même scénario, pas isolément.
+- Le **mode actif**, le **catalogue**, les **pièces**, les **rangées** font partie de l'**état initial** (preloaded ou construit via dispatchs de setup). Pas d'arguments « magiques » à l'action testée.
+- Le **drag**, le **clic d'un bouton**, l'**ouverture d'un panneau** sont des **actions ou des thunks** (`projectActions.updateSegmentOffset(...)`, `dragSegmentRelease({ rowId, segmentIndex, offsetCm })`). Pas de simulation DOM.
+- L'**assertion** porte presque toujours sur la **valeur d'un sélecteur** (`selectSummaryRows(state)`, `selectRowViewModel(state, rowId)`), pas sur des champs internes du state.
+
+### Hiérarchie
+
+| Cas | Pattern |
+|---|---|
+| **Comportement utilisateur** (cas par défaut, ~90 % des tests) | `src/store/__tests__/*.feature` — voir `.agent/patterns/new-store-test.md` |
+| Logique mathématique/géométrique pure réutilisée par plusieurs callers | `src/core/__tests__/*.feature` — voir `.agent/patterns/new-bdd-test.md` |
+| Sérialisation, parsing d'URL, fonctions utilitaires | `src/core/__tests__/*.feature` (style core BDD) |
+| Composant React | **Pas de test automatisé.** Documenter un test manuel dans la PR. |
+
+> Ne tester en core que ce qui est **strictement pur** et **réutilisé** ailleurs (`computeRowYStart`, `parseUrl`, `clampYOffset`). Sinon couvrir le comportement via un test store qui appelle l'action consommatrice et observe via sélecteur.
+
+### Règles dures
+
 - Toujours `loadFeature(path, { language: 'fr' })`.
+- **Pas de mock** de service, pas de stub de sélecteur, pas de simulation DOM.
+- **Pas de JSDOM**, pas de `@testing-library/*`, pas de `render()` React.
+- Une assertion par `Then`/`And`. Si plusieurs invariants → plusieurs `And`.
+- Un thunk (drag, batch) est testé **comme une seule unité** : un seul `When`, le `Then` observe le résultat final via sélecteur.
 
 ## Composants React — couplage Redux
 
