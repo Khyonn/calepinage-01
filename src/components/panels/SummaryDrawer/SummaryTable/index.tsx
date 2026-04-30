@@ -14,10 +14,6 @@ function formatEuro(value: number): string {
   return euro.format(value)
 }
 
-function plankCountLabel(n: number): string {
-  return `${n} lame${n > 1 ? 's' : ''}`
-}
-
 interface QuantityDisplay {
   primary: string
   secondary?: string
@@ -83,7 +79,6 @@ export function SummaryTable() {
           return (
             <tr key={s.plankTypeId}>
               <td>
-                <div className={styles.typePrimary}>{plankCountLabel(s.planksNeeded)}</div>
                 <div className={styles.typeName}>{plankType.name}</div>
                 <div className={styles.typeDims}>
                   {plankType.length} × {plankType.width} cm

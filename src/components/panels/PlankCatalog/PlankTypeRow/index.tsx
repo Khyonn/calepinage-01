@@ -1,4 +1,7 @@
+import { Info } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { Tooltip } from '@/components/ui/Tooltip'
+import { extractFirstUrl } from '@/core/utils/url'
 import type { PlankType } from '@/core/types'
 import styles from './PlankTypeRow.module.css'
 
@@ -16,11 +19,24 @@ function pricingLabel(type: PlankType): string {
 
 export function PlankTypeRow({ type, usageCount, onEdit, onDelete }: Props) {
   const inUse = usageCount > 0
+  const url = extractFirstUrl(type.description)
+  const hasDescription = type.description.trim().length > 0
 
   return (
     <div className={styles.row}>
       <div className={styles.info}>
-        <div className={styles.name}>{type.name}</div>
+        <div className={styles.nameLine}>
+          {url
+            ? <a className={styles.name} href={url} target="_blank" rel="noreferrer">{type.name}</a>
+            : <span className={styles.name}>{type.name}</span>}
+          {hasDescription && (
+            <Tooltip content={type.description}>
+              <span className={styles.infoIcon} aria-label="Description">
+                <Info size={14} />
+              </span>
+            </Tooltip>
+          )}
+        </div>
         <div className={styles.meta}>
           {type.length} × {type.width} cm · {pricingLabel(type)}
         </div>

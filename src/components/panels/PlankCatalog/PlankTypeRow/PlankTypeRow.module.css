@@ -10,7 +10,20 @@
 
 .info { display: flex; flex-direction: column; gap: 0.125rem; }
 
-.name { font-weight: 500; color: var(--text); }
+.nameLine {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.name { font-weight: 500; color: var(--text); text-decoration: none; }
+a.name:hover { text-decoration: underline; }
+
+.infoIcon {
+  display: inline-flex;
+  cursor: help;
+  color: var(--text-muted);
+}
 
 .meta { font-size: var(--text-sm); color: var(--text-muted); }
 

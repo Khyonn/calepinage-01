@@ -1,15 +1,31 @@
-import type {
-  OffcutLink, PlankType, Project, SummaryResult,
-} from '@/core/types'
+import type { OffcutLink, Plank, PlankType, Project, SummaryResult } from '@/core/types'
+import { computeRowGeometry } from '@/core/rowGeometry'
 
-export const CSV_BOM = '\ufeff'
+export const CSV_BOM = '﻿'
 export const CSV_SEPARATOR = ';'
 export const CSV_EOL = '\r\n'
 
-/**
- * Serialize a project to a CSV string suitable for Excel / LibreOffice.
- * Multi-section, `;` separator, UTF-8 BOM prefix, `\r\n` line endings.
- */
+const EPSILON = 0.001
+
+interface SegmentDetail {
+  firstPlank: number | null
+  fullPlanks: number | null
+  lastPlank: number | null
+}
+
+function describeSegment(planks: Plank[], plankType: PlankType): SegmentDetail {
+  if (planks.length === 0) return { firstPlank: null, fullPlanks: null, lastPlank: null }
+  const isFull = (p: Plank) => Math.abs(p.length - plankType.length) < EPSILON
+  const first = planks[0]
+  const last = planks[planks.length - 1]
+  const fullCount = planks.filter(isFull).length
+  return {
+    firstPlank: isFull(first) ? null : first.length,
+    fullPlanks: fullCount === 0 ? null : fullCount,
+    lastPlank: (planks.length === 1 || isFull(last)) ? null : last.length,
+  }
+}
+
 export function projectToCsv(
   project: Project,
   summary: SummaryResult | null,
@@ -37,29 +53,46 @@ export function projectToCsv(
   }
   lines.push('')
 
-  lines.push('# Liens de réutilisation')
-  lines.push(row(['Pièce source', 'Rangée source', 'Pièce cible', 'Rangée cible', 'Longueur réutilisée (cm)']))
-  for (const link of offcutLinks) {
-    const source = resolveRow(project, link.sourceRowId)
-    const target = resolveRow(project, link.targetRowId)
-    if (!source || !target) continue
-    lines.push(row([
-      source.roomName, String(source.rowIndex + 1),
-      target.roomName, String(target.rowIndex + 1),
-      link.length.toFixed(1),
-    ]))
+  for (const room of project.rooms) {
+    lines.push(`# Détail — ${room.name}`)
+    lines.push(row(['Rangée', 'Type de lame', 'Segment', 'Première lame (cm)', 'Source', 'Lames complètes', 'Dernière lame (cm)', 'Destination']))
+    for (let ri = 0; ri < room.rows.length; ri++) {
+      const geo = computeRowGeometry(room, ri, project.catalog, project.poseParams)
+      if (!geo) continue
+      const domRow = room.rows[ri]
+      for (let si = 0; si < geo.segments.length; si++) {
+        const seg = geo.segments[si]
+        const detail = describeSegment(seg.planks, geo.plankType)
+        let sourceLabel = ''
+        if (si === 0 && (domRow.segments[0]?.xOffset ?? 0) > 0) {
+          const link = offcutLinks.find(l => l.targetRowId === domRow.id)
+          if (link) {
+            const src = resolveRow(project, link.sourceRowId)
+            if (src) sourceLabel = `rangée ${src.rowIndex + 1} de ${src.roomName}`
+          }
+        }
+        let destLabel = ''
+        if (si === geo.segments.length - 1) {
+          const link = offcutLinks.find(l => l.sourceRowId === domRow.id)
+          if (link) {
+            const dst = resolveRow(project, link.targetRowId)
+            if (dst) destLabel = `rangée ${dst.rowIndex + 1} de ${dst.roomName}`
+          }
+        }
+        lines.push(row([
+          String(ri + 1),
+          describePlank(geo.plankType),
+          String(si + 1),
+          detail.firstPlank !== null ? detail.firstPlank.toFixed(1) : '',
+          sourceLabel,
+          detail.fullPlanks !== null ? String(detail.fullPlanks) : '',
+          detail.lastPlank !== null ? detail.lastPlank.toFixed(1) : '',
+          destLabel,
+        ]))
+      }
+    }
+    lines.push('')
   }
-  lines.push('')
-
-  lines.push('# Paramètres de pose')
-  lines.push(row(['Cale (cm)', 'Largeur de scie (cm)', 'Longueur min (cm)', 'Écart rangées min (cm)']))
-  const pp = project.poseParams
-  lines.push(row([
-    pp.cale.toFixed(1),
-    pp.sawWidth.toFixed(1),
-    pp.minPlankLength.toFixed(1),
-    pp.minRowGap.toFixed(1),
-  ]))
 
   return CSV_BOM + lines.join(CSV_EOL) + CSV_EOL
 }

@@ -64,10 +64,8 @@ describeFeature(feature, ({ Background, BeforeEachScenario, Scenario }) => {
     And('la sortie utilise ";" comme séparateur de colonnes', () => {
       expect(csv.includes(CSV_SEPARATOR)).toBe(true)
     })
-    And('la sortie contient les trois sections attendues', () => {
+    And('la sortie contient la section résumé matière', () => {
       expect(csv).toContain('# Résumé matière')
-      expect(csv).toContain('# Liens de réutilisation')
-      expect(csv).toContain('# Paramètres de pose')
     })
   })
 
@@ -90,29 +88,8 @@ describeFeature(feature, ({ Background, BeforeEachScenario, Scenario }) => {
     And('la section résumé contient "Total;;;40.00"', () => {
       expect(csv).toContain('Total;;;40.00')
     })
-  })
-
-  Scenario('Les liens de réutilisation sont écrits avec les numéros de rangée 1-indexés', ({ Given, And, When, Then }) => {
-    Given('un catalogue contenant "Pin" 100×10 cm au prix unitaire 5 €', () => {
-      catalog = [makePlank('Pin', 100, 10, 5)]
-    })
-    And('une pièce "Chambre" de 400 cm avec deux rangées du type "Pin"', () => {
-      rooms = [{
-        id: 'room-1', projectId: 'proj', name: 'Chambre',
-        vertices: BASE_VERTICES,
-        yOffset: 0,
-        rows: [
-          { id: 'row-1', roomId: 'room-1', plankTypeId: catalog[0].id, segments: [{ xOffset: 0 }] },
-          { id: 'row-2', roomId: 'room-1', plankTypeId: catalog[0].id, segments: [{ xOffset: 30 }] },
-        ],
-      }]
-    })
-    And('un lien de réutilisation de 30 cm entre la rangée 1 et la rangée 2', () => {
-      offcutLinks = [{ sourceRowId: 'row-1', targetRowId: 'row-2', length: 30 }]
-    })
-    When('j\'exporte le projet en CSV', () => exportProject())
-    Then('la section liens contient "Chambre;1;Chambre;2;30.0"', () => {
-      expect(csv).toContain('Chambre;1;Chambre;2;30.0')
+    And('la section détail contient "# Détail — Salon"', () => {
+      expect(csv).toContain('# Détail — Salon')
     })
   })
 
@@ -132,29 +109,19 @@ describeFeature(feature, ({ Background, BeforeEachScenario, Scenario }) => {
     Then('la section résumé contient "\\"Hêtre; premium 120×14 cm\\";4;12.00;48.00"', () => {
       expect(csv).toContain('"Hêtre; premium 120×14 cm";4;12.00;48.00')
     })
-    And('la section liens commence par l\'en-tête "Pièce source;Rangée source;Pièce cible;Rangée cible;Longueur réutilisée (cm)"', () => {
-      expect(csv).toContain('Pièce source;Rangée source;Pièce cible;Rangée cible;Longueur réutilisée (cm)')
-    })
   })
 
-  Scenario('Un projet vide produit des sections sans lignes de données', ({ When, Then, And }) => {
+  Scenario('Un projet vide produit une section résumé sans lignes de données', ({ When, Then }) => {
     When('j\'exporte le projet en CSV', () => exportProject())
     Then('la section résumé ne contient que son en-tête', () => {
       const summaryHeader = 'Type de lame;Quantité;Coût unitaire (€);Coût total (€)'
       expect(csv).toContain(summaryHeader)
       const body = csv.replace(CSV_BOM, '')
-      const summaryBlock = body.split('# Liens de réutilisation')[0]
-      const summaryLines = summaryBlock.split(CSV_EOL).filter(l => l && !l.startsWith('#') && l !== summaryHeader)
+      const afterSummaryTitle = body.split('# Résumé matière')[1] ?? ''
+      const nextSection = afterSummaryTitle.indexOf('\r\n#')
+      const summaryBlock = nextSection !== -1 ? afterSummaryTitle.slice(0, nextSection) : afterSummaryTitle
+      const summaryLines = summaryBlock.split(CSV_EOL).filter(l => l && l !== summaryHeader)
       expect(summaryLines).toEqual([])
-    })
-    And('la section liens ne contient que son en-tête', () => {
-      const linksHeader = 'Pièce source;Rangée source;Pièce cible;Rangée cible;Longueur réutilisée (cm)'
-      const linksBlock = csv.split('# Liens de réutilisation')[1].split('# Paramètres de pose')[0]
-      const linksLines = linksBlock.split(CSV_EOL).filter(l => l && l !== linksHeader)
-      expect(linksLines).toEqual([])
-    })
-    And('la section paramètres contient "0.5;0.1;30.0;15.0"', () => {
-      expect(csv).toContain('0.5;0.1;30.0;15.0')
     })
   })
 })
