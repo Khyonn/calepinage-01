@@ -1,14 +1,17 @@
 # Pattern : nouveau test BDD core
 
-Pour tester de la logique métier pure (calculs, validations, géométrie). Pas de store, pas de React, pas d'IDB.
+Pour tester une **fonction pure** réutilisée (calculs, validations, géométrie, parsing). Pas de store, pas de React, pas d'IDB.
+
+> Pattern **minoritaire**. Le pattern par défaut est `.agent/patterns/new-store-test.md` (test store-first orienté comportement utilisateur). Utiliser core uniquement si la logique testée est **pure** ET **réutilisée par plusieurs callers store** (sinon couvrir le comportement directement au niveau store).
 
 ## Quand utiliser
 
 | Cas | Pattern |
 |---|---|
-| Fonction pure dans `src/core/` | **Ce pattern** (test core) |
-| Reducer / sélecteur / thunk | `.agent/patterns/new-store-test.md` |
-| Comportement UI | Pas de test automatisé |
+| Fonction pure dans `src/core/` réutilisée par plusieurs reducers/sélecteurs | **Ce pattern** (test core) |
+| Sérialisation / parsing d'URL / fonctions utilitaires sans dépendance store | **Ce pattern** (test core) |
+| Reducer / sélecteur / thunk / comportement utilisateur | `.agent/patterns/new-store-test.md` (par défaut) |
+| Composant UI | Pas de test automatisé |
 
 ## Workflow
 
